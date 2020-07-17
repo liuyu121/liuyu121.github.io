@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="2946">
+<meta itemprop="wordCount" content="3980">
 
 
 
@@ -168,7 +168,7 @@
 </li>
 </ul>
 <h1 id="建立">建立</h1>
-<p>我们使用 <code>client</code> 表示主动发起建立方，<code>server</code> 表示被动响应建立方，server<code> 需要</code>bind<code>某个端口并</code>listen`，做好随时迎接一个连接的准备。</p>
+<p>我们使用 <code>client</code> 表示主动发起建立方，<code>server</code> 表示被动响应建立方，server<code>需要</code>bind<code>某个端口并</code>listen`，做好随时迎接一个连接的准备。</p>
 <p>一个连接的建立，大体流程如下：</p>
 <ul>
 <li>
@@ -178,7 +178,7 @@
 </ul>
 </li>
 <li>
-<p>2、<code>server</code> 收到请求报文后，发送一个 <code>SYNC =1, ACK = 1</code>，也即 <code>SYN+ACK</code>，且同样的，随机一个  <code>ISN2</code> 作为 <code>seq</code>，并设 <code>ack = ISN1+1</code>，也即对请求报文的确认。其中 <code>ack</code> 表示希望 <code>client</code> 接下来传该字节开始的数据流。</p>
+<p>2、<code>server</code> 收到请求报文后，发送一个 <code>SYNC = 1, ACK = 1</code>，也即 <code>SYN+ACK</code>，且同样的，随机一个  <code>ISN2</code> 作为 <code>seq</code>，并设 <code>ack = ISN1+1</code>，也即对请求报文的确认。其中 <code>ack</code> 表示希望 <code>client</code> 接下来传该字节开始的数据流。</p>
 <ul>
 <li>此时，<code>server</code> 进入 <code>SYN-RECEIVED</code> 状态。</li>
 </ul>
@@ -194,20 +194,29 @@
 <h2 id="为什么是三次握手">为什么是三次握手</h2>
 <p>为什么是三次握手，而不是不是<code>2</code> 次或<code>4</code> 次呢？</p>
 <p>从建立的流程可以看出，<code>第一次</code> 发送，表示 <code>client</code> 请求建立连接；第二次表示 <code>server</code> 收到了请求并做了回复。这里如果没有第三次就  <code>ESTABLISHED</code>  了，开始传输数据，那么会有什么问题呢？</p>
-<p>这里，我们需要重点关注 <code>seq</code> ，<code>tcp</code> 就是依据这个字段进行所谓 <code>可靠传输</code> 的，也即，<code>tcp</code> 双方都依赖这个序列号来进行数据包的有序传输。</p>
-<p>所以，在前两次握手完成后，此时：</p>
+<p>这里，我们需要重点关注 <code>seq</code> ，<code>tcp</code> 就是依据这个字段进行所谓 <code>可靠传输</code> 的，也即，<code>tcp</code> 双方都依赖这个序列号来进行数据包的有序传输。从语义上来说，参与 <code>TCP</code> 连接的双方，都需要满足：</p>
+<ul>
+<li>知道对方下一个要发的包序列（对方 <code>seq</code>）</li>
+<li>知道对方收到了自己之前发出的包（我方 <code>seq</code>）</li>
+</ul>
+<p>所以，在前两次握手完成后，双方都进入 <code>ESTABLISHED</code>，此时：</p>
 <ul>
 <li>
 <p><code>client</code> 得到了正确的返回 <code>ISN1+1</code>，且得到了 <code>server</code> 的 <code>seq</code>，也即 <code>cient</code> 知道 <code>server</code> 已经收到自己的数据包了，且知道 <code>server</code> 下一个要发的序列；</p>
 </li>
 <li>
-<p><code>server</code> 不确定自己的 <code>ACK</code>  是否成功被 <code>client</code> 接收，假设这时这个包丢了，  <code>server</code>  直接把自己置为  <code>ESTABLISHED</code> ，但这个时候 <code>client</code> 仍然处于 <code>SYN-SENT</code> 状态，全双工的连接并没建立起来！</p>
-</li>
-<li>
-<p>也即，此时，<code>client</code>  不知道 <code>server</code> 的 <code>seq</code>， <code>server</code>  就无法保证  <code>client</code>   是按照正确的顺序来接收数据包。如果 <code>server</code> 继续发送数据，<code>client</code> 无法做到有序接收。</p>
+<p><code>server</code> 不确定自己的 <code>ACK</code>  是否成功被 <code>client</code> 接收，假设这时这个包丢了，此时，<code>client</code>  不知道 <code>server</code> 的 <code>seq</code>， <code>server</code>  就无法保证  <code>client</code>   是按照正确的顺序来接收自己的数据包。也即，如果 <code>server</code> 继续发送数据，<code>client</code> 无法做到有序接收。</p>
 </li>
 </ul>
-<p>为什么不是 <code>4</code> 次连接呢，但这里我们已经知道 <code>3</code> 次就已经可以建立了，所以，为什么还要多一次呢，浪费资源 。。。</p>
+<p>以上，不满足 <code>TCP</code> 的语义要求。</p>
+<p>另外，还有其他场景，如：</p>
+<ul>
+<li><code>client</code> 先后发送了两次 <code>SYN</code>，第一个 <code>SYN</code> 延时了，第二个 <code>SYN</code> 先行到达 <code>server</code>；</li>
+<li>此后双方建立了连接，传输数据，关闭连接；</li>
+<li>这时，延时的第一个 <code>SYN</code> 又到了 <code>server</code>，然后 <code>server</code> 回复 <code>ACK</code>，又进入了 <code>ESTABLISHED</code>。但其实这是个无效的报文，建立了一个多余的连接。</li>
+<li>而如果使用 <code>三次握手</code> 机制，此时  <code>client</code> 可以直接丢弃该无效报文，而 <code>server</code> 收不到 <code>client</code> 的 <code>ACK</code>，也不会建立连接。</li>
+</ul>
+<p>为什么不是 <code>4</code> 次握手 呢，但这里我们已经知道最少需要 <code>3</code> 次就已经可以建立了，所以，为什么还要多一次呢，浪费资源 。。。</p>
 <h2 id="backlog-是什么">backlog 是什么</h2>
 <p>在上面的示意图中，我们可以看到，<code>server</code> 端有两个 <code>qeue</code>：<code>syn queue</code>、<code>accept queue</code>，其含义为:</p>
 <ul>
@@ -301,15 +310,59 @@ tcp-backlog 511
 </code></pre></td></tr></table>
 </div>
 </div><p>所以，我们 <em>惊奇</em> 的发现，三者的默认值都为 <code>511</code>，但其实之前 <code>php-fpm</code> 设置的是 <code>65535</code>，后来在某个版本中 <code>fix</code> 了，<code>issue</code> 参见 <a href="https://github.com/php/php-src/commit/ebf4ffc9354f316f19c839a114b26a564033708a">Set FPM_BACKLOG_DEFAULT to 511</a>。</p>
-<p>那么，为什么要 <code>fix</code></p>
+<p>那么，为什么要 <code>fix</code> 这个数值呢，我们可做如下推理：</p>
+<ul>
+<li>
+<p>如果 <code>php-fpm</code> 的 <code>backlog</code> 过大，通过 <code>nginx</code> 的请求可以一直建立，但如果 <code>php</code> 的处理速度变慢了，后面的连接执行时间过长，可能超出了 <code>nginx</code> 的 <code>fastcgi_read_timeout</code> 设置，<code>fpm</code> 往这个 <code>socket</code>  <code>write</code> 时，<code>nginx</code> 已经断开了连接了， 会出现  <code>broken pipe</code> 错误，也即 <code>Connection timed out</code>，<code>nginx</code> 表现为 <code>504 Gateway Timeout</code></p>
+</li>
+<li>
+<p>如果 <code>php-fpm</code> 的 <code>backlog</code> 过小， <code>nginx</code> 的请求超过 <code>fastcgi_connect_timeout</code> 时间还未建立，，也即 <code>Connection refused</code>， <code>nginx</code> 表现为 <code>502 Bad Gateway</code> 错误。</p>
+</li>
+</ul>
+<p>所以， <code>php-fpm</code> 的就设置为 <code>nginx</code> 一样，<code>511</code>，因为内核源码的判断条件是 <code>&gt;</code>，因而这些常见的应用最多能 <code>accept 512</code> 个请求。</p>
 <h1 id="关闭">关闭</h1>
-<p>关闭一个 <code>tcp</code>  链接的流程图如下（之前留的图，出处已不可考了）：</p>
+<p>我们使用 <code>client</code> 表示主动发起关闭方，<code>server</code> 表示被动响应关闭方。</p>
+<p>关闭一个 <code>TCP</code> 连接，大致流程如下：</p>
+<ul>
+<li>
+<p>1、<code>client</code> 发送请求关闭连接的报文，其中 <code>FIN = 1, seq = x</code>。</p>
+<ul>
+<li>此时，<code>client</code> 进入 <code>FIN_WAIT_1</code> 状态。</li>
+</ul>
+</li>
+<li>
+<p>2、<code>server</code> 收到 <code>FIN</code> 报文后，发送一个 <code>ACK = 1, ack = x+1</code>，表示已经收到了关闭的请求。注意，这里不是立即关闭，因为此时可能还要别的数据要接收、处理等。</p>
+<ul>
+<li>此时，<code>server</code> 进入 <code>CLOSE_WAIT</code> 状态；<code>client</code> 收到 <code>ACK</code> 后 进入 <code>FIN_WAIT_2</code> 状态。</li>
+</ul>
+</li>
+<li>
+<p>3、<code>server</code> 处理完了当前工作，可以关闭了，发送一个 <code>FIN = 1, seq = y</code> 的报文，然后等待 <code>client</code> 的响应，就可以关闭当前连接了。</p>
+<ul>
+<li>此时，<code>server</code> 进入 <code>LAST_ACK</code> 状态。</li>
+</ul>
+</li>
+<li>
+<p>4、<code>client</code> 收到 <code>FIN</code> 报文，发送一个 <code>ACK = 1, seq = y+1</code>，此时</p>
+<ul>
+<li>此时，<code>client</code>  进入 <code>TIME_WAIT</code> 状态，等待一段时间后，关闭连接；<code>server</code> 收到 <code>ACK</code>  关闭连接；</li>
+</ul>
+</li>
+</ul>
+<p>关闭一个 <code>tcp</code>  链接的流程图如下：</p>
 <p><img src="/img/tcp-close.png" alt=""></p>
-<p>可通俗解释为：</p>
 <h2 id="为什么需要四次">为什么需要四次</h2>
+<p>相同的问题来了，为什么需要 <code>4</code> 次挥手呢，而不是 <code>3</code> 、<code>5</code> 次？</p>
+<p>其实本质原因与需要 <code>3次握手</code> 类似，因为 <code>TCP</code> 是一个 <code>全双工</code>（<code>full-duplex</code>）的协议。</p>
+<ul>
+<li><code>1</code> 次肯定不行，<code>client</code> 根本不确定对方是否收到了自己的 <code>FIN</code>，直接关闭太简单粗暴</li>
+<li><code>2</code> 次的话，<code>server</code> 不能保证能立即关闭，因为其需要一个处理当前逻辑的时间</li>
+<li><code>3</code>次时，同理，<code>server</code> 也不能保证 <code>client</code> 收到了自己的 <code>FIN</code></li>
+</ul>
+<p>所以，因为是 <code>全双工</code>，所以一来一回<code>*2</code>，最少需要<code>4次</code> 握手机制，才能保证一个连接正确关闭。</p>
+<h2 id="time_wait-与-close_wait">TIME_WAIT 与 CLOSE_WAIT</h2>
+<p><code>TIME_WAIT</code> 与 <code>CLOSE_WAIT</code> 应该是 <code>web</code> 服务中，最常见的几个 <code>TCP</code> 状态，通常，也是我们需要重点关注的网络指标。</p>
 <h2 id="代码示例">代码示例</h2>
-<h2 id="time_wait-问题">time_wait 问题</h2>
-<h2 id="优化">优化</h2>
 <h2 id="参考">参考</h2>
 <p>下面有一些有用到文章，都是干货。</p>
 <ul>
