@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="2944">
+<meta itemprop="wordCount" content="2946">
 
 
 
@@ -160,7 +160,7 @@
 </ul>
 </li>
 <li>
-<p>ack<code>： </code>Acknowledgment number (if ACK set)</p>
+<p><code>ack</code>： <code>Acknowledgment number (if ACK set)</code></p>
 <ul>
 <li>当且仅当 <code>ACK</code> 设置为  <code>1</code> 时，才有效。</li>
 <li>表示期望收到的下一个 <code>seq</code>，如果是 <code>SYN</code> 的 <code>ACK</code>，其值为发起方的 <code>ISN+1</code>。</li>
@@ -168,20 +168,24 @@
 </li>
 </ul>
 <h1 id="建立">建立</h1>
-<p>一个连接的建立，大致流程如下，我们使用 <code>client</code> 表示主动发起建立方，<code>server</code> 表示被动响应建立方。</p>
-<p><code>server</code>  需要 <code>bind</code> 某个端口并 <code>listen</code>，做好随时迎接一个连接的准备，大体流程如下：</p>
+<p>我们使用 <code>client</code> 表示主动发起建立方，<code>server</code> 表示被动响应建立方，server<code> 需要</code>bind<code>某个端口并</code>listen`，做好随时迎接一个连接的准备。</p>
+<p>一个连接的建立，大体流程如下：</p>
 <ul>
-<li>1、<code>client</code> 发送请求建立连接的报文，其中 <code>SYN = 1</code> ，<code>seq</code>  为一个随机值  <code>ISN1</code> ，注意这里必须是随机值而不能设为 <code>1</code>，防止被猜测序列号后恶意攻击（也即所谓的「<code>TCP序列猜测攻击</code>」）。
+<li>
+<p>1、<code>client</code> 发送请求建立连接的报文，其中 <code>SYN = 1</code> ，<code>seq</code>  为一个随机值  <code>ISN1</code> ，注意这里必须是随机值而不能设为 <code>1</code>，防止被猜测序列号后恶意攻击（也即所谓的「<code>TCP序列猜测攻击</code>」）。</p>
 <ul>
 <li>此时，<code>client</code> 进入 <code>SYN-SENT</code> 状态。</li>
 </ul>
 </li>
-<li>2、<code>server</code> 收到请求报文后，发送一个 <code>SYNC =1, ACK = 1</code>，也即 <code>SYN+ACK</code>，且同样的，随机一个  <code>ISN2</code> 作为 <code>seq</code>，并设 <code>ack = ISN1+1</code>，也即对请求报文的确认。其中 <code>ack</code> 表示希望 <code>client</code> 接下来传该字节开始的数据流。
+<li>
+<p>2、<code>server</code> 收到请求报文后，发送一个 <code>SYNC =1, ACK = 1</code>，也即 <code>SYN+ACK</code>，且同样的，随机一个  <code>ISN2</code> 作为 <code>seq</code>，并设 <code>ack = ISN1+1</code>，也即对请求报文的确认。其中 <code>ack</code> 表示希望 <code>client</code> 接下来传该字节开始的数据流。</p>
 <ul>
 <li>此时，<code>server</code> 进入 <code>SYN-RECEIVED</code> 状态。</li>
 </ul>
 </li>
-<li>3、<code>client</code> 收到响应报文后，需要再次确认，发送一个 <code>ACK = 1</code>，并设 <code>ack = ISN2+1，seq = ISN1+1</code>，也即表示自己收到了 <code>server</code> 的确认报文。这里，<code>seq = ISN1+1</code>  是因为，从语义上来说，<code>server</code> 希望收到该序号的报文。</li>
+<li>
+<p>3、<code>client</code> 收到响应报文后，需要再次确认，发送一个 <code>ACK = 1</code>，并设 <code>ack = ISN2+1，seq = ISN1+1</code>，也即表示自己收到了 <code>server</code> 的确认报文。这里，<code>seq = ISN1+1</code>  是因为，从语义上来说，<code>server</code> 希望收到该序号的报文。</p>
+</li>
 </ul>
 <p>自此，我们可以认为双方进入 <code>ESTABLISHED</code> 状态，全双工连接建立完成。但其实，这里准确的说，应该是 <code>client</code> 进入了  <code>ESTABLISHED</code> 状态，<code>server</code> 是否成功还取决于当前 <code>accept queue</code> 的情况，下面会分析。</p>
 <p>需要注意的是，上面的流程中，并没有真正的发送数据，双方只是进行一系列序列号交换的握手操作。</p>
