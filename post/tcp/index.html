@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="3980">
+<meta itemprop="wordCount" content="4004">
 
 
 
@@ -350,7 +350,6 @@ tcp-backlog 511
 </li>
 </ul>
 <p>关闭一个 <code>tcp</code>  链接的流程图如下：</p>
-<p><img src="/img/tcp-close.png" alt=""></p>
 <h2 id="为什么需要四次">为什么需要四次</h2>
 <p>相同的问题来了，为什么需要 <code>4</code> 次挥手呢，而不是 <code>3</code> 、<code>5</code> 次？</p>
 <p>其实本质原因与需要 <code>3次握手</code> 类似，因为 <code>TCP</code> 是一个 <code>全双工</code>（<code>full-duplex</code>）的协议。</p>
@@ -362,10 +361,16 @@ tcp-backlog 511
 <p>所以，因为是 <code>全双工</code>，所以一来一回<code>*2</code>，最少需要<code>4次</code> 握手机制，才能保证一个连接正确关闭。</p>
 <h2 id="time_wait-与-close_wait">TIME_WAIT 与 CLOSE_WAIT</h2>
 <p><code>TIME_WAIT</code> 与 <code>CLOSE_WAIT</code> 应该是 <code>web</code> 服务中，最常见的几个 <code>TCP</code> 状态，通常，也是我们需要重点关注的网络指标。</p>
-<h2 id="代码示例">代码示例</h2>
-<h2 id="参考">参考</h2>
-<p>下面有一些有用到文章，都是干货。</p>
+<h1 id="代码示例">代码示例</h1>
+<h1 id="参考">参考</h1>
 <ul>
+<li>又找来一张图，较为完善的描述了 <code>TCP</code> 的整个生命周期：</li>
+</ul>
+<p><img src="/img/tcp.png" alt=""></p>
+<ul>
+<li>
+<p>下面有一些有用到文章，都是干货。</p>
+</li>
 <li>
 <p><a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">wikipedia - TCP</a></p>
 </li>

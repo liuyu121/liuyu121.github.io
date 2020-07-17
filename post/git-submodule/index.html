@@ -49,7 +49,7 @@
 <meta itemprop="description" content="之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1">
 <meta itemprop="datePublished" content="2019-04-11T18:42:45&#43;08:00" />
 <meta itemprop="dateModified" content="2019-04-11T18:42:45&#43;08:00" />
-<meta itemprop="wordCount" content="1402">
+<meta itemprop="wordCount" content="1455">
 
 
 
@@ -539,7 +539,27 @@ git submodule foreach git pull
 <p>手动删除子模块残留的目录，如 <code>.git/modules/</code> 下对应目录等</p>
 </li>
 </ul>
-
+<h2 id="问题解决">问题解决</h2>
+<ul>
+<li>不小心删除了 <code>public</code>  下的所有代码，然后总也 <code>pull</code> 不下来：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">git ls-files --stage public
+git rm --cached public
+git ls-files --stage public
+rm -rf public
+git submodule add --force https://github.com/liuyu121/liuyu121.github.io.git public
+</code></pre></td></tr></table>
+</div>
+</div>
     </div>
 
     <div class="post-copyright">
