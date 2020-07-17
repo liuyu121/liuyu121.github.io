@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="4004">
+<meta itemprop="wordCount" content="3927">
 
 
 
@@ -127,7 +127,7 @@
       <div class="post-meta">
         <span class="post-time"> 2020-07-16 </span>
         <div class="post-category">
-            <a href="/categories/tcp/"> Tcp </a>
+            <a href="/categories/tcp/"> TCP </a>
             </div>
         
       </div>
@@ -137,8 +137,8 @@
     <div class="post-content">
       <p><code>tcp（Transmission Control Protocol）</code> 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 <code>http</code>、<code>SMTP</code> 等。鼎鼎大名的 <code>三次握手</code>、<code>四次挥手</code>指的就是其建立与关闭的流程。</p>
 <p><code>tcp</code> 协议的生命周期，本质是一个<em>有限状态机</em> 的流转，从建立到数据传输再到关闭，伴随着不同状态的迁移。而在不同的状态中，又会有着一些优化与问题。</p>
-<p><code>tcp 协议</code>  本身及其复杂，除了建立与关闭涉及到多次交互外，还需要考虑  <code>滑动窗口</code>、<code>重传策略</code>、<code>状态复用</code>、<code>拥塞控制</code>、<code>RTT（Round Trip Time）</code> 等等，远古大神们真实费煞苦心。</p>
-<p>注：本文的图例来自网络，出处已经不可考，感谢原作者们清晰的图示 :)</p>
+<p><code>tcp 协议</code>  本身极其复杂，除了建立与关闭涉及到多次交互外，还需要考虑  <code>滑动窗口</code>、<code>重传策略</code>、<code>状态复用</code>、<code>拥塞控制</code>、<code>RTT（Round Trip Time）</code> 等等，远古大神们真是费煞苦心。</p>
+<p>注：本文的图例来自网络，历史原因未标明出处，感谢原作者们清晰的图示 :)</p>
 <h1 id="首部结构">首部结构</h1>
 <p><code>tcp</code> 报文首部格式如下：</p>
 <p><img src="/img/tcp-segment-header.png" alt=""></p>
@@ -168,7 +168,7 @@
 </li>
 </ul>
 <h1 id="建立">建立</h1>
-<p>我们使用 <code>client</code> 表示主动发起建立方，<code>server</code> 表示被动响应建立方，server<code>需要</code>bind<code>某个端口并</code>listen`，做好随时迎接一个连接的准备。</p>
+<p>我们使用 <code>client</code> 表示主动发起建立方，<code>server</code> 表示被动响应建立方，<code>server</code> 需要 <code>bind</code> 某个端口并 <code>listen</code>，做好随时迎接一个连接的准备。</p>
 <p>一个连接的建立，大体流程如下：</p>
 <ul>
 <li>
@@ -211,34 +211,63 @@
 <p>以上，不满足 <code>TCP</code> 的语义要求。</p>
 <p>另外，还有其他场景，如：</p>
 <ul>
-<li><code>client</code> 先后发送了两次 <code>SYN</code>，第一个 <code>SYN</code> 延时了，第二个 <code>SYN</code> 先行到达 <code>server</code>；</li>
-<li>此后双方建立了连接，传输数据，关闭连接；</li>
-<li>这时，延时的第一个 <code>SYN</code> 又到了 <code>server</code>，然后 <code>server</code> 回复 <code>ACK</code>，又进入了 <code>ESTABLISHED</code>。但其实这是个无效的报文，建立了一个多余的连接。</li>
-<li>而如果使用 <code>三次握手</code> 机制，此时  <code>client</code> 可以直接丢弃该无效报文，而 <code>server</code> 收不到 <code>client</code> 的 <code>ACK</code>，也不会建立连接。</li>
+<li>
+<p><code>client</code> 先后发送了两次 <code>SYN</code>，第一个 <code>SYN</code> 延时了，第二个 <code>SYN</code> 先行到达 <code>server</code>；</p>
+</li>
+<li>
+<p>此后双方建立了连接，传输数据，关闭连接；</p>
+</li>
+<li>
+<p>这时，延时的第一个 <code>SYN</code> 又到了 <code>server</code>，然后 <code>server</code> 回复 <code>ACK</code>，又进入了 <code>ESTABLISHED</code>。但其实这是个无效的报文，建立了一个多余的连接。</p>
+</li>
+<li>
+<p>而如果使用 <code>三次握手</code> 机制，此时  <code>client</code> 可以直接丢弃该无效报文，而 <code>server</code> 收不到 <code>client</code> 的 <code>ACK</code>，也不会建立连接。</p>
+</li>
 </ul>
 <p>为什么不是 <code>4</code> 次握手 呢，但这里我们已经知道最少需要 <code>3</code> 次就已经可以建立了，所以，为什么还要多一次呢，浪费资源 。。。</p>
 <h2 id="backlog-是什么">backlog 是什么</h2>
 <p>在上面的示意图中，我们可以看到，<code>server</code> 端有两个 <code>qeue</code>：<code>syn queue</code>、<code>accept queue</code>，其含义为:</p>
 <ul>
-<li><code>syn queue</code>：半连接队列（<code>Half-open Connection</code>)。当 <code>server</code> 第一次收到请求报文后，内核会将该连接放入 <code>syn queue</code>，然后发送 <code>SYN+ACK</code> 给 <code>client</code>。顾名思义，这个队列保存的都是正在建立中的连接列表。
+<li>
+<p><code>syn queue</code>：半连接队列（<code>Half-open Connection</code>)。当 <code>server</code> 第一次收到请求报文后，内核会将该连接放入 <code>syn queue</code>，然后发送 <code>SYN+ACK</code> 给 <code>client</code>。顾名思义，这个队列保存的都是正在建立中的连接列表。</p>
 <ul>
-<li>队列未满：加入到 <code>sync queue</code>。</li>
-<li>队列已满：如果  <code>net.ipv4.tcp_syncookies = 0</code>，直接丢弃这个包，如果设置了该参数，则：
+<li>
+<p>队列未满：加入到 <code>sync queue</code>。</p>
+</li>
+<li>
+<p>队列已满：如果  <code>net.ipv4.tcp_syncookies = 0</code>，直接丢弃这个包，如果设置了该参数，则：</p>
 <ul>
-<li>如果 <code>accept queue</code> 也已经满了，并且 <code>qlen_young</code> 的值大于 1，丢弃这个 <code>SYN</code>；其中，<code>qlen_young</code> 表示目前 <code>syn queue</code> 中，没有进行 <code>SYN+ACK</code> 包重传的连接数量。</li>
-<li>否则，生成 <code>syncookie</code> 并返回 <code>SYN+ACK</code>。</li>
+<li>
+<p>如果 <code>accept queue</code> 也已经满了，并且 <code>qlen_young</code> 的值大于 1，丢弃这个 <code>SYN</code>；其中，<code>qlen_young</code> 表示目前 <code>syn queue</code> 中，没有进行 <code>SYN+ACK</code> 包重传的连接数量。</p>
+</li>
+<li>
+<p>否则，生成 <code>syncookie</code> 并返回 <code>SYN+ACK</code>。</p>
+</li>
 </ul>
 </li>
-<li>可构造 <code>TCP SYN FLOOD</code> 攻击，发送大量的 <code>SYN</code> 报文，然后丢弃，导致 <code>server</code> 的该队列一直处于满负荷状态，无法处理其他正常的请求。</li>
+<li>
+<p>可构造 <code>TCP SYN FLOOD</code> 攻击，发送大量的 <code>SYN</code> 报文，然后丢弃，导致 <code>server</code> 的该队列一直处于满负荷状态，无法处理其他正常的请求。</p>
+</li>
 </ul>
 </li>
-<li><code>accept queue</code>：全连接队列。当 <code>server</code> 再次收到  <code>client</code> 的 <code>ACK</code> 后，这时，如果
+<li>
+<p><code>accept queue</code>：全连接队列。当 <code>server</code> 再次收到  <code>client</code> 的 <code>ACK</code> 后，这时，如果：</p>
 <ul>
-<li>队列未满：将该连接放入到全连接队列中，系统调用 <code>accept</code> 本质就是从该队列不断获取已经连接好的请求。</li>
-<li>队列已满：取决于 <code>tcp_abort_on_overflow</code> 的配置
+<li>
+<p>队列未满：将该连接放入到全连接队列中，系统调用 <code>accept</code> 本质就是从该队列不断获取已经连接好的请求。</p>
+</li>
+<li>
+<p>队列已满：取决于 <code>tcp_abort_on_overflow</code> 的配置</p>
 <ul>
-<li><code>tcp_abort_on_overflow = 0</code>：<code>server</code> 丢弃该 <code>ACK</code>，再由一个定时器  <code>net.ipv4.tcp_synack_retries</code> 重传 <code>SYN+ACK</code> ，总次数不超过 <code>/proc/sys/net/ipv4/tcp_synack_retries</code>  配置的次数。这是因为此时 <code>server</code> 还处于 <code>SYN-RECEIVED</code> 状态，所以再次发送报文告诉 <code>client</code> 可以重新尝试建立连接（可能  <code>server</code> 下一次收到该包时队列变成未满状态了 ）。此时，若 <code>client</code> 的超时时间较短，则表现为 <code>READ_TIMEOUT</code>，因为 <code>client</code> 已经处于 <code>ESTABLISHED</code> 了。</li>
-<li><code>tcp_abort_on_overflow = 1</code>：<code>server</code> 回复 <code>RST</code>，并从半连接队列中删除，<code>client</code> 表现为 <code>Connection reset by peer</code></li>
+<li>
+<p><code>tcp_abort_on_overflow = 0</code>：<code>server</code> 丢弃该 <code>ACK</code>，再由一个定时器  <code>net.ipv4.tcp_synack_retries</code> 重传 <code>SYN+ACK</code> ，总次数不超过 <code>/proc/sys/net/ipv4/tcp_synack_retries</code>  配置的次数。</p>
+</li>
+<li>
+<p>这是因为此时 <code>server</code> 还处于 <code>SYN-RECEIVED</code> 状态，所以再次发送报文告诉 <code>client</code> 可以重新尝试建立连接（可能  <code>server</code> 下一次收到该包时队列变成未满状态了 ）。此时，若 <code>client</code> 的超时时间较短，则表现为 <code>READ_TIMEOUT</code>，因为 <code>client</code> 已经处于 <code>ESTABLISHED</code> 了。</p>
+</li>
+<li>
+<p><code>tcp_abort_on_overflow = 1</code>：<code>server</code> 回复 <code>RST</code>，并从半连接队列中删除，<code>client</code> 表现为 <code>Connection reset by peer</code></p>
+</li>
 </ul>
 </li>
 </ul>
@@ -255,7 +284,8 @@
 <pre class="chroma"><code class="language-c" data-lang="c">       <span class="kt">int</span> <span class="nf">listen</span><span class="p">(</span><span class="kt">int</span> <span class="n">sockfd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">backlog</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>这个 <code>backlog</code> 参数，定义是 <em>已连接但未进行 <code>accept</code> 处理的 <code>SOCKET</code> 队列大小</em>，也即上面提到的 <code>accept queue</code>。如果这个队列满了，将会发送一个ECONNREFUSED错误信息给到客户端,即 linux 头文件 /usr/include/asm-generic/errno.h中定义的“Connection refused”，（如果协议不支持重传，该请求会被忽略）如下：</p>
+</div><p>这个 <code>backlog</code> 参数，定义是 <em>已连接但未进行 <code>accept</code> 处理的 <code>SOCKET</code> 队列大小</em>，也即上面提到的 <code>accept queue</code>。如果这个队列满了，将会发送一个 <code>errno = ECONNREFUSED</code> 的错误，即 <code>linux</code> 头文件 <code>/usr/include/asm-generic/errno.h</code> 中定义的 <code>Connection refused</code>。</p>
+<p>接下来分别看下常用软件的设置：</p>
 <ul>
 <li><code>nginx</code>：默认为 <code>511</code></li>
 </ul>
@@ -363,14 +393,10 @@ tcp-backlog 511
 <p><code>TIME_WAIT</code> 与 <code>CLOSE_WAIT</code> 应该是 <code>web</code> 服务中，最常见的几个 <code>TCP</code> 状态，通常，也是我们需要重点关注的网络指标。</p>
 <h1 id="代码示例">代码示例</h1>
 <h1 id="参考">参考</h1>
-<ul>
-<li>又找来一张图，较为完善的描述了 <code>TCP</code> 的整个生命周期：</li>
-</ul>
+<p>最后，用一张图结束本文：</p>
 <p><img src="/img/tcp.png" alt=""></p>
-<ul>
-<li>
 <p>下面有一些有用到文章，都是干货。</p>
-</li>
+<ul>
 <li>
 <p><a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">wikipedia - TCP</a></p>
 </li>
