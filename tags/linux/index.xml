@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>linux on 日拱一卒</title>
+    <link>https://liuyu121.github.io/tags/linux/</link>
+    <description>Recent content in linux on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 14 Jul 2020 19:29:40 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Bit Twiddling Hacks</title>
+      <link>https://liuyu121.github.io/post/bit-twiddling-hacks/</link>
+      <pubDate>Tue, 14 Jul 2020 19:29:40 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/bit-twiddling-hacks/</guid>
+      <description>算法里面有很多 位操作，看 redis 源码，看到 src/dict.c 下一个函数： 1 2 3 4 5 6 7 8 9 10 11 /* Function to reverse bits. Algorithm from: * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */ static unsigned long rev(unsigned long v) { unsigned long s = CHAR_BIT * sizeof(v); // bit size; must be power of 2 unsigned long</description>
+    </item>
+    
+    <item>
+      <title>Linux 下使用 Cron Mail</title>
+      <link>https://liuyu121.github.io/post/linux-cron-mail/</link>
+      <pubDate>Fri, 24 May 2019 10:01:35 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/linux-cron-mail/</guid>
+      <description>注：本文对一些信息做了处理，不影响核心逻辑。 一、背景介绍 1.1 问题发现 在线上某台机器上，手动执行脚本，发现报错 Fatal Error，提示有个类的常量未定</description>
+    </item>
+    
+  </channel>
+</rss>

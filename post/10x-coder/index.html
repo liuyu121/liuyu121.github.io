@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>10x Coder - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="牛逼的工具集，必须能事半功倍。 下面参考链接是来自于网上一些大牛的分享，大牛是100x programmer，我觉着 10x coder 就已经很牛逼了（难。😋 How" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/10x-coder/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="10x Coder" />
+<meta property="og:description" content="牛逼的工具集，必须能事半功倍。 下面参考链接是来自于网上一些大牛的分享，大牛是100x programmer，我觉着 10x coder 就已经很牛逼了（难。😋 How" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/10x-coder/" />
+<meta property="article:published_time" content="2020-07-07T19:53:51+08:00" />
+<meta property="article:modified_time" content="2020-07-07T19:53:51+08:00" />
+<meta itemprop="name" content="10x Coder">
+<meta itemprop="description" content="牛逼的工具集，必须能事半功倍。 下面参考链接是来自于网上一些大牛的分享，大牛是100x programmer，我觉着 10x coder 就已经很牛逼了（难。😋 How">
+<meta itemprop="datePublished" content="2020-07-07T19:53:51&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-07T19:53:51&#43;08:00" />
+<meta itemprop="wordCount" content="1132">
+
+
+
+<meta itemprop="keywords" content="tech," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="10x Coder"/>
+<meta name="twitter:description" content="牛逼的工具集，必须能事半功倍。 下面参考链接是来自于网上一些大牛的分享，大牛是100x programmer，我觉着 10x coder 就已经很牛逼了（难。😋 How"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">10x Coder</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-07 </span>
+        <div class="post-category">
+            <a href="/categories/tech/"> Tech </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>牛逼的工具集，必须能事半功倍。</p>
+<p>下面参考链接是来自于网上一些大牛的分享，大牛是<code>100x programmer</code>，我觉着 <code>10x coder</code> 就已经很牛逼了（难。😋</p>
+<ul>
+<li><a href="https://crispgm.com/page/how-to-be-a-100x-programmer.html">How to be a 100x Programmer?</a></li>
+<li><a href="http://xiaorui.cc/archives/6643">高能分享之《优雅的编程者》</a></li>
+</ul>
+<p>常用电脑是 <code>mac</code>，所以本文相关工具都是基于 <code>mac</code> 系统，在其他系统上可能出现不可用、或使用姿势有差别，但更多的都是可跨平台使用软件。</p>
+<h2 id="装机必备篇">装机必备篇</h2>
+<p><code>Mac</code> 装机必备软件，真心的要有，否则就真心的不及格 ：）</p>
+<p>啊，真心赞美这些伟大的开源软件大神们~</p>
+<h3 id="homebrew">Homebrew</h3>
+<p><a href="https://brew.sh/">https://brew.sh/</a></p>
+<p>不必多说，神器。</p>
+<p>因为是 <code>ruby</code> 写的，看着某个功能不爽可自行编辑，毕竟 修改 <code>ruby</code> 代码不需要懂语法：）</p>
+<h3 id="iterm2">iTerm2</h3>
+<p><a href="https://www.iterm2.com/">https://www.iterm2.com/</a></p>
+<p>神器<code>+10086</code>，全面吊打自带的终端。</p>
+<p>至于 <code>shell</code> 版本，<code>Mac</code> 默认已经是 <code>zsh</code> 了（<code>bash</code> 太落后了），具体配置，大神已经给你准备好了，<a href="https://ohmyz.sh/">https://ohmyz.sh/</a>。</p>
+<p>不过对于<code>oh-my-zsh</code> 下的 <code>git</code>配置，我觉得不讨喜，个人更喜欢这种：<a href="https://liuyu121.github.io/post/git-shell-config/">Git Shell 便捷设置</a>。</p>
+<p><code>tips</code>：</p>
+<ul>
+<li>罗技鼠标在 <code>iterm2</code>里不生效，需要 <a href="https://mikebuss.com/2019/12/30/logitech-scrolling/">设置</a> ，去掉 <code>Secure Keyboard Entry</code>这个选项即可（曾经困扰半天）。</li>
+</ul>
+<h3 id="typora">Typora</h3>
+<p><a href="https://typora.io/">https://typora.io/</a></p>
+<p>习惯了使用 <code>markdown</code> 写东西，简单直接，下面是之前用过的一些编辑器：</p>
+<ul>
+<li><code>mou</code>：某国人写的一个所见即所得编辑器，分屏展示效果。</li>
+<li><code>macdown</code>：基于 <code>mou</code> 的改造。</li>
+<li><code>印象笔记</code>：不忍吐槽</li>
+</ul>
+<p>现在该<code>markdown</code> 神之编辑器出场了： <code>Typora</code> 。</p>
+<p>不管是 <code>UI</code> 、交互还是人性化，都是大写的牛逼。全屏模式下的沉浸式写作，简直让人欲罢不能。</p>
+<h4 id="typora-tips">Typora Tips</h4>
+<p>持续更新一些 <code>tips</code>。</p>
+<ul>
+<li>不继承上一行格式：<code>mac</code> 下使用 <code>command+[</code>，比如在列表换行，必须要知道这个快捷键，否则，你懂的。</li>
+<li><code>emoji list</code>：<a href="https://gist.github.com/rxaviers/7360908">https://gist.github.com/rxaviers/7360908</a></li>
+<li>常用的快捷键：
+<ul>
+<li>超链接：<code>command+k</code>，选中文本后，<code>Typora</code>能自动识别剪贴板的 <code>url</code>，生成超链接。</li>
+<li>内联公式：<code>control+</code>;` 我喜欢把数字和英文加上该样式，所以特别实用。</li>
+</ul>
+</li>
+</ul>
+<h3 id="v2ray">v2ray</h3>
+<p><a href="https://github.com/v2ray/v2ray-core">https://github.com/v2ray/v2ray-core</a></p>
+<p>你懂的，<code>ss</code>被喝茶后，哀嚎一片，这尼玛都<code>0202年了</code>，墙你妈呢~</p>
+<h3 id="vim">VIM</h3>
+<p>不会用 <code>emacs</code>又如何，<code>vim</code>足够了。</p>
+<p>关于 <code>vim</code>的配置也一大堆，按照个人喜好来就行。之前基于<code>vim</code>下开发了段时间，各种插件，但最后终究还是现代编辑器真香（<code>VsVode</code>、<code>intellij </code>家族），但还是得感谢那段时间的使用，对于这些上古玩意，就讲究一个熟能生巧 ：）</p>
+<h2 id="进阶篇">进阶篇</h2>
+<h3 id="tig">tig</h3>
+<p><a href="https://github.com/jonas/tig">https://github.com/jonas/tig</a></p>
+<p>你会告别 <code>git log --xxxx</code>，但坏处是，会让你忘记 <code>git log --xxxx</code>。</p>
+<p>但真的很方便。</p>
+<h3 id="tmux">tmux</h3>
+<p><a href="https://github.com/tmux/tmux">https://github.com/tmux/tmux</a></p>
+<p>注意，所谓前置快捷键 <code>ctrl+b</code>是指按下这俩键后松手，再按其他快捷键，否则会很迷惑。</p>
+<p>各种快捷键，熟能生巧。</p>
+<h3 id="小工具">小工具</h3>
+<ul>
+<li><code>dos2unix</code>：顾名思义，在 <code>win</code>下<code>copy</code>的文件，因为换行符不一样，会导致行数计算等有问题，直接<code>dos2unix</code> 下即可。</li>
+</ul>
+<h3 id="tips">Tips</h3>
+<ul>
+<li><code>open</code>：学会在终端使用该命令，简单快捷，然后放在 <code>shell</code> 脚本里，美滋滋。</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-07
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/10x-coder/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/tech/">tech</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/quantitative_trade/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">量化交易</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/hugo-blog/">
+            <span class="next-text nav-default">Hexo 迁移到 Hugo</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

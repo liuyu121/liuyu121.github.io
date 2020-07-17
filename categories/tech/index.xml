@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tech on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/tech/</link>
+    <description>Recent content in Tech on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 07 Jul 2020 19:53:51 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/tech/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>10x Coder</title>
+      <link>https://liuyu121.github.io/post/10x-coder/</link>
+      <pubDate>Tue, 07 Jul 2020 19:53:51 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/10x-coder/</guid>
+      <description>牛逼的工具集，必须能事半功倍。 下面参考链接是来自于网上一些大牛的分享，大牛是100x programmer，我觉着 10x coder 就已经很牛逼了（难。😋 How</description>
+    </item>
+    
+  </channel>
+</rss>

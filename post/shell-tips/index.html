@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Shell Tips - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &amp;#34;&amp;lt;p&amp;gt;$i&amp;lt;/p&amp;gt;&amp;#34;;done &amp;lt; test.txt 链接一行" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/shell-tips/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Shell Tips" />
+<meta property="og:description" content="一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &#34;&lt;p&gt;$i&lt;/p&gt;&#34;;done &lt; test.txt 链接一行" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/shell-tips/" />
+<meta property="article:published_time" content="2014-09-18T19:51:01+08:00" />
+<meta property="article:modified_time" content="2014-09-18T19:51:01+08:00" />
+<meta itemprop="name" content="Shell Tips">
+<meta itemprop="description" content="一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &#34;&lt;p&gt;$i&lt;/p&gt;&#34;;done &lt; test.txt 链接一行">
+<meta itemprop="datePublished" content="2014-09-18T19:51:01&#43;08:00" />
+<meta itemprop="dateModified" content="2014-09-18T19:51:01&#43;08:00" />
+<meta itemprop="wordCount" content="360">
+
+
+
+<meta itemprop="keywords" content="shell," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Shell Tips"/>
+<meta name="twitter:description" content="一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &#34;&lt;p&gt;$i&lt;/p&gt;&#34;;done &lt; test.txt 链接一行"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Shell Tips</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2014-09-18 </span>
+        <div class="post-category">
+            <a href="/categories/shell/"> Shell </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>一些常用的 <code>shell</code> 技巧分享，很多都可以举一反三的扩展 ：）</p>
+<h2 id="文本处理">文本处理</h2>
+<ul>
+<li>逐行处理文本：这里不能用 <code>for</code>，空格会被分割，所以应该用 <code>read</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="k">while</span> <span class="nb">read</span> i<span class="p">;</span><span class="k">do</span> <span class="nb">echo</span> <span class="s2">&#34;&lt;p&gt;</span><span class="nv">$i</span><span class="s2">&lt;/p&gt;&#34;</span><span class="p">;</span><span class="k">done</span> &lt; test.txt
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>链接一行：可用于将一些文本格式化成 <code>php</code> 的数组格式等</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">cat test.txt <span class="p">|</span> xargs <span class="p">|</span> sed <span class="s1">&#39;s/ /&#34;,&#34;/g&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>统计文本各行出现次数</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">cat test2.log <span class="p">|</span> sort <span class="p">|</span> uniq -c <span class="p">|</span> sort -nrk1
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>两个文件的差集</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># 想想为什么可以这么写
+cat t1 t1 t2 | sort | uniq -u
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>去掉行尾的逗号</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">sed <span class="s1">&#39;s/[,]*$//g&#39;</span> test.txt
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>查找文件</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 如查找普通文件</span>
+find ./ -type f
+
+<span class="c1"># 查找.zip文件</span>
+find ./ -name <span class="s1">&#39;*.zip&#39;</span>
+
+<span class="c1"># 查找目标文件并修改权限 后面的\;必须的，表示按行输出 {} 表示找到的文件路径</span>
+find . -type f -exec chmod <span class="m">644</span> <span class="o">{}</span> <span class="se">\;</span> 
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>删除 <code>utf8</code> 的 <code>bomb</code> 头</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 查找 bomd 头</span>
+grep -R <span class="s1">$&#39;\xEF\xBB\xBF&#39;</span> ./*
+grep -r -I -l <span class="s1">$&#39;^\xEF\xBB\xBF&#39;</span> ./*
+
+<span class="c1"># 可使用 vim 替换</span>
+vim <span class="nb">set</span> nobomb
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="awk">awk</h2>
+<ul>
+<li>统计某一列值大于等于 <code>5000</code> 的总行数：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">cat diamond.csv <span class="p">|</span> grep -iv <span class="nb">test</span> <span class="p">|</span>  awk -F <span class="s1">&#39;,&#39;</span> <span class="s1">&#39;{if($2&gt;=5000)print }&#39;</span> <span class="p">|</span> wc -l
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="进程">进程</h2>
+<ul>
+<li>查看进程端口的占用</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 如查看 mysql 进程的端口占用</span>
+
+ps aux <span class="p">|</span> grep -i mysql
+netstat -apn  <span class="p">|</span> grep -i mysqld 
+lsof -i:端口号
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2014-09-18
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/shell-tips/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/shell/">shell</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/php-gen-excel/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">PHP 生成 Excel</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

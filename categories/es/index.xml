@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Es on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/es/</link>
+    <description>Recent content in Es on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 09 Jul 2020 15:36:15 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/es/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>ES Nested 类型</title>
+      <link>https://liuyu121.github.io/post/es-nested-datatype/</link>
+      <pubDate>Thu, 09 Jul 2020 15:36:15 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/es-nested-datatype/</guid>
+      <description>有个服务写 es，遇到了以下报错： 1 2 3 4 5 Failed to execute bulk item (index) BulkShardRequest ... limit of total fields [1000] in index 使用的 es版本为5.3.2，在 es 的数据项中，使用了 nested 类型，字面意思是</description>
+    </item>
+    
+  </channel>
+</rss>

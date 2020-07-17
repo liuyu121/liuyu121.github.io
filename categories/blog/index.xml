@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blog on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/blog/</link>
+    <description>Recent content in Blog on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 06 Jul 2020 18:45:20 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Hexo 迁移到 Hugo</title>
+      <link>https://liuyu121.github.io/post/hugo-blog/</link>
+      <pubDate>Mon, 06 Jul 2020 18:45:20 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/hugo-blog/</guid>
+      <description>快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成</description>
+    </item>
+    
+  </channel>
+</rss>

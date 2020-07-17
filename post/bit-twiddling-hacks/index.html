@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Bit Twiddling Hacks - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="算法里面有很多 位操作，看 redis 源码，看到 src/dict.c 下一个函数： 1 2 3 4 5 6 7 8 9 10 11 /* Function to reverse bits. Algorithm from: * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */ static unsigned long rev(unsigned long v) { unsigned long s = CHAR_BIT * sizeof(v); // bit size; must be power of 2 unsigned long" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/bit-twiddling-hacks/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Bit Twiddling Hacks" />
+<meta property="og:description" content="算法里面有很多 位操作，看 redis 源码，看到 src/dict.c 下一个函数： 1 2 3 4 5 6 7 8 9 10 11 /* Function to reverse bits. Algorithm from: * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */ static unsigned long rev(unsigned long v) { unsigned long s = CHAR_BIT * sizeof(v); // bit size; must be power of 2 unsigned long" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/bit-twiddling-hacks/" />
+<meta property="article:published_time" content="2020-07-14T19:29:40+08:00" />
+<meta property="article:modified_time" content="2020-07-14T19:29:40+08:00" />
+<meta itemprop="name" content="Bit Twiddling Hacks">
+<meta itemprop="description" content="算法里面有很多 位操作，看 redis 源码，看到 src/dict.c 下一个函数： 1 2 3 4 5 6 7 8 9 10 11 /* Function to reverse bits. Algorithm from: * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */ static unsigned long rev(unsigned long v) { unsigned long s = CHAR_BIT * sizeof(v); // bit size; must be power of 2 unsigned long">
+<meta itemprop="datePublished" content="2020-07-14T19:29:40&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-14T19:29:40&#43;08:00" />
+<meta itemprop="wordCount" content="347">
+
+
+
+<meta itemprop="keywords" content="linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Bit Twiddling Hacks"/>
+<meta name="twitter:description" content="算法里面有很多 位操作，看 redis 源码，看到 src/dict.c 下一个函数： 1 2 3 4 5 6 7 8 9 10 11 /* Function to reverse bits. Algorithm from: * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */ static unsigned long rev(unsigned long v) { unsigned long s = CHAR_BIT * sizeof(v); // bit size; must be power of 2 unsigned long"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Bit Twiddling Hacks</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-14 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> Linux </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>算法里面有很多 <code>位操作</code>，看 <code>redis</code> 源码，看到 <code>src/dict.c</code>  下一个函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* Function to reverse bits. Algorithm from:
+</span><span class="cm"> * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */</span>
+<span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">rev</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">v</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">s</span> <span class="o">=</span> <span class="n">CHAR_BIT</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">v</span><span class="p">);</span> <span class="c1">// bit size; must be power of 2
+</span><span class="c1"></span>    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="mi">0UL</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">s</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">mask</span> <span class="o">^=</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&lt;&lt;</span> <span class="n">s</span><span class="p">);</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">((</span><span class="n">v</span> <span class="o">&gt;&gt;</span> <span class="n">s</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mask</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">v</span> <span class="o">&lt;&lt;</span> <span class="n">s</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">mask</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>该函数主要作用是反转一个数字的所有位，觉得很巧妙（<code>centos</code> 下头文件位置：<code>/usr/include/</code>）。</p>
+<p>在一些算法实现中，如：</p>
+<ul>
+<li>偶数：<code>v &amp; 1 == 0</code></li>
+<li>奇数：<code>v &amp; 1 != 0</code></li>
+</ul>
+<p>在很多开源软件的代码里（如 <code>redis</code>），可见大量的位操作，这是因为在计算机世界里，本质就是一个个位操作（<code>0 or 1</code>），所以无疑是最快的。</p>
+<p>这篇文章列举了大量的位操作，堪称奇技淫巧大集合，而位操作的难点是不好理解，看到已经有国人翻译成了中文了，厉害~</p>
+<ul>
+<li>一些常用的十六进制</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-python" data-lang="python"><span class="o">&gt;&gt;&gt;</span> <span class="nb">bin</span><span class="p">(</span><span class="mh">0x55555555</span><span class="p">)</span>
+<span class="s1">&#39;0b 01010101 01010101 01010101 01010101&#39;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="p">(</span><span class="mh">0x55555555</span><span class="p">)</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span>
+<span class="mi">31</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><a href="http://graphics.stanford.edu/~seander/bithacks.html">Bit Twiddling Hacks</a></li>
+<li><a href="https://blog.hufeifei.cn/2017/07/30/DataStructure/%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9A%84%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7/">【译】位运算的奇技淫巧：Bit Twiddling Hacks</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-14
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/bit-twiddling-hacks/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">linux</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/tcp/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Tcp 连接的建立与关闭</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/es-nested-datatype/">
+            <span class="next-text nav-default">ES Nested 类型</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

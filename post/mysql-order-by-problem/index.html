@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Mysql Order by 问题 - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="环境说明 MySQL 版本：5.1.73-log 存储引擎：ENGINE=InnoDB 问题起因 某个需求实现中，采用的是通过使用「业务表」的某个时间字段 作为" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/mysql-order-by-problem/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Mysql Order by 问题" />
+<meta property="og:description" content="环境说明 MySQL 版本：5.1.73-log 存储引擎：ENGINE=InnoDB 问题起因 某个需求实现中，采用的是通过使用「业务表」的某个时间字段 作为" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/mysql-order-by-problem/" />
+<meta property="article:published_time" content="2018-08-06T17:49:41+08:00" />
+<meta property="article:modified_time" content="2018-08-06T17:49:41+08:00" />
+<meta itemprop="name" content="Mysql Order by 问题">
+<meta itemprop="description" content="环境说明 MySQL 版本：5.1.73-log 存储引擎：ENGINE=InnoDB 问题起因 某个需求实现中，采用的是通过使用「业务表」的某个时间字段 作为">
+<meta itemprop="datePublished" content="2018-08-06T17:49:41&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-06T17:49:41&#43;08:00" />
+<meta itemprop="wordCount" content="1680">
+
+
+
+<meta itemprop="keywords" content="mysql,database," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mysql Order by 问题"/>
+<meta name="twitter:description" content="环境说明 MySQL 版本：5.1.73-log 存储引擎：ENGINE=InnoDB 问题起因 某个需求实现中，采用的是通过使用「业务表」的某个时间字段 作为"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Mysql Order by 问题</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-06 </span>
+        <div class="post-category">
+            <a href="/categories/mysql/"> MySQL </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>环境说明</p>
+<ul>
+<li>
+<p>MySQL 版本：<code>5.1.73-log</code></p>
+</li>
+<li>
+<p>存储引擎：<code>ENGINE=InnoDB</code></p>
+</li>
+</ul>
+<h2 id="问题起因">问题起因</h2>
+<p>某个需求实现中，采用的是通过使用「业务表」的<code>某个时间字段</code> 作为 <code>游标</code>，通过每次获取的数量作为 <code>偏移量</code>，遍历一个 <code>静态数据的集合</code>，从而达到迭代遍历的目的。</p>
+<p>也即，会构造 <code>&lt;last_id|time&gt;</code> 的游标，<code>time</code> 按照月划分（业务需要），从 <code>0</code> 开始计数。</p>
+<ul>
+<li>
+<p><code>time</code>： 表示起始时间，截止时间为 <code>+1 月</code>。</p>
+</li>
+<li>
+<p><code>last_id</code>：表示当前该时间取到了哪里。</p>
+</li>
+</ul>
+<p>举例说明：</p>
+<ul>
+<li>
+<p><code>0|2018-01-01</code>：表示在 <code>[1月, 2月)</code> 从 <code>0</code> 开始获取 <code>n</code> 条数据</p>
+</li>
+<li>
+<p><code>128|2018-01-01</code>：表示在 <code>[1月, 2月)</code> 从 <code>128</code> 开始获取 <code>n</code> 条数据</p>
+</li>
+</ul>
+<p>当数据集合为空时，<code>break</code> 至下一个月。</p>
+<p>一切看起来正常，但在最终 <code>check</code> 数据的时候，却发现有 <em><code>重复的推送</code></em>。</p>
+<p>下面，我们举个例子，尝试解释该问题。</p>
+<h3 id="场景还原">场景还原</h3>
+<blockquote>
+<p>注：以下数据均为举例说明，不代表生产环境真实数据情况。</p>
+</blockquote>
+<p>推送订单（<code>orders</code>），使用 <code>pay_time</code> 作为游标。</p>
+<ul>
+<li><code>sql</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">orders</span> <span class="k">where</span> <span class="n">pay_time</span> <span class="o">&gt;=</span> <span class="s1">&#39;2018-01-01 00:00:00&#39;</span> <span class="k">and</span> <span class="n">pay_time</span> <span class="o">&lt;=</span> <span class="s1">&#39;2018-01-31 23:59:59&#39;</span> <span class="k">order</span> <span class="k">by</span> <span class="n">pay_time</span> <span class="k">asc</span> <span class="k">limit</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>我们设想这里在相同 <code>pay_time</code> 的上，会根据主键 <code>id</code> 进行 <code>asc</code>。</p>
+<ul>
+<li>索引：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="o">`</span><span class="k">KEY</span> <span class="o">`</span><span class="n">pay_time</span><span class="o">`</span> <span class="p">(</span><span class="o">`</span><span class="n">pay_time</span><span class="o">`</span><span class="p">),</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>explain</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="o">+</span><span class="c1">----+-------------+--------------+-------+---------------+----------+---------+------+-------+-------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span> <span class="o">|</span> <span class="n">select_type</span> <span class="o">|</span> <span class="k">table</span>        <span class="o">|</span> <span class="k">type</span>  <span class="o">|</span> <span class="n">possible_keys</span> <span class="o">|</span> <span class="k">key</span>      <span class="o">|</span> <span class="n">key_len</span> <span class="o">|</span> <span class="k">ref</span>  <span class="o">|</span> <span class="k">rows</span>  <span class="o">|</span> <span class="n">Extra</span>       <span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+--------------+-------+---------------+----------+---------+------+-------+-------------+
+</span><span class="c1"></span><span class="o">|</span>  <span class="mi">1</span> <span class="o">|</span> <span class="k">SIMPLE</span>      <span class="o">|</span> <span class="n">orders</span> <span class="o">|</span> <span class="n">range</span> <span class="o">|</span> <span class="n">pay_time</span>      <span class="o">|</span> <span class="n">pay_time</span> <span class="o">|</span> <span class="mi">9</span>       <span class="o">|</span> <span class="k">NULL</span> <span class="o">|</span> <span class="mi">57420</span> <span class="o">|</span> <span class="k">Using</span> <span class="k">where</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+--------------+-------+---------------+----------+---------+------+-------+-------------+
+</span></code></pre></td></tr></table>
+</div>
+</div><p>按照预期，该 <code>sql</code> 理应能够不重复的遍历整个数据集合。但不幸的是，事实并没按预期发生，在推送过程中，出现了重复推送的问题。</p>
+<h3 id="举例说明">举例说明</h3>
+<ul>
+<li>
+<p><code>pay_time</code> 为 <code>2019-01-01 18:09:34</code>。</p>
+</li>
+<li>
+<p>该时间点有 <code>2</code> 条数据，<code>id</code> 为 <code>100</code>，<code>98</code>。</p>
+</li>
+<li>
+<p>某次 <code>limit 100, 500</code> 恰好取到了这个时间的 <code>1 条数据</code>，取出来的是 <code>id=98</code>，也即发生了 <code>跨页问题</code>。</p>
+</li>
+<li>
+<p>下次偏移依然从这个时间开始，但 <code>MySQL</code> 仍然返回了 <code>id=98</code>，而不是另一条数据：<code>id=100</code>。</p>
+</li>
+<li>
+<p>这里，并没有按照我们预想的一样，有个隐含的排序规则：<code>id asc</code>。</p>
+</li>
+</ul>
+<h2 id="分析与解决">分析与解决</h2>
+<p>通过上面的描述，我们猜测 <code>MySQL</code> 针对 <code>order by ... limit </code> 的查询，并没有对结果集进行排序。具体到这个例子，并没有按照 <code>id asc</code> 或 <code>id desc</code> 排序。而且很可能是 <code>随机</code> 返回。</p>
+<p>去找 <code>mysql</code> 手册，<code>5.1 版本</code> 没找到，直接看 <code>5.7 版本</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>。</p>
+<p>这篇文章很明确给出了答案：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">If multiple rows have identical values in the ORDER BY columns, the server is free to return those rows in any order, and may do so differently depending on the overall execution plan. In other words, the sort order of those rows is nondeterministic with respect to the nonordered columns.
+
+</code></pre></td></tr></table>
+</div>
+</div><p>通俗翻译过来就是：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">如果 ORDER BY 的那个字段（列），在数据库里有多条数据（行），MySQL 会按照随机顺序返回查询结果，具体取决于对应的执行计划。
+
+或者说，如果排序的列是无序的，那么排序的结果行的顺序也是 *非确定性的*。
+</code></pre></td></tr></table>
+</div>
+</div><p>而我们的查询场景，正好符合这个解释。</p>
+<p>通过这篇文章，我们还可以了解到 <code>MySQL</code> 是到底是怎么解析 <code>order by ... limit</code> 语句的，比如如下一段：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">If you combine LIMIT row_count with ORDER BY, MySQL stops sorting as soon as it has found the first row_count rows of the sorted result, rather than sorting the entire result. If ordering is done by using an index, this is very fast. If a filesort must be done, all rows that match the query without the LIMIT clause are selected, and most or all of them are sorted, before the first row_count are found. After the initial rows have been found, MySQL does not sort any remainder of the result set.
+
+</code></pre></td></tr></table>
+</div>
+</div><p>简而言之，<code>MySQL</code> 在按照 <code>ORDER BY</code> 排序后的匹配结果集，会且只会选取 <code>LIMIT row_count</code> 行返回，而不会再针对该结果集进行排序。</p>
+<p>既然知道了原因，那么就很好解决了。既然没有按照设想的 <code>id asc</code>，那么就在 sql 指定顺序：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">orders</span> <span class="k">where</span> <span class="n">pay_time</span> <span class="o">&gt;=</span> <span class="s1">&#39;2018-01-01 00:00:00&#39;</span> <span class="k">and</span> <span class="n">pay_time</span> <span class="o">&lt;=</span> <span class="s1">&#39;2018-01-31 23:59:59&#39;</span> <span class="k">order</span> <span class="k">by</span> <span class="n">pay_time</span> <span class="k">asc</span><span class="p">,</span> <span class="n">id</span> <span class="k">asc</span> <span class="k">limit</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>显式指明 <code>id asc</code>，明确告诉 <code>MySQL</code>，我们需要针对主键 id 进行一次排序。</p>
+<p>但需要注意的是，这里只能选取具有 <code>unqiue 属性</code> 的字段，才能保证稳定排序。（思考下是为什么）。</p>
+<h2 id="延伸">延伸</h2>
+<p>在实际的业务场景中，即便我们使用了 <code>order by pay_time asc, id asc</code>，但还是可能存在问题。</p>
+<p>一个典型的场景如下：</p>
+<ul>
+<li>
+<p>假设脚本执行到了 <code>当前时间</code>（设为 <code>etime</code>）停止，取到了 n 条数据，假设 <code>id=100</code>。</p>
+</li>
+<li>
+<p>恰好这时有 <code>id=98</code> 的订单在变更状态，但并没有被这次 <code>轮询</code> 获取到。</p>
+</li>
+<li>
+<p>下次脚本启动时，从上次的时间 <code>etime</code> 开始，如果是使用了 <code>id asc</code>，会导致 <code>id=98</code>的数据被忽略，重复取到了 <code>id=100</code> 这条。如果是使用了 <code>id &gt; last_id</code> 的条件，会导致漏掉了 <code>id=98</code> 的数据。</p>
+</li>
+</ul>
+<p>当然，这个问题就和 <code>MySQL</code> 无关了，主要是业务理解不当导致的。</p>
+<p>也即，因为 <code>并发</code> 导致遍历的不是一个 <code>静态数据集合</code>。这里，我们需要通过别的手段进行解决。</p>
+<p>最简单粗暴的解决方案为，加一个 <code>时间戳限制</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">orders</span> <span class="k">where</span> <span class="n">pay_time</span> <span class="o">&gt;=</span> <span class="s1">&#39;{$stime}&#39;</span> <span class="k">and</span> <span class="n">pay_time</span> <span class="o">&lt;=</span> <span class="s1">&#39;{$etime} and pay_time &lt;= &#39;</span><span class="err">{</span><span class="mi">30</span><span class="err">秒之前}</span><span class="s1">&#39; order by pay_time asc, id asc limit 100, 500
+</span><span class="s1">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>也即，<code>在已经过去的时间里，业务终态的数据集合必然是静态的</code>。</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/limit-optimization.html">8.2.1.17 LIMIT Query Optimization</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2018-08-06
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/mysql-order-by-problem/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/mysql/">mysql</a>
+          <a href="/tags/database/">database</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/mysql-proxy/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Mysql Proxy</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/mysql-archiver/">
+            <span class="next-text nav-default">Mysql 归档</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

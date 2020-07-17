@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>git on 日拱一卒</title>
+    <link>https://liuyu121.github.io/tags/git/</link>
+    <description>Recent content in git on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 11 Apr 2019 18:42:45 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Git Submodule 简单使用</title>
+      <link>https://liuyu121.github.io/post/git-submodule/</link>
+      <pubDate>Thu, 11 Apr 2019 18:42:45 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/git-submodule/</guid>
+      <description>之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1</description>
+    </item>
+    
+    <item>
+      <title>Git Shell 便捷设置</title>
+      <link>https://liuyu121.github.io/post/git-shell-config/</link>
+      <pubDate>Sun, 12 Apr 2015 19:26:53 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/git-shell-config/</guid>
+      <description>注：可使用 zsh 工具推荐：请安装 tig brew install tig 为了更好、更方便的在 shell 下操作 git，下面介绍一些常用的 git 配置等，以供参考。 本机相关环境： 操作系统： 1 2 3</description>
+    </item>
+    
+  </channel>
+</rss>

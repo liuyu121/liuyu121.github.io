@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>PHP 处理 POST 请求 - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="默认的处理方式 我们知道，在 php 下获取 POST 数据极其简单，只需要使用 $_POST 的全局数组即可。 题外话：这种使用简单操作方便的特性，也是为什么 php 如此流行的关键" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/php-post-request/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="PHP 处理 POST 请求" />
+<meta property="og:description" content="默认的处理方式 我们知道，在 php 下获取 POST 数据极其简单，只需要使用 $_POST 的全局数组即可。 题外话：这种使用简单操作方便的特性，也是为什么 php 如此流行的关键" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/php-post-request/" />
+<meta property="article:published_time" content="2015-03-12T19:49:28+08:00" />
+<meta property="article:modified_time" content="2015-03-12T19:49:28+08:00" />
+<meta itemprop="name" content="PHP 处理 POST 请求">
+<meta itemprop="description" content="默认的处理方式 我们知道，在 php 下获取 POST 数据极其简单，只需要使用 $_POST 的全局数组即可。 题外话：这种使用简单操作方便的特性，也是为什么 php 如此流行的关键">
+<meta itemprop="datePublished" content="2015-03-12T19:49:28&#43;08:00" />
+<meta itemprop="dateModified" content="2015-03-12T19:49:28&#43;08:00" />
+<meta itemprop="wordCount" content="687">
+
+
+
+<meta itemprop="keywords" content="php," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PHP 处理 POST 请求"/>
+<meta name="twitter:description" content="默认的处理方式 我们知道，在 php 下获取 POST 数据极其简单，只需要使用 $_POST 的全局数组即可。 题外话：这种使用简单操作方便的特性，也是为什么 php 如此流行的关键"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">PHP 处理 POST 请求</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-03-12 </span>
+        <div class="post-category">
+            <a href="/categories/php/"> PHP </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <h2 id="默认的处理方式">默认的处理方式</h2>
+<p>我们知道，在 <code>php</code> 下获取 <code>POST 数据</code>极其简单，只需要使用 <code>$_POST</code> 的全局数组即可。</p>
+<blockquote>
+<p>题外话：这种使用简单操作方便的特性，也是为什么 <code>php</code> 如此流行的关键原因之一。 php 是世上最好的语言。 ：）</p>
+</blockquote>
+<p>但有个疑问，<code>$_POST</code> 是处理哪些 <code>Content-type</code> 的请求呢。</p>
+<p>通过查看 <code>php manual</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">当 HTTP POST 请求的 Content-Type 是 application/x-www-form-urlencoded 或 multipart/form-data 时，会将变量以关联数组形式传入当前脚本。
+</code></pre></td></tr></table>
+</div>
+</div><p>下面我们使用 <code>curl</code> 来验证下。</p>
+<ul>
+<li>测试代码</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-php" data-lang="php"><span class="cp">&lt;?php</span>
+
+<span class="nx">var_dump</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>测试 application/x-www-form-urlencoded</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -v -H <span class="s1">&#39;Content-type: application/x-www-form-urlencoded&#39;</span> -d <span class="s1">&#39;name=liuduoyu&#39;</span>  http://127.0.0.1/
+*   Trying 127.0.0.1...
+* TCP_NODELAY <span class="nb">set</span>
+* Connected to 127.0.0.1 <span class="o">(</span>127.0.0.1<span class="o">)</span> port <span class="m">80</span> <span class="o">(</span><span class="c1">#0)</span>
+&gt; POST / HTTP/1.1
+&gt; Host: 127.0.0.1
+&gt; User-Agent: curl/7.63.0
+&gt; Accept: */*
+&gt; Content-type: application/x-www-form-urlencoded
+&gt; Content-Length: <span class="m">13</span>
+&gt;
+* upload completely sent off: <span class="m">13</span> out of <span class="m">13</span> bytes
+&lt; HTTP/1.1 <span class="m">200</span> OK
+&lt; Server: nginx/1.8.1
+&lt; Date: Fri, <span class="m">12</span> Jul <span class="m">2019</span> 03:13:03 GMT
+&lt; Content-Type: text/html
+&lt; Transfer-Encoding: chunked
+&lt; Connection: keep-alive
+&lt; X-Powered-By: PHP/5.3.29
+&lt;
+array<span class="o">(</span>1<span class="o">)</span> <span class="o">{</span>
+  <span class="o">[</span><span class="s2">&#34;name&#34;</span><span class="o">]=</span>&gt;
+  string<span class="o">(</span>8<span class="o">)</span> <span class="s2">&#34;liuduoyu&#34;</span>
+<span class="o">}</span>
+* Connection <span class="c1">#0 to host 127.0.0.1 left intact</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>测试 multipart/form-data</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -v -H <span class="s1">&#39;Content-type: multipart/form-data&#39;</span>   -F <span class="s1">&#39;data={&#34;score&#34;:&#34;129&#34;}&amp;name=liuduoyu&#39;</span>   http://127.0.0.1/
+*   Trying 127.0.0.1...
+* TCP_NODELAY <span class="nb">set</span>
+* Connected to 127.0.0.1 <span class="o">(</span>127.0.0.1<span class="o">)</span> port <span class="m">80</span> <span class="o">(</span><span class="c1">#0)</span>
+&gt; POST / HTTP/1.1
+&gt; Host: 127.0.0.1
+&gt; User-Agent: curl/7.63.0
+&gt; Accept: */*
+&gt; Content-Length: <span class="m">168</span>
+&gt; Content-Type: multipart/form-data<span class="p">;</span> <span class="nv">boundary</span><span class="o">=</span>------------------------2d07b2e8fe03448d
+&gt;
+&lt; HTTP/1.1 <span class="m">200</span> OK
+&lt; Server: nginx/1.8.1
+&lt; Date: Fri, <span class="m">12</span> Jul <span class="m">2019</span> 03:13:38 GMT
+&lt; Content-Type: text/html
+&lt; Transfer-Encoding: chunked
+&lt; Connection: keep-alive
+&lt; X-Powered-By: PHP/5.3.29
+&lt;
+array<span class="o">(</span>1<span class="o">)</span> <span class="o">{</span>
+  <span class="o">[</span><span class="s2">&#34;data&#34;</span><span class="o">]=</span>&gt;
+  string<span class="o">(</span>29<span class="o">)</span> <span class="s2">&#34;{&#34;</span>score<span class="s2">&#34;:&#34;</span>129<span class="s2">&#34;}&amp;name=liuduoyu&#34;</span>
+<span class="o">}</span>
+* Connection <span class="c1">#0 to host 127.0.0.1 left intact</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="处理其他-content-type">处理其他 Content-Type</h2>
+<p>很多时候，当我们与外部系统交互时，在调试过程中，往往会遇到各自无法获取对方数据的问题。</p>
+<p>典型的如：</p>
+<ul>
+<li>
+<p><code>java</code> 很多框架的 <code>HttpClient</code> 常用的 <code>Content-Type: application/json</code></p>
+</li>
+<li>
+<p><code>微信开发</code>中，获取推送的报文数据</p>
+</li>
+</ul>
+<p>所以，我们需要使用 <code>php://input</code> 来获取数据。</p>
+<ul>
+<li>测试代码</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-php" data-lang="php">$s = file_get_contents(&#34;php://input&#34;);
+var_dump($s);
+
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Content-Type: application/json&rsquo;</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -v -H <span class="s1">&#39;Content-type: application/json&#39;</span>  -d <span class="s1">&#39;{&#34;name&#34;: &#34;liudoyu&#34;}&#39;</span> http://127.0.0.1/
+*   Trying 127.0.0.1...
+* TCP_NODELAY <span class="nb">set</span>
+* Connected to 127.0.0.1 <span class="o">(</span>127.0.0.1<span class="o">)</span> port <span class="m">80</span> <span class="o">(</span><span class="c1">#0)</span>
+&gt; POST / HTTP/1.1
+&gt; Host: 127.0.0.1
+&gt; User-Agent: curl/7.63.0
+&gt; Accept: */*
+&gt; Content-type: application/json
+&gt; Content-Length: <span class="m">19</span>
+&gt;
+* upload completely sent off: <span class="m">19</span> out of <span class="m">19</span> bytes
+&lt; HTTP/1.1 <span class="m">200</span> OK
+&lt; Server: nginx/1.8.1
+&lt; Date: Fri, <span class="m">12</span> Jul <span class="m">2019</span> 03:52:44 GMT
+&lt; Content-Type: text/html
+&lt; Transfer-Encoding: chunked
+&lt; Connection: keep-alive
+&lt; X-Powered-By: PHP/5.3.29
+&lt;
+string<span class="o">(</span>19<span class="o">)</span> <span class="s2">&#34;{&#34;</span>name<span class="s2">&#34;: &#34;</span>liudoyu<span class="s2">&#34;}&#34;</span>
+* Connection <span class="c1">#0 to host 127.0.0.1 left intact</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="php-curl-指定-content-type">php-curl 指定 Content-Type</h2>
+<p>下面是 php curl 扩展常用的 <code>Content-Type</code>：</p>
+<ul>
+<li>文件</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-php" data-lang="php">curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		&#39;Content-Type: multipart/form-data;charset=UTF-8&#39;,
+	)
+);
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>json</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-php" data-lang="php">curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		&#39;Content-Type: application/json&#39;,
+	)
+);
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2015-03-12
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/php-post-request/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/php/">php</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/git-shell-config/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Git Shell 便捷设置</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/php-gen-excel/">
+            <span class="next-text nav-default">PHP 生成 Excel</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

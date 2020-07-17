@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Git Submodule 简单使用 - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/git-submodule/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Git Submodule 简单使用" />
+<meta property="og:description" content="之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/git-submodule/" />
+<meta property="article:published_time" content="2019-04-11T18:42:45+08:00" />
+<meta property="article:modified_time" content="2019-04-11T18:42:45+08:00" />
+<meta itemprop="name" content="Git Submodule 简单使用">
+<meta itemprop="description" content="之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1">
+<meta itemprop="datePublished" content="2019-04-11T18:42:45&#43;08:00" />
+<meta itemprop="dateModified" content="2019-04-11T18:42:45&#43;08:00" />
+<meta itemprop="wordCount" content="1402">
+
+
+
+<meta itemprop="keywords" content="git,git-submodule,blog," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Git Submodule 简单使用"/>
+<meta name="twitter:description" content="之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Git Submodule 简单使用</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-04-11 </span>
+        <div class="post-category">
+            <a href="/categories/git/"> Git </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>之前把 <code>blog</code> 改用新的 <code>hexo</code> 来实现的时候，使用了 <code>next</code> 主题，开始尝试以 <code>git-submodule</code> 的方式引入。期间遇到了一些问题，以此文做记录。：）</p>
+<h2 id="添加子模块">添加子模块</h2>
+<p>添加子模块比较简单：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">git submodule add https://github.com/liuyu121/hexo-theme-next.git themes/next
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="拉取子模块">拉取子模块</h2>
+<p>下面以 <code>clone</code> 我的 <code>blog</code> 举例，说明 <code>git submodule</code> 是如何使用的。</p>
+<h3 id="逐步获取">逐步获取</h3>
+<p>首先 <code>clone</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ git clone https://github.com/liuyu121/liuyu121.github.io.git
+
+正克隆到 &#39;liuyu121.github.io&#39;...
+remote: Enumerating objects: 400, done.
+remote: Counting objects: 100% (400/400), done.
+remote: Compressing objects: 100% (95/95), done.
+remote: Total 694 (delta 152), reused 385 (delta 139), pack-reused 294
+接收对象中: 100% (694/694), 1.20 MiB | 683.00 KiB/s, 完成.
+处理 delta 中: 100% (219/219), 完成.
+</code></pre></td></tr></table>
+</div>
+</div><p>我们观察当前有那些 <code>.git*</code> 的隐藏文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ls -alh . <span class="p">|</span> grep -i git
+drwxr-xr-x+ <span class="m">12</span> liuyu  staff   384B  <span class="m">7</span> <span class="m">31</span> 16:14 .git
+</code></pre></td></tr></table>
+</div>
+</div><p>然后查看 <code>.git/config</code> 文件的内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ cat .git/config
+<span class="o">[</span>core<span class="o">]</span>
+	<span class="nv">repositoryformatversion</span> <span class="o">=</span> <span class="m">0</span>
+	<span class="nv">filemode</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">bare</span> <span class="o">=</span> <span class="nb">false</span>
+	<span class="nv">logallrefupdates</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">ignorecase</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">precomposeunicode</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="o">[</span>remote <span class="s2">&#34;origin&#34;</span><span class="o">]</span>
+	<span class="nv">url</span> <span class="o">=</span> https://github.com/liuyu121/liuyu121.github.io.git
+	<span class="nv">fetch</span> <span class="o">=</span> +refs/heads/*:refs/remotes/origin/*
+<span class="o">[</span>branch <span class="s2">&#34;master&#34;</span><span class="o">]</span>
+	<span class="nv">remote</span> <span class="o">=</span> origin
+	<span class="nv">merge</span> <span class="o">=</span> refs/heads/master
+</code></pre></td></tr></table>
+</div>
+</div><p>这里因为我的 <code>blog</code> 的开发分支是 <code>gh-pages</code>，所以需要 <code>checkout</code> 过去。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">git co gh-pages
+</code></pre></td></tr></table>
+</div>
+</div><p>继续上述操作：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ls -alh . <span class="p">|</span> grep -i git
+drwxr-xr-x+ <span class="m">12</span> liuyu  staff   384B  <span class="m">7</span> <span class="m">31</span> 16:16 .git
+-rw-r--r--+  <span class="m">1</span> liuyu  staff    65B  <span class="m">7</span> <span class="m">31</span> 16:16 .gitignore
+-rw-r--r--+  <span class="m">1</span> liuyu  staff   101B  <span class="m">7</span> <span class="m">31</span> 16:16 .gitmodules
+
+$ cat .git/config
+<span class="o">[</span>core<span class="o">]</span>
+	<span class="nv">repositoryformatversion</span> <span class="o">=</span> <span class="m">0</span>
+	<span class="nv">filemode</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">bare</span> <span class="o">=</span> <span class="nb">false</span>
+	<span class="nv">logallrefupdates</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">ignorecase</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">precomposeunicode</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="o">[</span>remote <span class="s2">&#34;origin&#34;</span><span class="o">]</span>
+	<span class="nv">url</span> <span class="o">=</span> https://github.com/liuyu121/liuyu121.github.io.git
+	<span class="nv">fetch</span> <span class="o">=</span> +refs/heads/*:refs/remotes/origin/*
+<span class="o">[</span>branch <span class="s2">&#34;master&#34;</span><span class="o">]</span>
+	<span class="nv">remote</span> <span class="o">=</span> origin
+	<span class="nv">merge</span> <span class="o">=</span> refs/heads/master
+<span class="o">[</span>branch <span class="s2">&#34;gh-pages&#34;</span><span class="o">]</span>
+	<span class="nv">remote</span> <span class="o">=</span> origin
+	<span class="nv">merge</span> <span class="o">=</span> refs/heads/gh-pages
+</code></pre></td></tr></table>
+</div>
+</div><p>这时，发现了多了几个文件，我们查看 <code>.gitmodules</code> 的内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ cat .gitmodules
+<span class="o">[</span>submodule <span class="s2">&#34;themes/next&#34;</span><span class="o">]</span>
+	<span class="nv">path</span> <span class="o">=</span> themes/next
+	<span class="nv">url</span> <span class="o">=</span> https://github.com/liuyu121/hexo-theme-next.git
+</code></pre></td></tr></table>
+</div>
+</div><p>也即，这个分支存在 <code>submodule</code>，但 <code>themes/next</code> 是空目录：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ ls -alh themes/next/
+total 0
+drwxr-xr-x+ 2 liuyu  staff    64B  7 31 16:16 .
+drwxr-xr-x+ 4 liuyu  staff   128B  7 31 16:16 ..
+</code></pre></td></tr></table>
+</div>
+</div><p>这个时候，就需要使用 <code>submodule</code> 相关命令，进行操作了。</p>
+<ul>
+<li>首先，需要 <code>init</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ git submodule init
+子模组 <span class="s1">&#39;themes/next&#39;</span>（https://github.com/liuyu121/hexo-theme-next.git）已对路径 <span class="s1">&#39;themes/next&#39;</span> 注册
+</code></pre></td></tr></table>
+</div>
+</div><p>通过查看 <code>git help submodule</code>，找到对 <code>init</code> 的解释（可参考上面的 <code>.gitmodules</code> 进行理解），这里会将 <code>url</code> 的 <code>repos</code> 注册至 <code>path</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">       init <span class="o">[</span>--<span class="o">]</span> <span class="o">[</span>&lt;path&gt;...<span class="o">]</span>
+           Initialize the submodules recorded in the index <span class="o">(</span>which were added and committed elsewhere<span class="o">)</span> by setting
+           submodule.<span class="nv">$name</span>.url in .git/config. It uses the same setting from .gitmodules as a template. If the URL is relative,
+           it will be resolved using the default remote. If there is no default remote, the current repository will be assumed
+</code></pre></td></tr></table>
+</div>
+</div><p>查看 <code>.git/config</code>，发现最下面多了 <code>submodule</code> 开始的那几行，其中 <code>active = true</code> 表示已经 <code>注册</code> 了 <code>submodule</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ cat .git/config
+<span class="o">[</span>core<span class="o">]</span>
+	<span class="nv">repositoryformatversion</span> <span class="o">=</span> <span class="m">0</span>
+	<span class="nv">filemode</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">bare</span> <span class="o">=</span> <span class="nb">false</span>
+	<span class="nv">logallrefupdates</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">ignorecase</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">precomposeunicode</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="o">[</span>remote <span class="s2">&#34;origin&#34;</span><span class="o">]</span>
+	<span class="nv">url</span> <span class="o">=</span> https://github.com/liuyu121/liuyu121.github.io.git
+	<span class="nv">fetch</span> <span class="o">=</span> +refs/heads/*:refs/remotes/origin/*
+<span class="o">[</span>branch <span class="s2">&#34;master&#34;</span><span class="o">]</span>
+	<span class="nv">remote</span> <span class="o">=</span> origin
+	<span class="nv">merge</span> <span class="o">=</span> refs/heads/master
+<span class="o">[</span>branch <span class="s2">&#34;gh-pages&#34;</span><span class="o">]</span>
+	<span class="nv">remote</span> <span class="o">=</span> origin
+	<span class="nv">merge</span> <span class="o">=</span> refs/heads/gh-pages
+<span class="o">[</span>submodule <span class="s2">&#34;themes/next&#34;</span><span class="o">]</span>
+	<span class="nv">active</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">url</span> <span class="o">=</span> https://github.com/liuyu121/hexo-theme-next.git
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>接下来，获取 <code>submodule</code> 的代码。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ git submodule update
+正克隆到 <span class="s1">&#39;/Users/liuyu/liuyu/test/liuyu121.github.io/themes/next&#39;</span>...
+子模组路径 <span class="s1">&#39;themes/next&#39;</span>：检出 <span class="s1">&#39;6ce32b8d7bc0a54ac735bf3e9b4d8592d9204f37&#39;</span>
+
+$ ls  themes/next/
+LICENSE.md      _config.yml     crowdin.yml     gulpfile.coffee layout          scripts         <span class="nb">test</span>
+README.md       bower.json      docs            languages       package.json    <span class="nb">source</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中，<code>update</code> 指令的作用可自行查阅。</p>
+<p>通过以上几步，我们完整的 <code>pull</code> 了一个 <code>git-repos</code>，并大致了解了 <code>git submodule</code> 命令执行后，<code>git</code> 环境的一些变化。</p>
+<p>对了，别忘了到 <code>submodule</code> 对应的目录下，切换分支（<code>update</code> 后处于 <code>HEAD（非分支）</code>状态）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">cd</span> themes/next/
+$ git co master
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="快捷操作">快捷操作</h3>
+<p>一般情况下，上面的命令会太繁琐，所以 <code>git</code> 提供了更方便的操作。</p>
+<ul>
+<li>在 <code>colone</code> 的时候加上 <code>--recursive</code>，会发现在 <code>.git/config</code> 中已经存在了 <code>submodule</code> 的信息了。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">git clone https://github.com/liuyu121/liuyu121.github.io.git --recursive
+
+$ git co gh-pages
+
+$ cat .git/config
+<span class="o">[</span>core<span class="o">]</span>
+	<span class="nv">repositoryformatversion</span> <span class="o">=</span> <span class="m">0</span>
+	<span class="nv">filemode</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">bare</span> <span class="o">=</span> <span class="nb">false</span>
+	<span class="nv">logallrefupdates</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">ignorecase</span> <span class="o">=</span> <span class="nb">true</span>
+	<span class="nv">precomposeunicode</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="o">[</span>submodule<span class="o">]</span>
+	<span class="nv">active</span> <span class="o">=</span> .
+<span class="o">[</span>remote <span class="s2">&#34;origin&#34;</span><span class="o">]</span>
+	<span class="nv">url</span> <span class="o">=</span> https://github.com/liuyu121/liuyu121.github.io.git
+	<span class="nv">fetch</span> <span class="o">=</span> +refs/heads/*:refs/remotes/origin/*
+<span class="o">[</span>branch <span class="s2">&#34;master&#34;</span><span class="o">]</span>
+	<span class="nv">remote</span> <span class="o">=</span> origin
+	<span class="nv">merge</span> <span class="o">=</span> refs/heads/master
+	
+$ cat .gitmodules
+<span class="o">[</span>submodule <span class="s2">&#34;themes/next&#34;</span><span class="o">]</span>
+	<span class="nv">path</span> <span class="o">=</span> themes/next
+	<span class="nv">url</span> <span class="o">=</span> https://github.com/liuyu121/hexo-theme-next.git
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>再使用 <code>update</code> 获取数据：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ git submodule update
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>其他一些常用命令：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 一次性获取所有 submodule</span>
+git submodule foreach --recursive git submodule init 
+git submodule foreach --recursive git submodule update 
+
+<span class="c1"># 查看 submodule 的文件信息</span>
+git submodule foreach ls -l
+
+<span class="c1"># 拉取所有 submodule</span>
+git submodule foreach git pull
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="删除子模块">删除子模块</h2>
+<p>据我了解，<code>git</code> 还没提供删除子模块的命令，所以总结了大致流程如下：</p>
+<ul>
+<li>
+<p><code>git rm -r --cached [path]</code></p>
+</li>
+<li>
+<p>编辑 <code>.gitmodules</code> 文件，删除该子模块的相关配置</p>
+</li>
+<li>
+<p>编辑 <code>.git/config</code> 文件，删除该子模块的相关配置</p>
+</li>
+<li>
+<p>手动删除子模块残留的目录，如 <code>.git/modules/</code> 下对应目录等</p>
+</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-04-11
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/git-submodule/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/git/">git</a>
+          <a href="/tags/git-submodule/">git-submodule</a>
+          <a href="/tags/blog/">blog</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/linux-cron-mail/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux 下使用 Cron Mail</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/mysql-proxy/">
+            <span class="next-text nav-default">Mysql Proxy</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

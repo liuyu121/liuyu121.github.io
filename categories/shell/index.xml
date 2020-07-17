@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shell on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/shell/</link>
+    <description>Recent content in Shell on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 18 Sep 2014 19:51:01 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/shell/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Shell Tips</title>
+      <link>https://liuyu121.github.io/post/shell-tips/</link>
+      <pubDate>Thu, 18 Sep 2014 19:51:01 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/shell-tips/</guid>
+      <description>一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &amp;#34;&amp;lt;p&amp;gt;$i&amp;lt;/p&amp;gt;&amp;#34;;done &amp;lt; test.txt 链接一行</description>
+    </item>
+    
+  </channel>
+</rss>

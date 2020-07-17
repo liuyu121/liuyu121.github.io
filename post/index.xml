@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on 日拱一卒</title>
+    <link>https://liuyu121.github.io/post/</link>
+    <description>Recent content in Posts on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 16 Jul 2020 14:03:29 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Tcp 连接的建立与关闭</title>
+      <link>https://liuyu121.github.io/post/tcp/</link>
+      <pubDate>Thu, 16 Jul 2020 14:03:29 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/tcp/</guid>
+      <description>tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h</description>
+    </item>
+    
+    <item>
+      <title>Bit Twiddling Hacks</title>
+      <link>https://liuyu121.github.io/post/bit-twiddling-hacks/</link>
+      <pubDate>Tue, 14 Jul 2020 19:29:40 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/bit-twiddling-hacks/</guid>
+      <description>算法里面有很多 位操作，看 redis 源码，看到 src/dict.c 下一个函数： 1 2 3 4 5 6 7 8 9 10 11 /* Function to reverse bits. Algorithm from: * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */ static unsigned long rev(unsigned long v) { unsigned long s = CHAR_BIT * sizeof(v); // bit size; must be power of 2 unsigned long</description>
+    </item>
+    
+    <item>
+      <title>ES Nested 类型</title>
+      <link>https://liuyu121.github.io/post/es-nested-datatype/</link>
+      <pubDate>Thu, 09 Jul 2020 15:36:15 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/es-nested-datatype/</guid>
+      <description>有个服务写 es，遇到了以下报错： 1 2 3 4 5 Failed to execute bulk item (index) BulkShardRequest ... limit of total fields [1000] in index 使用的 es版本为5.3.2，在 es 的数据项中，使用了 nested 类型，字面意思是</description>
+    </item>
+    
+    <item>
+      <title>Rust Learn</title>
+      <link>https://liuyu121.github.io/post/rust-learn/</link>
+      <pubDate>Thu, 09 Jul 2020 03:35:40 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/rust-learn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>快慢指针总结</title>
+      <link>https://liuyu121.github.io/post/slow-quick-pointer/</link>
+      <pubDate>Thu, 09 Jul 2020 02:05:35 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/slow-quick-pointer/</guid>
+      <description>遇到链表的算法题，可以优先假设是否可以运用双指针策略解答，leetcode 上相关题目有很多，而快慢指针更是其中一种常见类型，其他的还有一前一</description>
+    </item>
+    
+    <item>
+      <title>量化交易</title>
+      <link>https://liuyu121.github.io/post/quantitative_trade/</link>
+      <pubDate>Wed, 08 Jul 2020 19:35:04 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/quantitative_trade/</guid>
+      <description>量化交易平台 几个不错的量化交易平台： 聚宽：https://www.joinquant.com/ 米筐：https://www.ricequan</description>
+    </item>
+    
+    <item>
+      <title>10x Coder</title>
+      <link>https://liuyu121.github.io/post/10x-coder/</link>
+      <pubDate>Tue, 07 Jul 2020 19:53:51 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/10x-coder/</guid>
+      <description>牛逼的工具集，必须能事半功倍。 下面参考链接是来自于网上一些大牛的分享，大牛是100x programmer，我觉着 10x coder 就已经很牛逼了（难。😋 How</description>
+    </item>
+    
+    <item>
+      <title>Hexo 迁移到 Hugo</title>
+      <link>https://liuyu121.github.io/post/hugo-blog/</link>
+      <pubDate>Mon, 06 Jul 2020 18:45:20 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/hugo-blog/</guid>
+      <description>快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成</description>
+    </item>
+    
+    <item>
+      <title>Mysql Metadata Lock</title>
+      <link>https://liuyu121.github.io/post/mysql-metadata-lock/</link>
+      <pubDate>Wed, 31 Jul 2019 17:24:04 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-metadata-lock/</guid>
+      <description>环境说明 MySQL 版本：5.7.11 存储引擎：ENGINE=InnoDB 注：MySQL 在 5.5.3 版本引入了 MDL锁（metadata-lock） 场景复现 开</description>
+    </item>
+    
+    <item>
+      <title>Redis Cluster</title>
+      <link>https://liuyu121.github.io/post/redis-cluster/</link>
+      <pubDate>Tue, 02 Jul 2019 13:26:15 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/redis-cluster/</guid>
+      <description>本文所使用 Redis 版本为 Redis 5。 业界方案 codis： 本质是个 proxy，通过内存保存着槽位和实例节点之间的映射关系 槽位间的信息同步交给 ZooKeeper 管理 支持一些</description>
+    </item>
+    
+    <item>
+      <title>Linux 下使用 Cron Mail</title>
+      <link>https://liuyu121.github.io/post/linux-cron-mail/</link>
+      <pubDate>Fri, 24 May 2019 10:01:35 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/linux-cron-mail/</guid>
+      <description>注：本文对一些信息做了处理，不影响核心逻辑。 一、背景介绍 1.1 问题发现 在线上某台机器上，手动执行脚本，发现报错 Fatal Error，提示有个类的常量未定</description>
+    </item>
+    
+    <item>
+      <title>Git Submodule 简单使用</title>
+      <link>https://liuyu121.github.io/post/git-submodule/</link>
+      <pubDate>Thu, 11 Apr 2019 18:42:45 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/git-submodule/</guid>
+      <description>之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1</description>
+    </item>
+    
+    <item>
+      <title>Mysql Proxy</title>
+      <link>https://liuyu121.github.io/post/mysql-proxy/</link>
+      <pubDate>Sun, 26 Aug 2018 15:44:49 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-proxy/</guid>
+      <description>HA：High Available Mysql proxy Mysql proxy 的意义在于： 单机数据库不满足需求，需要多实例、多机部署 基于 mysql server 与 client 的中间层，对前端透明，对 DB 则是一个客户端 读写分离 分</description>
+    </item>
+    
+    <item>
+      <title>Mysql Order by 问题</title>
+      <link>https://liuyu121.github.io/post/mysql-order-by-problem/</link>
+      <pubDate>Mon, 06 Aug 2018 17:49:41 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-order-by-problem/</guid>
+      <description>环境说明 MySQL 版本：5.1.73-log 存储引擎：ENGINE=InnoDB 问题起因 某个需求实现中，采用的是通过使用「业务表」的某个时间字段 作为</description>
+    </item>
+    
+    <item>
+      <title>Mysql 归档</title>
+      <link>https://liuyu121.github.io/post/mysql-archiver/</link>
+      <pubDate>Mon, 16 Jul 2018 19:32:32 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-archiver/</guid>
+      <description>归档方案 pt-archiver 使用 pt-archiver 归档数据。 官方文档 mysql 分区 mysql 官方提供的分区方案。 mysql 分区 手动归档 场景：某业务单表几 kw，需要归档，一般地，以记录生成时间归档（t</description>
+    </item>
+    
+    <item>
+      <title>PHP7 初识</title>
+      <link>https://liuyu121.github.io/post/php7-tips/</link>
+      <pubDate>Fri, 06 Jul 2018 19:39:56 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php7-tips/</guid>
+      <description>注：以下部分内容摘自 《PHP7 内核剖析》 与之前版本的区别 php7 相较于 php 5.x，号称性能得到了极大提升，从版本上看确实如此 :) 。那么，到底是哪些地方</description>
+    </item>
+    
+    <item>
+      <title>PHP-FPM 配置与实现</title>
+      <link>https://liuyu121.github.io/post/php-fpm-tips/</link>
+      <pubDate>Sat, 06 May 2017 11:36:13 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php-fpm-tips/</guid>
+      <description>配置 对于 php-fpm 的配置，其实无需阅读网上各种文章，因为大多数时候，百度搜索结果页前几页里，经常是重复的、概念性的、不全面的文章；或者在 CSDN 等网站上的</description>
+    </item>
+    
+    <item>
+      <title>MySQL 语句类型以及提交类型</title>
+      <link>https://liuyu121.github.io/post/mysql-ops/</link>
+      <pubDate>Thu, 16 Mar 2017 14:18:07 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-ops/</guid>
+      <description>一、sql 语句类型 1.1 DQL DQL : Data Query Language DQL 也即 数据查询语言，语法定义为： 1 2 3 4 5 6 7 SELECT select_list [ INTO new_table ] FROM table_source [ WHERE search_condition ] [ GROUP BY group_by_expression ] [ HAVING search_condition ] [ ORDER BY order_expression [ ASC | DESC ] ]</description>
+    </item>
+    
+    <item>
+      <title>Git Shell 便捷设置</title>
+      <link>https://liuyu121.github.io/post/git-shell-config/</link>
+      <pubDate>Sun, 12 Apr 2015 19:26:53 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/git-shell-config/</guid>
+      <description>注：可使用 zsh 工具推荐：请安装 tig brew install tig 为了更好、更方便的在 shell 下操作 git，下面介绍一些常用的 git 配置等，以供参考。 本机相关环境： 操作系统： 1 2 3</description>
+    </item>
+    
+    <item>
+      <title>PHP 处理 POST 请求</title>
+      <link>https://liuyu121.github.io/post/php-post-request/</link>
+      <pubDate>Thu, 12 Mar 2015 19:49:28 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php-post-request/</guid>
+      <description>默认的处理方式 我们知道，在 php 下获取 POST 数据极其简单，只需要使用 $_POST 的全局数组即可。 题外话：这种使用简单操作方便的特性，也是为什么 php 如此流行的关键</description>
+    </item>
+    
+    <item>
+      <title>PHP 生成 Excel</title>
+      <link>https://liuyu121.github.io/post/php-gen-excel/</link>
+      <pubDate>Fri, 12 Dec 2014 20:10:14 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php-gen-excel/</guid>
+      <description>在 php 中，比如要下载一个表单，不一定必须要用诸如 PHPExcel，或在服务器上生成 txt、csv等文件。 我们可以利用 html 的 table，指定对应的</description>
+    </item>
+    
+    <item>
+      <title>Shell Tips</title>
+      <link>https://liuyu121.github.io/post/shell-tips/</link>
+      <pubDate>Thu, 18 Sep 2014 19:51:01 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/shell-tips/</guid>
+      <description>一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &amp;#34;&amp;lt;p&amp;gt;$i&amp;lt;/p&amp;gt;&amp;#34;;done &amp;lt; test.txt 链接一行</description>
+    </item>
+    
+  </channel>
+</rss>

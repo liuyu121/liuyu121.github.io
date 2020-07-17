@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Mysql Proxy - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="HA：High Available Mysql proxy Mysql proxy 的意义在于： 单机数据库不满足需求，需要多实例、多机部署 基于 mysql server 与 client 的中间层，对前端透明，对 DB 则是一个客户端 读写分离 分" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/mysql-proxy/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Mysql Proxy" />
+<meta property="og:description" content="HA：High Available Mysql proxy Mysql proxy 的意义在于： 单机数据库不满足需求，需要多实例、多机部署 基于 mysql server 与 client 的中间层，对前端透明，对 DB 则是一个客户端 读写分离 分" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/mysql-proxy/" />
+<meta property="article:published_time" content="2018-08-26T15:44:49+08:00" />
+<meta property="article:modified_time" content="2018-08-26T15:44:49+08:00" />
+<meta itemprop="name" content="Mysql Proxy">
+<meta itemprop="description" content="HA：High Available Mysql proxy Mysql proxy 的意义在于： 单机数据库不满足需求，需要多实例、多机部署 基于 mysql server 与 client 的中间层，对前端透明，对 DB 则是一个客户端 读写分离 分">
+<meta itemprop="datePublished" content="2018-08-26T15:44:49&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-26T15:44:49&#43;08:00" />
+<meta itemprop="wordCount" content="437">
+
+
+
+<meta itemprop="keywords" content="mysql,database," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mysql Proxy"/>
+<meta name="twitter:description" content="HA：High Available Mysql proxy Mysql proxy 的意义在于： 单机数据库不满足需求，需要多实例、多机部署 基于 mysql server 与 client 的中间层，对前端透明，对 DB 则是一个客户端 读写分离 分"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Mysql Proxy</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-26 </span>
+        <div class="post-category">
+            <a href="/categories/mysql/"> MySQL </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>HA：High Available</p>
+<h2 id="mysql-proxy"><code>Mysql proxy</code></h2>
+<p><code>Mysql proxy</code> 的意义在于：</p>
+<ul>
+<li>单机数据库不满足需求，需要多实例、多机部署</li>
+<li>基于 <code>mysql server</code> 与 <code>client</code> 的中间层，对前端透明，对 <code>DB</code> 则是一个客户端</li>
+<li>读写分离</li>
+<li>分表路由</li>
+<li>连接池</li>
+<li><code>sql 黑名单</code>：如 不带 <code>where</code> 条件的 <code>update</code>、<code>insert</code> 等语句。</li>
+<li><code>web 化</code> 的管理界面</li>
+</ul>
+<p>下面是一些开源的技术方案。</p>
+<ul>
+<li>
+<p><a href="https://github.com/mysql/mysql-proxy">mysql-proxy</a>：<code>Mysql</code> 官方的方案</p>
+</li>
+<li>
+<p><a href="https://github.com/alibaba/druid">druid</a>：阿里巴巴开源的数据库连接池</p>
+</li>
+<li>
+<p><a href="https://github.com/Qihoo360/Atlas">Atlas</a>：奇虎360开源的 <code>Mysql proxy</code>，基于 [mysql-proxy]</p>
+</li>
+<li>
+<p><a href="https://github.com/MyCATApache/Mycat-Server">Mycat-Server</a>：国内开源社区的集成方案，基于原阿里中间件 <code>Cobar</code> 进行的二次开发。</p>
+</li>
+</ul>
+<h2 id="uuid"><code>uuid</code></h2>
+<p>关于 <code>全局id</code> 的生成，也即有很多方案，目的是为了构造一个全局的、趋势递增、独一无二的 <code>整型id</code>。</p>
+<p>大体思想是以 <code>命名空间</code> 形式构造：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">版本号 + 时间 + 机器号 + 序列号(一个自增序列)
+</code></pre></td></tr></table>
+</div>
+</div><p>因为是基于 <code>时间</code>，所以会存在 <code>时钟回拨</code> 的问题。</p>
+<ul>
+<li>
+<p><a href="https://github.com/twitter-archive/snowflake">snowflake</a> ：<code>twittter</code> 开源的 <code>uuid</code> 生成算法。</p>
+</li>
+<li>
+<p><a href="https://github.com/baidu/uid-generator">uid-generator</a>：百度开源的 <code>uuid</code> 生成方案，基于 <code>snowflake</code>。</p>
+</li>
+<li>
+<p><a href="https://github.com/Meituan-Dianping/Leaf">Leaf</a>：美团开源的方案，具体可参见其技术文章：<a href="https://tech.meituan.com/2017/04/21/mt-leaf.html">Leaf——美团点评分布式ID生成系统</a></p>
+</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2018-08-26
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/mysql-proxy/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/mysql/">mysql</a>
+          <a href="/tags/database/">database</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/git-submodule/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Git Submodule 简单使用</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/mysql-order-by-problem/">
+            <span class="next-text nav-default">Mysql Order by 问题</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

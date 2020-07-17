@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ES Nested 类型 - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="有个服务写 es，遇到了以下报错： 1 2 3 4 5 Failed to execute bulk item (index) BulkShardRequest ... limit of total fields [1000] in index 使用的 es版本为5.3.2，在 es 的数据项中，使用了 nested 类型，字面意思是" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/es-nested-datatype/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="ES Nested 类型" />
+<meta property="og:description" content="有个服务写 es，遇到了以下报错： 1 2 3 4 5 Failed to execute bulk item (index) BulkShardRequest ... limit of total fields [1000] in index 使用的 es版本为5.3.2，在 es 的数据项中，使用了 nested 类型，字面意思是" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/es-nested-datatype/" />
+<meta property="article:published_time" content="2020-07-09T15:36:15+08:00" />
+<meta property="article:modified_time" content="2020-07-09T15:36:15+08:00" />
+<meta itemprop="name" content="ES Nested 类型">
+<meta itemprop="description" content="有个服务写 es，遇到了以下报错： 1 2 3 4 5 Failed to execute bulk item (index) BulkShardRequest ... limit of total fields [1000] in index 使用的 es版本为5.3.2，在 es 的数据项中，使用了 nested 类型，字面意思是">
+<meta itemprop="datePublished" content="2020-07-09T15:36:15&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-09T15:36:15&#43;08:00" />
+<meta itemprop="wordCount" content="1659">
+
+
+
+<meta itemprop="keywords" content="es," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ES Nested 类型"/>
+<meta name="twitter:description" content="有个服务写 es，遇到了以下报错： 1 2 3 4 5 Failed to execute bulk item (index) BulkShardRequest ... limit of total fields [1000] in index 使用的 es版本为5.3.2，在 es 的数据项中，使用了 nested 类型，字面意思是"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">ES Nested 类型</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-09 </span>
+        <div class="post-category">
+            <a href="/categories/es/"> Es </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>有个服务写 <code>es</code>，遇到了以下报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Failed to execute bulk item (index) BulkShardRequest
+
+...
+
+limit of total fields [1000] in index
+</code></pre></td></tr></table>
+</div>
+</div><p>使用的 <code>es</code>版本为<code>5.3.2</code>，在 <code>es</code> 的数据项中，使用了 <code>nested</code> 类型，字面意思是这个 <code>index</code> 下的 <code>fileds</code> 超过了 <code>1000</code>，禁止写入了。</p>
+<p>问题原因很简单，但其中涉及到 <code>es</code> 的 <code>objects</code>  、<code>nested</code>类型，下面我们来具体分析下这俩类型的异同。</p>
+<h2 id="object-类型">object 类型</h2>
+<h3 id="例子-1">例子 1</h3>
+<p>我们先看个 <code>object</code> 类型的例子，下面这个文档是一篇文章的评论信息，包含了 <code>3</code> 条 <code>comment</code>，且该 <code>comment</code> 为 <code>object</code> 类型：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">my_index/my_type/</span><span class="mi">1</span>
+<span class="p">{</span>
+  <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;test&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;body&#34;</span><span class="p">:</span> <span class="s2">&#34;这是一个测试文档&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;tags&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;test&#34;</span><span class="p">,</span> <span class="s2">&#34;xxx&#34;</span><span class="p">],</span>
+  <span class="nt">&#34;published_on&#34;</span><span class="p">:</span> <span class="s2">&#34;2020-07-09&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;comments&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;zhangsan&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+      <span class="nt">&#34;comment&#34;</span><span class="p">:</span> <span class="s2">&#34;👍 写得真好&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;commented_on&#34;</span><span class="p">:</span> <span class="s2">&#34;2020-07-09&#34;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;lisi&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+      <span class="nt">&#34;comment&#34;</span><span class="p">:</span> <span class="s2">&#34;多谢，学习了&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;commented_on&#34;</span><span class="p">:</span> <span class="s2">&#34;2020-07-09&#34;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;wangwu&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
+      <span class="nt">&#34;comment&#34;</span><span class="p">:</span> <span class="s2">&#34;涨姿势&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;commented_on&#34;</span><span class="p">:</span> <span class="s2">&#34;2020-07-09&#34;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>写入 <code>es</code> 后，我们来查询 <code>name = wangwu</code> 的评论，分别测试 <code>age = 10、20、33</code> 等 <code>case</code>，查询语法如下，修改 <code>age</code> 为对应的值即可（用 <code>kibana</code> 语法表示更简明）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">GET</span> <span class="err">/my_index/_search?pretty</span>
+<span class="p">{</span>
+  <span class="nt">&#34;query&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;bool&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;must&#34;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;comments.name&#34;</span><span class="p">:</span> <span class="s2">&#34;wangwu&#34;</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;comments.age&#34;</span><span class="p">:</span> <span class="mi">10</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>测试结果如下：</p>
+<ul>
+<li>1&gt; <code>comments.name: &quot;wangwu&quot; &amp;&amp; comments.age: 10</code>：返回空</li>
+<li>2&gt; <code>comments.name: &quot;wangwu&quot; &amp;&amp; comments.age: 20</code>：返回 <code>_id=1</code>的文档（也即我们刚写入的那条数据）</li>
+<li>3&gt; <code>comments.name: &quot;wangwu&quot; &amp;&amp; comments.age: 33</code>：返回 <code>_id=1</code>的文档</li>
+</ul>
+<p>从上面的现象可知，其实 <code>3&gt;</code> 条结果才是我们的预期，而 <code>2&gt;</code> 这个 <code>case</code>，虽然并不存在 <code>name = wangwu AND age = 20</code> 的情况，但也返回了。</p>
+<p>这是为什么呢，下面来一探究竟。</p>
+<h3 id="分析">分析</h3>
+<p>在 <code>es</code>中， <code>object fields</code> <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> 支持 <code>json</code> 格式的文档存储，也即支持多层嵌套，然后可以对其进行嵌套搜索，如上面例子所见：<code>comments.name: &quot;wangwu&quot;</code>。</p>
+<p>但在其在内部实际存储该类型时，会被展开成扁平化的  <code>key-value pairs</code>  ，其中 <code>value</code> 是同一个 <code>key</code> 的聚合，也即，上面的实例中，最后被格式化为了如下格式：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;comments.name&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;zhangsan&#34;</span><span class="p">,</span> <span class="s2">&#34;lisi&#34;</span><span class="p">,</span> <span class="s2">&#34;wangwu&#34;</span><span class="p">],</span>
+  <span class="nt">&#34;comments.age&#34;</span><span class="p">:</span>  <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">33</span><span class="p">],</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>一眼便知，为什么会出现上面例子中 <code>2&gt;</code> 这个 <code>case</code>，因为 <code>comments.age</code> 这个 <code>key</code> 的 <code>multi-value</code>里，有 <code>20</code> 这个值，所以便被匹配出来。</p>
+<p>问题来了，我们就是精确匹配呢，使用 <code>nested</code> 类型可解决。</p>
+<h2 id="nested-类型">nested 类型</h2>
+<p><code>Nested fileds</code><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> 看起来和 <code>object fields</code> 类似，都支持多层嵌套查询，但实际上，它的内部存储方式却不一样。</p>
+<h3 id="例子-2">例子 2</h3>
+<p>我们新建个 <code>coments</code> 类型为 <code>nested</code> 的 <code>index</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">my_index</span><span class="mi">3</span>
+<span class="p">{</span>
+  <span class="nt">&#34;mappings&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;my_type&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;properties&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;comments&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;nested&#34;</span> 
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后插入 <code>例子 1</code> 中的测试数据，同样的做相关测试，具体过程就省略了，注意，查询语法的区别<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">GET</span> <span class="err">my_index</span><span class="mi">3</span><span class="err">/_search</span>
+<span class="p">{</span>
+  <span class="nt">&#34;query&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;nested&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;comments&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;query&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;bool&#34;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;must&#34;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span> <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;comments.name&#34;</span><span class="p">:</span> <span class="s2">&#34;wangwu&#34;</span> <span class="p">}},</span>
+            <span class="p">{</span> <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;comments.age&#34;</span><span class="p">:</span>  <span class="mi">33</span> <span class="p">}}</span> 
+          <span class="p">]</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>测试结果如下（<code>kibana</code> 不支持这种查询语法，下面的搜索条件只是沿用上面例子的，为了方便查看）：</p>
+<ul>
+<li>1&gt; <code>comments.name: &quot;wangwu&quot; &amp;&amp; comments.age: 10</code>：返回空</li>
+<li>2&gt; <code>comments.name: &quot;wangwu&quot; &amp;&amp; comments.age: 20</code>：返回空</li>
+<li>3&gt; <code>comments.name: &quot;wangwu&quot; &amp;&amp; comments.age: 33</code>：返回 <code>_id=1</code>的文档</li>
+</ul>
+<p>我们发现，这种搜索结果才是预期的。</p>
+<h3 id="分析-1">分析</h3>
+<p><code>nested fileds</code> 内部实现方式与 <code>object</code> 不同之处在于：</p>
+<ul>
+<li><code>object</code>：在内部，会被展开成扁平化的  <code>key-value pairs</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">Internally,</span> <span class="err">this</span> <span class="err">document</span> <span class="err">is</span> <span class="err">indexed</span> <span class="err">as</span> <span class="err">a</span> <span class="err">simple,</span> <span class="err">flat</span> <span class="err">list</span> <span class="err">of</span> <span class="err">key-value</span> <span class="err">pairs.</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>nested</code>：在内部，会索引数组中的每个对象作为单独的隐藏文档，这意味着每个嵌套对象可以独立于其他对象查询。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">Internally,</span> <span class="err">nested</span> <span class="err">objects</span> <span class="err">index</span> <span class="err">each</span> <span class="err">object</span> <span class="err">in</span> <span class="err">the</span> <span class="err">array</span> <span class="err">as</span> <span class="err">a</span> <span class="err">separate</span> <span class="err">hidden</span> <span class="err">document,</span> <span class="err">meaning</span> <span class="err">that</span> <span class="err">each</span> <span class="err">nested</span> <span class="err">object</span> <span class="err">can</span> <span class="err">be</span> <span class="err">queried</span> <span class="err">independently</span> <span class="err">of</span> <span class="err">the</span> <span class="err">others.</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="问题解决">问题解决</h2>
+<p>以上，我们知道 <code>object</code> 与 <code>nested</code> 这俩者的区别，接下来，下面回到开头的问题。</p>
+<p>在实际的 <code>es</code> 使用中，我们是按天 <code>shard</code>，且有几个字段为 <code>nested</code> 类型, 根据  <code>dynamic mapping</code>  策略，<code>nested</code> 类型的 <code>key</code> 会被解析成 <code>fileds</code>，而业务有个场景是以 <code>随机值</code> 作为 <code>key</code> 写入 <code>es</code>，就导致了 <code>fileds</code> 快速膨胀，达到了 <code>1000</code> 的限制。</p>
+<p>那为什么会限制在 <code>1000</code> 呢，因为如果不限制，<code>mapping</code> 快速膨胀后，会引起索引和副本数据膨胀，从而导致性能退化、内存问题等<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup>。</p>
+<p>当然，这个限制也可以人为修改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="err">PUT</span> <span class="err">/my_index</span><span class="mi">3</span><span class="err">/_settings</span> 
+<span class="p">{</span>
+  <span class="nt">&#34;index.mapping.total_fields.limit&#34;</span><span class="p">:</span> <span class="mi">1111</span>
+<span class="p">}</span>
+
+<span class="err">GET</span> <span class="err">/my_index</span><span class="mi">3</span><span class="err">/_settings/index.mapping.total_fields.limit</span>
+
+<span class="p">{</span>
+  <span class="nt">&#34;my_index3&#34;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;settings&#34;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;index&#34;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;mapping&#34;</span> <span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&#34;total_fields&#34;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;limit&#34;</span> <span class="p">:</span> <span class="s2">&#34;1111&#34;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>需要注意的是，<code>dynamic mapping</code>  时，会以先写入的 <code>filed</code> 的数据格式作为当天的数据格式，后续写入不能修改，在弱类型语言中，比如 <code>php</code> 也即一旦创建完成，就不允许修改，否则会写入失败：</p>
+<ul>
+<li>后续继续写入已有的数据，数据格式必须一致，因为此时 `field datatype 已经建立好了；</li>
+<li>后续继续写入新增的 <code>field</code>，是可以成功写入的。</li>
+</ul>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/5.3/object.html#object">Object datatype</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/5.3/nested.html">Nested datatype</a> <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/5.3/query-dsl-nested-query.html">Nested query</a> <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4" role="doc-endnote">
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/master/mapping.html#mapping-limit-settings">mapping-limit-settings</a> <a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-09
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/es-nested-datatype/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/es/">es</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/bit-twiddling-hacks/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Bit Twiddling Hacks</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/rust-learn/">
+            <span class="next-text nav-default">Rust Learn</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

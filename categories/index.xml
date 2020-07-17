@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/</link>
+    <description>Recent content in Categories on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 16 Jul 2020 14:03:29 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Tcp</title>
+      <link>https://liuyu121.github.io/categories/tcp/</link>
+      <pubDate>Thu, 16 Jul 2020 14:03:29 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/tcp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux</title>
+      <link>https://liuyu121.github.io/categories/linux/</link>
+      <pubDate>Tue, 14 Jul 2020 19:29:40 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Es</title>
+      <link>https://liuyu121.github.io/categories/es/</link>
+      <pubDate>Thu, 09 Jul 2020 15:36:15 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/es/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rust</title>
+      <link>https://liuyu121.github.io/categories/rust/</link>
+      <pubDate>Thu, 09 Jul 2020 03:35:40 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/rust/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algorithm</title>
+      <link>https://liuyu121.github.io/categories/algorithm/</link>
+      <pubDate>Thu, 09 Jul 2020 02:05:35 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/algorithm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Invest</title>
+      <link>https://liuyu121.github.io/categories/invest/</link>
+      <pubDate>Wed, 08 Jul 2020 19:35:04 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/invest/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tech</title>
+      <link>https://liuyu121.github.io/categories/tech/</link>
+      <pubDate>Tue, 07 Jul 2020 19:53:51 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/tech/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Blog</title>
+      <link>https://liuyu121.github.io/categories/blog/</link>
+      <pubDate>Mon, 06 Jul 2020 18:45:20 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/blog/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MySQL</title>
+      <link>https://liuyu121.github.io/categories/mysql/</link>
+      <pubDate>Wed, 31 Jul 2019 17:24:04 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/mysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Redis</title>
+      <link>https://liuyu121.github.io/categories/redis/</link>
+      <pubDate>Tue, 02 Jul 2019 13:26:15 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/redis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Git</title>
+      <link>https://liuyu121.github.io/categories/git/</link>
+      <pubDate>Thu, 11 Apr 2019 18:42:45 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/git/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PHP</title>
+      <link>https://liuyu121.github.io/categories/php/</link>
+      <pubDate>Fri, 06 Jul 2018 19:39:56 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/php/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Shell</title>
+      <link>https://liuyu121.github.io/categories/shell/</link>
+      <pubDate>Thu, 18 Sep 2014 19:51:01 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/categories/shell/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

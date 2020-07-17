@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Mysql Metadata Lock - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="环境说明 MySQL 版本：5.7.11 存储引擎：ENGINE=InnoDB 注：MySQL 在 5.5.3 版本引入了 MDL锁（metadata-lock） 场景复现 开" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/mysql-metadata-lock/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Mysql Metadata Lock" />
+<meta property="og:description" content="环境说明 MySQL 版本：5.7.11 存储引擎：ENGINE=InnoDB 注：MySQL 在 5.5.3 版本引入了 MDL锁（metadata-lock） 场景复现 开" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/mysql-metadata-lock/" />
+<meta property="article:published_time" content="2019-07-31T17:24:04+08:00" />
+<meta property="article:modified_time" content="2019-07-31T17:24:04+08:00" />
+<meta itemprop="name" content="Mysql Metadata Lock">
+<meta itemprop="description" content="环境说明 MySQL 版本：5.7.11 存储引擎：ENGINE=InnoDB 注：MySQL 在 5.5.3 版本引入了 MDL锁（metadata-lock） 场景复现 开">
+<meta itemprop="datePublished" content="2019-07-31T17:24:04&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-31T17:24:04&#43;08:00" />
+<meta itemprop="wordCount" content="996">
+
+
+
+<meta itemprop="keywords" content="mysql,database,mysql 锁," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mysql Metadata Lock"/>
+<meta name="twitter:description" content="环境说明 MySQL 版本：5.7.11 存储引擎：ENGINE=InnoDB 注：MySQL 在 5.5.3 版本引入了 MDL锁（metadata-lock） 场景复现 开"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Mysql Metadata Lock</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-31 </span>
+        <div class="post-category">
+            <a href="/categories/mysql/"> MySQL </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>环境说明</p>
+<ul>
+<li>
+<p>MySQL 版本：<code>5.7.11</code></p>
+</li>
+<li>
+<p>存储引擎：<code>ENGINE=InnoDB</code></p>
+</li>
+</ul>
+<p>注：<code>MySQL</code> 在 <code>5.5.3</code> 版本引入了 <code>MDL</code>锁（<code>metadata-lock</code>）</p>
+<h2 id="场景复现">场景复现</h2>
+<p>开启多个 <code>mysql shell</code>：</p>
+<ul>
+<li>测试准备：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">use</span> <span class="n">test</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">test_metadata_lock</span><span class="o">`</span> <span class="p">(</span>
+  <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>session A：开启一个事务，但不提交</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_metadata_lock</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span>  <span class="mi">123</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="n">connection_id</span><span class="p">();</span>
+<span class="o">+</span><span class="c1">-----------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">connection_id</span><span class="p">()</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------------+
+</span><span class="c1"></span><span class="o">|</span>             <span class="mi">246</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">begin</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_metadata_lock</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span>  <span class="mi">123</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>session B：会阻塞</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="n">connection_id</span><span class="p">();</span>
+<span class="o">+</span><span class="c1">-----------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">connection_id</span><span class="p">()</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------------+
+</span><span class="c1"></span><span class="o">|</span>             <span class="mi">247</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">alter</span> <span class="k">table</span> <span class="n">test_metadata_lock</span> <span class="k">add</span> <span class="k">column</span> <span class="p">(</span><span class="n">name</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>session C：查看当前进程，发现 <code>247</code> 存在 <code>metadata-lock</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">show</span> <span class="n">processlist</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">-----+------+-----------+------+---------+------+---------------------------------+-----------------------------------------------------------------------------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">Id</span>  <span class="o">|</span> <span class="k">User</span> <span class="o">|</span> <span class="k">Host</span>      <span class="o">|</span> <span class="n">db</span>   <span class="o">|</span> <span class="n">Command</span> <span class="o">|</span> <span class="n">Time</span> <span class="o">|</span> <span class="k">State</span>                           <span class="o">|</span> <span class="n">Info</span>                                                                              <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----+------+-----------+------+---------+------+---------------------------------+-----------------------------------------------------------------------------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="mi">246</span> <span class="o">|</span> <span class="n">root</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">test</span> <span class="o">|</span> <span class="n">Sleep</span>   <span class="o">|</span>  <span class="mi">132</span> <span class="o">|</span>                                 <span class="o">|</span> <span class="k">NULL</span>                                                                              <span class="o">|</span>
+<span class="o">|</span> <span class="mi">247</span> <span class="o">|</span> <span class="n">root</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">test</span> <span class="o">|</span> <span class="n">Query</span>   <span class="o">|</span>   <span class="mi">48</span> <span class="o">|</span> <span class="n">Waiting</span> <span class="k">for</span> <span class="k">table</span> <span class="n">metadata</span> <span class="k">lock</span> <span class="o">|</span> <span class="k">alter</span> <span class="k">table</span> <span class="n">test_metadata_lock</span> <span class="k">add</span> <span class="k">column</span> <span class="p">(</span><span class="n">name</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">248</span> <span class="o">|</span> <span class="n">root</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">test</span> <span class="o">|</span> <span class="n">Query</span>   <span class="o">|</span>    <span class="mi">0</span> <span class="o">|</span> <span class="n">starting</span>                        <span class="o">|</span> <span class="k">show</span> <span class="n">processlist</span>                                                                  <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----+------+-----------+------+---------+------+---------------------------------+-----------------------------------------------------------------------------------+
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="解释">解释</h2>
+<p><code>metadata lock</code> 主要为了保证元数据的一致性，用于处理不同线程操作同一数据对象的同步与互斥问题。可参考 <code>MySQL 官方文档</code>  <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>，相关 <code>bug</code>  <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</p>
+<ul>
+<li>
+<p>事务隔离（5.5 之前的版本）：比如在可重复读隔离级别（<code>RR</code>）下，<code>session A</code> 在 2 次查询期间，<code>session B</code> 对表结构做了修改，两次查询结果就会不一致，无法满足可重复读的要求。</p>
+</li>
+<li>
+<p>数据复制问题：比如 <code>session A</code> 执行了多条更新语句，<code>session B</code>做了表结构变更并且先提交，就会导致 <code>slave</code> 在重做时，因为先重做 <code>alter</code>，再重做 <code>update</code>，会出现复制错误的现象。</p>
+</li>
+</ul>
+<p>需要注意的是，如果 <code>sql</code> 本身存在错误（非语法错误），也会造成 <code>metadata-lock</code>：</p>
+<ul>
+<li><code>session A</code>：<code>select</code> 一个不存在的字段，事务没有开始，但是失败语句获取到的锁依然有效。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">set</span> <span class="n">autocommit</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">05</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="n">t</span> <span class="k">from</span> <span class="n">test_autocommit</span><span class="p">;</span>
+<span class="n">ERROR</span> <span class="mi">1054</span> <span class="p">(</span><span class="mi">42</span><span class="n">S22</span><span class="p">):</span> <span class="k">Unknown</span> <span class="k">column</span> <span class="s1">&#39;t&#39;</span> <span class="k">in</span> <span class="s1">&#39;field list&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session B</code>：<code>alter table</code> 阻塞。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">alter</span> <span class="k">table</span> <span class="n">test_autocommit</span> <span class="k">add</span> <span class="k">column</span> <span class="p">(</span><span class="n">name</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session C</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">information_schema</span><span class="p">.</span><span class="n">processlist</span> <span class="k">where</span> <span class="k">state</span> <span class="o">=</span> <span class="s1">&#39;Waiting for table metadata lock&#39;</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">-----+------+-----------+------+---------+------+---------------------------------+--------------------------------------------------------------------------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">ID</span>  <span class="o">|</span> <span class="k">USER</span> <span class="o">|</span> <span class="k">HOST</span>      <span class="o">|</span> <span class="n">DB</span>   <span class="o">|</span> <span class="n">COMMAND</span> <span class="o">|</span> <span class="n">TIME</span> <span class="o">|</span> <span class="k">STATE</span>                           <span class="o">|</span> <span class="n">INFO</span>                                                                           <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----+------+-----------+------+---------+------+---------------------------------+--------------------------------------------------------------------------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="mi">247</span> <span class="o">|</span> <span class="n">root</span> <span class="o">|</span> <span class="n">localhost</span> <span class="o">|</span> <span class="n">test</span> <span class="o">|</span> <span class="n">Query</span>   <span class="o">|</span>  <span class="mi">168</span> <span class="o">|</span> <span class="n">Waiting</span> <span class="k">for</span> <span class="k">table</span> <span class="n">metadata</span> <span class="k">lock</span> <span class="o">|</span> <span class="k">alter</span> <span class="k">table</span> <span class="n">test_autocommit</span> <span class="k">add</span> <span class="k">column</span> <span class="p">(</span><span class="n">name</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----+------+-----------+------+---------+------+---------------------------------+--------------------------------------------------------------------------------+
+</span></code></pre></td></tr></table>
+</div>
+</div><p>但如果是语法错误，<code>session B</code> 不会阻塞：</p>
+<ul>
+<li><code>session A</code>：语法错误。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="n">select1</span> <span class="n">t</span> <span class="k">from</span> <span class="n">test_autocommit</span><span class="p">;</span>
+<span class="n">ERROR</span> <span class="mi">1064</span> <span class="p">(</span><span class="mi">42000</span><span class="p">):</span> <span class="n">You</span> <span class="n">have</span> <span class="n">an</span> <span class="n">error</span> <span class="k">in</span> <span class="n">your</span> <span class="k">SQL</span> <span class="n">syntax</span><span class="p">;</span> <span class="k">check</span> <span class="n">the</span> <span class="n">manual</span> <span class="n">that</span> <span class="n">corresponds</span> <span class="k">to</span> <span class="n">your</span> <span class="n">MySQL</span> <span class="n">server</span> <span class="k">version</span> <span class="k">for</span> <span class="n">the</span> <span class="k">right</span> <span class="n">syntax</span> <span class="k">to</span> <span class="n">use</span> <span class="n">near</span> <span class="s1">&#39;select1 t from test_autocommit&#39;</span> <span class="k">at</span> <span class="n">line</span> <span class="mi">1</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session B</code>：执行成功。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">alter</span> <span class="k">table</span> <span class="n">test_autocommit</span> <span class="k">add</span> <span class="k">column</span> <span class="p">(</span><span class="n">name</span> <span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">not</span> <span class="k">null</span> <span class="k">default</span> <span class="s1">&#39;&#39;</span><span class="p">);</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">24</span> <span class="n">sec</span><span class="p">)</span>
+<span class="n">Records</span><span class="p">:</span> <span class="mi">0</span>  <span class="n">Duplicates</span><span class="p">:</span> <span class="mi">0</span>  <span class="n">Warnings</span><span class="p">:</span> <span class="mi">0</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>官方对此说明为：</p>
+<blockquote>
+<p>If the server acquires metadata locks for a statement that is syntactically valid but fails during execution, it does not release the locks early. Lock release is still deferred to the end of the transaction because the failed statement is written to the binary log and the locks protect log consistency.</p>
+</blockquote>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/metadata-locking.html">MySQL 官方文档</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p><a href="https://bugs.mysql.com/bug.php?id=989">bug#989</a> <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-07-31
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/mysql-metadata-lock/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/mysql/">mysql</a>
+          <a href="/tags/database/">database</a>
+          <a href="/tags/mysql-%E9%94%81/">mysql 锁</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/hugo-blog/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Hexo 迁移到 Hugo</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/redis-cluster/">
+            <span class="next-text nav-default">Redis Cluster</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

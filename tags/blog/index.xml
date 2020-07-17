@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>blog on 日拱一卒</title>
+    <link>https://liuyu121.github.io/tags/blog/</link>
+    <description>Recent content in blog on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 06 Jul 2020 18:45:20 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/tags/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Hexo 迁移到 Hugo</title>
+      <link>https://liuyu121.github.io/post/hugo-blog/</link>
+      <pubDate>Mon, 06 Jul 2020 18:45:20 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/hugo-blog/</guid>
+      <description>快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成</description>
+    </item>
+    
+    <item>
+      <title>Git Submodule 简单使用</title>
+      <link>https://liuyu121.github.io/post/git-submodule/</link>
+      <pubDate>Thu, 11 Apr 2019 18:42:45 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/git-submodule/</guid>
+      <description>之前把 blog 改用新的 hexo 来实现的时候，使用了 next 主题，开始尝试以 git-submodule 的方式引入。期间遇到了一些问题，以此文做记录。：） 添加子模块 添加子模块比较简单： 1</description>
+    </item>
+    
+  </channel>
+</rss>

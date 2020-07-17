@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>PHP-FPM 配置与实现 - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="配置 对于 php-fpm 的配置，其实无需阅读网上各种文章，因为大多数时候，百度搜索结果页前几页里，经常是重复的、概念性的、不全面的文章；或者在 CSDN 等网站上的" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/php-fpm-tips/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="PHP-FPM 配置与实现" />
+<meta property="og:description" content="配置 对于 php-fpm 的配置，其实无需阅读网上各种文章，因为大多数时候，百度搜索结果页前几页里，经常是重复的、概念性的、不全面的文章；或者在 CSDN 等网站上的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/php-fpm-tips/" />
+<meta property="article:published_time" content="2017-05-06T11:36:13+08:00" />
+<meta property="article:modified_time" content="2017-05-06T11:36:13+08:00" />
+<meta itemprop="name" content="PHP-FPM 配置与实现">
+<meta itemprop="description" content="配置 对于 php-fpm 的配置，其实无需阅读网上各种文章，因为大多数时候，百度搜索结果页前几页里，经常是重复的、概念性的、不全面的文章；或者在 CSDN 等网站上的">
+<meta itemprop="datePublished" content="2017-05-06T11:36:13&#43;08:00" />
+<meta itemprop="dateModified" content="2017-05-06T11:36:13&#43;08:00" />
+<meta itemprop="wordCount" content="966">
+
+
+
+<meta itemprop="keywords" content="php," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="PHP-FPM 配置与实现"/>
+<meta name="twitter:description" content="配置 对于 php-fpm 的配置，其实无需阅读网上各种文章，因为大多数时候，百度搜索结果页前几页里，经常是重复的、概念性的、不全面的文章；或者在 CSDN 等网站上的"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">PHP-FPM 配置与实现</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-05-06 </span>
+        <div class="post-category">
+            <a href="/categories/php/"> PHP </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <h2 id="配置">配置</h2>
+<p>对于 <code>php-fpm</code> 的配置，其实无需阅读网上各种文章，因为大多数时候，<code>百度</code>搜索结果页前几页里，经常是重复的、概念性的、不全面的文章；或者在 <code>CSDN</code> 等网站上的文章，很多也是互相转载、互相 <code>copy</code>。</p>
+<p>实际上，我们在了解、使用、优化 <code>php-fpm</code> 的时候，做好以下几件事即可：</p>
+<ul>
+<li>
+<p>查看 <a href="https://www.php.net/manual/zh/install.fpm.php"><code>php 手册</code></a></p>
+</li>
+<li>
+<p><code>man php-fpm</code>：查看 <code>php-fpm</code> 的命令，可以一窥可能用得到的选项。</p>
+</li>
+<li>
+<p>阅读 <code>php-fpm.conf</code>：一些启动时的配置，如</p>
+<ul>
+<li><code>pid</code></li>
+<li><code>erro_log</code></li>
+<li><code>daemonize</code>：是否 <code>daemon</code> 形式运行，一般为 <code>yes</code></li>
+<li><code>Pool Definitions</code> 的配置，一般在 <code>php-fpm.d</code> 目录下</li>
+</ul>
+</li>
+<li>
+<p>阅读 <code>php-fpm.d/www.conf</code>：一般是配置某个 <code>pool</code>，多个则可多个文件（当然也可以放在同一个文件），一些重要的配置如</p>
+<ul>
+<li>
+<p><code>prefix = /data/devops/php/php-fpm/pools/liuduoyu.com</code></p>
+</li>
+<li>
+<p><code>user = _www</code>、<code>group = _www</code>：<code>woker</code> 所属用户与组</p>
+</li>
+<li>
+<p><code>listen = 127.0.0.1:9202</code>：也可以是 <code>sock</code> 文件 <code>/path/to/unix/socket</code></p>
+</li>
+<li>
+<p><code>pm = dynamic</code>：很重要的配置，文件里有详细的解释三个不同的参数的区别。每种类型下，都有对应的其他指令。</p>
+</li>
+<li>
+<p><code>pm.max_children = 5</code>：最大的子进程数（上限，不能超过该配置数）</p>
+</li>
+<li>
+<p><code>pm.start_servers = 2</code>：启动时 <code>fork</code> 的 <code>worker</code> 数，可通过 <code>min_spare_servers + (max_spare_servers - min_spare_servers) / 2</code> 进行计算。</p>
+</li>
+<li>
+<p><code>pm.min_spare_servers = 1</code>：空闲（<code>idle state</code>）的 <code>worker</code> 数最小值，小于该值则创建新的 <code>worker</code></p>
+</li>
+<li>
+<p><code>pm.max_spare_servers = 1</code>：空闲（<code>idle state</code>）的 <code>worker</code> 数最大值，大于该值则 <code>kill</code> 已存在的 <code>worker</code></p>
+</li>
+<li>
+<p><code>pm.max_requests = 500</code>：单个 <code>woker</code> 处理的最大请求数，超过则会自动退出（防止<code>内存泄漏</code>）。</p>
+</li>
+<li>
+<p><code>pm.status_path = /fpm-status</code>：配置 <code>php-fpm</code> 的 <code>status page</code>，需要结合 <code>web server</code> 如 <code>nginx</code> 等使用。</p>
+</li>
+<li>
+<p><code>slowlog = log/$pool.log.slow</code>：慢日志，需要结合 <code>request_slowlog_*</code> 等配置使用。默认是 <code>10 s</code> 的阈值记录。</p>
+</li>
+<li>
+<p><code>;rlimit_files = 1024</code>：打开的最大文件句柄数，这个一般依赖 <code>操作系统</code> 的配置，如果服务器要启动很多个 <code>woker</code>，可能需要调整这个参数。</p>
+</li>
+<li>
+<p><code>env</code>：设置一些环境变量，需要设置 <code>clear_env = no</code>，然后测试 <code>env[AUTHOR] = LIUDUOYU</code>，在 <code>php</code> 代码中 <code>echo $_SERVER['AUTHOR'];</code></p>
+</li>
+<li>
+<p><code>php_admin_value</code>：设置一些 <code>php.ini</code> 的配置，不能被 <code>ini_set</code> 覆盖</p>
+</li>
+<li>
+<p><code>php_flag</code>：设置一些 <code>php.ini</code> 的配置，能被 <code>ini_set</code> 覆盖</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="关于-php-fpm-status-page-的配置">关于 <code>php-fpm status page</code> 的配置</h3>
+<ul>
+<li>使用 <code>Nginx</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">    location ~ ^/<span class="o">(</span>fpm-status<span class="p">|</span>fpm-ping<span class="o">)</span>$ <span class="o">{</span>
+        add_header Access-Control-Allow-Origin *<span class="p">;</span>
+        access_log off<span class="p">;</span>
+        fastcgi_pass 127.0.0.1:9202<span class="p">;</span>
+        include fastcgi.conf<span class="p">;</span>
+        fastcgi_connect_timeout 5s<span class="p">;</span>
+        fastcgi_send_timeout 5s<span class="p">;</span>
+        fastcgi_read_timeout 5s<span class="p">;</span>
+        fastcgi_intercept_errors on<span class="p">;</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>地址形如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"> http://127.0.0.1/fpm-status?json&amp;full
+ http://127.0.0.1/fpm-status?full
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>可以使用自带的 <code>status.html</code>，在该页面的 <code>Status URL</code> 填写上述地址即可：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">/usr/local/Cellar/php/7.3.7/share/php/fpm/status.html
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="进程模型">进程模型</h2>
+<p>典型的 <code>mster-worker</code> 进程模型，类似于 <code>nginx</code>。</p>
+<p><code>php-fpm</code> 的 <code>master</code> 进程，在初始化之后，然后执行 <code>fpm_run()</code>，随即进入一个事件循环中，(<code>fpm_event_loop()</code>)。</p>
+<h2 id="生命周期">生命周期</h2>
+<p>&hellip; 待续</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2017-05-06
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/php-fpm-tips/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/php/">php</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/php7-tips/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">PHP7 初识</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/mysql-ops/">
+            <span class="next-text nav-default">MySQL 语句类型以及提交类型</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

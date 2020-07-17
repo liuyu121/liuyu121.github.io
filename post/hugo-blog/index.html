@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Hexo 迁移到 Hugo - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/hugo-blog/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Hexo 迁移到 Hugo" />
+<meta property="og:description" content="快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/hugo-blog/" />
+<meta property="article:published_time" content="2020-07-06T18:45:20+08:00" />
+<meta property="article:modified_time" content="2020-07-06T18:45:20+08:00" />
+<meta itemprop="name" content="Hexo 迁移到 Hugo">
+<meta itemprop="description" content="快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成">
+<meta itemprop="datePublished" content="2020-07-06T18:45:20&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-06T18:45:20&#43;08:00" />
+<meta itemprop="wordCount" content="668">
+
+
+
+<meta itemprop="keywords" content="blog,hugo," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Hexo 迁移到 Hugo"/>
+<meta name="twitter:description" content="快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Hexo 迁移到 Hugo</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-06 </span>
+        <div class="post-category">
+            <a href="/categories/blog/"> Blog </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <h2 id="快速开始">快速开始</h2>
+<p><code>blog</code> 之前用的是 <code>hexo</code> 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。</p>
+<p>这段时间打算迁移到 <code>hugo</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>，一个 <code>go</code> 写的生成静态博客的工具，生成速度极快，且能关联到 <code>github-pages</code>。</p>
+<p>这篇文章简单记录如何使用 <code>hugo</code>，以及如何与 <code>github-pages</code> 打通。</p>
+<p><code>hugo</code> 具体使用可参考官方文档，上手及其简单，我使用的是 <code>next </code> 主题<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</p>
+<h2 id="github-pages">github pages</h2>
+<p>配置 <code>github-pages</code> 也较简单，且支持多种配置方式，我采用了<code>GitHub User or Organization Pages</code><sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup> 的方式，大体步骤如下：</p>
+<ul>
+<li>
+<p>新建一个 <code>blog</code> 的 <code>repo</code>，将本地的 <code>hugo</code> 目录导入至该 <code>repo</code>。</p>
+</li>
+<li>
+<p>添加 <code>public</code> 目录至 <code>gitignore</code>，保存官网提供的 <code>deploy.sh</code> ，然后提交到远程。</p>
+</li>
+<li>
+<p>将 <code>github-pages</code> 的 <code>repo</code> 以 <code>submodule</code>  引入至 <code>hugo</code> 的 <code>public</code> 目录，注意，如果需要先删除本地的 <code>public</code> 目录（如果存在）。</p>
+</li>
+<li>
+<p>将 <code>github</code> 的 <code>repo</code> 作为 <code>submodule</code> 引入至 <code>public</code>，这样每次 <code>hugo</code> 生成的静态文件就直接 <code>push</code> 到了该 <code>repo</code>。</p>
+</li>
+<li>
+<p>关键操作如下</p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">git remote add origin https://github.com/liuyu121/blog.git
+<span class="nb">echo</span> <span class="s2">&#34;public&#34;</span> &gt;&gt; .gitignore
+vim depoy.sh
+
+rm -rf public
+git submodule add  -f  -b master https://github.com/liuyu121/liuyu121.github.io.git public
+</code></pre></td></tr></table>
+</div>
+</div><p>以上，操作简单方便，没有一堆 <code>nodejs</code> 的依赖，生成速度极快，可见即所得。</p>
+<h2 id="添加评论系统">添加评论系统</h2>
+<p>开源的评论系统很多，我选择用 <code>utterances</code>，一个依托于 <code>github-issues</code> 的评论系统，配置及其简单。</p>
+<p>修改 <code>config.toml</code> 文件，这里我直接使用 <code>liuyu121.github.io</code> 作为 <code>repo</code>。</p>
+<p>注意：这里的 <code>repo</code> 填写的是名称，而不是全地址，否则会加载不出来。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-toml" data-lang="toml">  <span class="p">[</span><span class="nx">params</span><span class="p">.</span><span class="nx">utterances</span><span class="p">]</span>       <span class="c"># https://utteranc.es/</span>
+    <span class="nx">owner</span> <span class="p">=</span> <span class="s2">&#34;liuyu121&#34;</span>              <span class="c"># Your GitHub ID</span>
+    <span class="nx">repo</span> <span class="p">=</span> <span class="s2">&#34;liuyu121.github.io&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="脚手架">脚手架</h2>
+<h3 id="deploy--publish">deploy &amp;&amp; publish</h3>
+<p>改写了下 官方的 <code>deploy.sh</code>，支持 <code>publish</code> 与 <code>deploy</code>，脚本很简单，本质就是封装一系列命令。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ./deploy.sh
+Usage: deploy.sh
+        a : publish <span class="o">&amp;&amp;</span> deploy
+        p : publish
+        d : deploy
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="push-">push &amp;&amp;</h3>
+<ul>
+<li>生成新的 <code>md</code> ，并自动打开（将 <code>.md</code>文件默认打开方式设置为<code>Typora</code>）</li>
+<li>自动 <code>pull</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ./util.sh
+Usage: util.sh
+        new md-file-name : create the md file at content/post/md-file-name.md
+        pull : pull repo <span class="o">&amp;&amp;</span> submodules
+</code></pre></td></tr></table>
+</div>
+</div><section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://gohugo.io/">hugo 官网</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p><a href="https://github.com/olOwOlo/hugo-theme-even">hugo-theme-even</a> <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p><a href="https://gohugo.io/hosting-and-deployment/hosting-on-github">hosting-on-github</a> <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-06
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/hugo-blog/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/blog/">blog</a>
+          <a href="/tags/hugo/">hugo</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/10x-coder/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">10x Coder</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/mysql-metadata-lock/">
+            <span class="next-text nav-default">Mysql Metadata Lock</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

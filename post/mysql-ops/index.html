@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>MySQL 语句类型以及提交类型 - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="一、sql 语句类型 1.1 DQL DQL : Data Query Language DQL 也即 数据查询语言，语法定义为： 1 2 3 4 5 6 7 SELECT select_list [ INTO new_table ] FROM table_source [ WHERE search_condition ] [ GROUP BY group_by_expression ] [ HAVING search_condition ] [ ORDER BY order_expression [ ASC | DESC ] ]" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/mysql-ops/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="MySQL 语句类型以及提交类型" />
+<meta property="og:description" content="一、sql 语句类型 1.1 DQL DQL : Data Query Language DQL 也即 数据查询语言，语法定义为： 1 2 3 4 5 6 7 SELECT select_list [ INTO new_table ] FROM table_source [ WHERE search_condition ] [ GROUP BY group_by_expression ] [ HAVING search_condition ] [ ORDER BY order_expression [ ASC | DESC ] ]" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/mysql-ops/" />
+<meta property="article:published_time" content="2017-03-16T14:18:07+08:00" />
+<meta property="article:modified_time" content="2017-03-16T14:18:07+08:00" />
+<meta itemprop="name" content="MySQL 语句类型以及提交类型">
+<meta itemprop="description" content="一、sql 语句类型 1.1 DQL DQL : Data Query Language DQL 也即 数据查询语言，语法定义为： 1 2 3 4 5 6 7 SELECT select_list [ INTO new_table ] FROM table_source [ WHERE search_condition ] [ GROUP BY group_by_expression ] [ HAVING search_condition ] [ ORDER BY order_expression [ ASC | DESC ] ]">
+<meta itemprop="datePublished" content="2017-03-16T14:18:07&#43;08:00" />
+<meta itemprop="dateModified" content="2017-03-16T14:18:07&#43;08:00" />
+<meta itemprop="wordCount" content="1995">
+
+
+
+<meta itemprop="keywords" content="mysql,database," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MySQL 语句类型以及提交类型"/>
+<meta name="twitter:description" content="一、sql 语句类型 1.1 DQL DQL : Data Query Language DQL 也即 数据查询语言，语法定义为： 1 2 3 4 5 6 7 SELECT select_list [ INTO new_table ] FROM table_source [ WHERE search_condition ] [ GROUP BY group_by_expression ] [ HAVING search_condition ] [ ORDER BY order_expression [ ASC | DESC ] ]"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">MySQL 语句类型以及提交类型</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-16 </span>
+        <div class="post-category">
+            <a href="/categories/mysql/"> Mysql </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <h2 id="一sql-语句类型">一、sql 语句类型</h2>
+<h3 id="11-dql">1.1 DQL</h3>
+<blockquote>
+<p>DQL : Data Query Language</p>
+</blockquote>
+<p><code>DQL</code> 也即 <code>数据查询语言</code>，语法定义为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="n">select_list</span>
+<span class="p">[</span> <span class="k">INTO</span> <span class="n">new_table</span> <span class="p">]</span>
+<span class="k">FROM</span> <span class="n">table_source</span>
+<span class="p">[</span> <span class="k">WHERE</span> <span class="n">search_condition</span> <span class="p">]</span>
+<span class="p">[</span> <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">group_by_expression</span> <span class="p">]</span>
+<span class="p">[</span> <span class="k">HAVING</span> <span class="n">search_condition</span> <span class="p">]</span>
+<span class="p">[</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">order_expression</span> <span class="p">[</span> <span class="k">ASC</span> <span class="o">|</span> <span class="k">DESC</span> <span class="p">]</span> <span class="p">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>举例：</p>
+<ul>
+<li>查找订单表总消费大于 1000 元的用户，按照消费金额从大到小排序：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">user_id</span><span class="p">,</span> <span class="k">sum</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="n">total</span> 
+<span class="k">from</span> <span class="n">orders</span>
+<span class="k">where</span> <span class="n">status</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">group</span> <span class="k">by</span> <span class="n">user_id</span>
+<span class="k">having</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="k">order</span> <span class="k">by</span> <span class="n">total</span> <span class="k">desc</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="12-dml">1.2 DML</h3>
+<blockquote>
+<p>DML : Data Manipulation Language</p>
+</blockquote>
+<p><code>DML</code> 也即 <code>数据操纵语言</code>，有三种形式：</p>
+<ul>
+<li>INSERT：插入</li>
+<li>UPDATE：更新</li>
+<li>DELETE：删除</li>
+</ul>
+<h3 id="13-ddl">1.3 DDL</h3>
+<blockquote>
+<p>DDL : Data Definition Language</p>
+</blockquote>
+<p><code>DDL</code> 也即 <code>数据定义语言</code>，主要是用来操作数据库、表、视图等的一系列语句，如</p>
+<ul>
+<li>
+<p>CREATE 语句：创建数据库、表、视图等</p>
+<ul>
+<li>CREATE DATABASE</li>
+<li>CREATE TABLE</li>
+<li>CREATE VIEW</li>
+</ul>
+</li>
+<li>
+<p>ALTER 语句：修改表、视图等</p>
+<ul>
+<li>ALTER TABLE</li>
+<li>ALTER VIEW</li>
+</ul>
+</li>
+<li>
+<p>DROP 语句：删除表、视图等</p>
+<ul>
+<li>DROP TABLE</li>
+<li>DROP VIEW</li>
+</ul>
+</li>
+<li>
+<p>TRUNCATE：重置表</p>
+</li>
+</ul>
+<blockquote>
+<p>务必注意：<code>DDL</code> 操作是 <code>隐性提交</code> 的，不能 <code>rollback</code>。</p>
+</blockquote>
+<h3 id="14-dcl">1.4 DCL</h3>
+<blockquote>
+<p>DCL : Data Control Language</p>
+</blockquote>
+<p><code>DCL</code> 也即 <code>数据控制语言</code>，是用来设置、更改数据库用户、角色权限等的一系列语句。</p>
+<p>最常用的如：</p>
+<ul>
+<li>GRANT：授予访问权限</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">GRANT</span> <span class="k">SElECT</span> <span class="k">ON</span> <span class="n">test</span><span class="p">.</span><span class="o">*</span> <span class="k">TO</span> <span class="s1">&#39;test&#39;</span><span class="o">@</span><span class="s1">&#39;127.0.0.1&#39;</span> <span class="n">IDENTIFIED</span> <span class="k">BY</span> <span class="s2">&#34;readonly&#34;</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>REVOKE：撤销访问权限</p>
+</li>
+<li>
+<p>COMMIT：事务提交</p>
+</li>
+<li>
+<p>ROLLBACK：事务回滚；</p>
+</li>
+<li>
+<p>SAVEPOINT：设置保存点</p>
+</li>
+<li>
+<p>LOCK：对数据库的特定部分进行锁定，如 <code>lock table</code></p>
+</li>
+</ul>
+<h2 id="二显式提交隐式提交自动提交">二、显式提交、隐式提交、自动提交</h2>
+<blockquote>
+<p>注：环境说明</p>
+</blockquote>
+<ul>
+<li><code>MySQL</code> 版本：<code>5.7.11</code></li>
+<li>存储引擎：<code> ENGINE=InnoDB</code></li>
+<li>隔离级别：<code>RR</code>（<code>REPEATABLE-READ</code>）：</li>
+</ul>
+<h3 id="21-显示提交">2.1 显示提交</h3>
+<p><code>commit</code> 语句用来显示提交一个事务，标准用法为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">begin</span><span class="p">;</span>
+
+<span class="k">commit</span> <span class="o">|</span> <span class="k">rollback</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当且仅当执行了该命令，数据库才会将之前的语句真实提交。</p>
+<p>具体单机事务的提交，可以参考其他资料，如在 <code>innoDB</code> 下，存在 <code>2PC 机制</code>，以及 <code>undo log</code>、<code>redo log</code>、<code>binlog</code>等文件的写入机制。</p>
+<h3 id="22-隐式提交">2.2 隐式提交</h3>
+<p>一些 <code>SQL</code> 命令的提交，是隐式提交，也即会自动提交，最常见的如：</p>
+<ul>
+<li><code>DDL语句</code></li>
+<li>嵌套事务：尤为要注意是否在代码中存在嵌套事务。</li>
+</ul>
+<blockquote>
+<p>详细语句可参考 <a href="https://www.docs4dev.com/docs/zh/mysql/5.7/reference/implicit-commit.html">导致隐式提交的语句 </a></p>
+</blockquote>
+<p><code>隐式提交</code> 可能导致一些异常现象，下面举例说明：</p>
+<blockquote>
+<p>开启多个 <code>mysql session</code>，按照如下顺序执行语句。</p>
+</blockquote>
+<ul>
+<li><code>session A</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">@@</span><span class="n">autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="o">@@</span><span class="n">autocommit</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span>            <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">create</span> <span class="k">table</span> <span class="n">test_yinshi_commit</span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">));</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">05</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">show</span> <span class="k">create</span> <span class="k">table</span> <span class="n">test_yinshi_commit</span><span class="err">\</span><span class="k">G</span>
+<span class="o">***************************</span> <span class="mi">1</span><span class="p">.</span> <span class="k">row</span> <span class="o">***************************</span>
+       <span class="k">Table</span><span class="p">:</span> <span class="n">test_yinshi_commit</span>
+<span class="k">Create</span> <span class="k">Table</span><span class="p">:</span> <span class="k">CREATE</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">test_yinshi_commit</span><span class="o">`</span> <span class="p">(</span>
+  <span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span>
+<span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">begin</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">insert</span> <span class="k">into</span> <span class="n">test_yinshi_commit</span> <span class="k">values</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">1</span> <span class="k">row</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">rollback</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="n">Empty</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session B</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="n">Empty</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>接下来，我们在事务中，添加一个 <code>DDL</code> 语句，注意观察不同。</p>
+<ul>
+<li><code>session A</code>：注意，这时事务并未提交。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">begin</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="n">Empty</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">insert</span> <span class="k">into</span> <span class="n">test_yinshi_commit</span> <span class="k">values</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">1</span> <span class="k">row</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">create</span> <span class="k">table</span> <span class="n">test_yinshi_commit2</span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span> <span class="nb">int</span><span class="p">(</span><span class="mi">11</span><span class="p">));</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">04</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session B</code>：A 事务未提交，但已经可以获取数据。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session A</code>：回滚事务，但数据已经提交了。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">rollback</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_yinshi_commit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>   <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过观察上述情况，我们发现，第二处 <code>rollback</code> 并没起到作用。其实事务在 <code>create table</code> 语句提交后，已经 <code>commit</code> 了。</p>
+<p>也即，<code>DDL 语句</code>会进行<code>隐式提交</code>，因为 <code>DDL 语句</code>是数据定义语言，起着创建、删除、修改数据库的作用，对数据的影响较为复杂，所以为了简单实现，保证数据库的一致性，防止阻塞、提高性能等，<code>MySQL</code> 在设计的时候，每执行一次就进行提交。</p>
+<p>所以在事务中，要谨慎使用会<code>隐式提交</code>的语句，否则可能得不到预期的效果。</p>
+<h3 id="23-自动提交">2.3 自动提交</h3>
+<p>如果把 <code>AUTOCOMMIT</code> 设置为 <code>OFF</code>，那么之前的语句都会可以被理解成一个事务，需要每次显式的 <code>commit</code> 或 <code>rollback</code>，否则会一直阻塞。</p>
+<p>举例：</p>
+<ul>
+<li><code>session A</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">set</span> <span class="n">autocommit</span> <span class="o">=</span> <span class="k">on</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">@@</span><span class="n">autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="o">@@</span><span class="n">autocommit</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span>            <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">set</span> <span class="n">autocommit</span> <span class="o">=</span> <span class="k">off</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">@@</span><span class="n">autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="o">@@</span><span class="n">autocommit</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span>            <span class="mi">0</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session B</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">set</span> <span class="n">autocommit</span> <span class="o">=</span> <span class="k">on</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="k">rows</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">@@</span><span class="n">autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span> <span class="o">@@</span><span class="n">autocommit</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="o">|</span>            <span class="mi">1</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">--------------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>        <span class="o">|</span> <span class="k">count</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="mi">100000000</span> <span class="o">|</span>     <span class="mi">4</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>然后按照顺序，先后执行：</p>
+<ul>
+<li><code>session A</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>        <span class="o">|</span> <span class="k">count</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="mi">100000000</span> <span class="o">|</span>     <span class="mi">4</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">update</span> <span class="n">test_autocommit</span> <span class="k">set</span> <span class="k">count</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">100000000</span><span class="p">;</span>
+<span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">1</span> <span class="k">row</span> <span class="n">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span> <span class="n">sec</span><span class="p">)</span>
+<span class="k">Rows</span> <span class="n">matched</span><span class="p">:</span> <span class="mi">1</span>  <span class="n">Changed</span><span class="p">:</span> <span class="mi">1</span>  <span class="n">Warnings</span><span class="p">:</span> <span class="mi">0</span>
+
+<span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>        <span class="o">|</span> <span class="k">count</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="mi">100000000</span> <span class="o">|</span>     <span class="mi">0</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>session B</code>：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="n">localhost</span><span class="o">@</span><span class="n">test</span> <span class="o">&gt;</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">test_autocommit</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="n">id</span>        <span class="o">|</span> <span class="k">count</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="o">|</span> <span class="mi">100000000</span> <span class="o">|</span>     <span class="mi">4</span> <span class="o">|</span>
+<span class="o">+</span><span class="c1">-----------+-------+
+</span><span class="c1"></span><span class="mi">1</span> <span class="k">row</span> <span class="k">in</span> <span class="k">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>也即，在 <code>session B</code> 中，还是原来的值 <code>4</code>。</p>
+<p>换言之，因为 <code>session A</code> 的 <code>update</code> 语句还没被提交，所以值并没改变。</p>
+<h3 id="24-可能存在的问题">2.4 可能存在的问题</h3>
+<ul>
+<li>连接池的问题</li>
+</ul>
+<p>假设框架里使用了 <code>连接池</code>，那么，就可能存在复用上次连接情况。</p>
+<p>比如如上一个链接的 <code>autocommit</code> 是 <code>off</code>、事务没有 <code>commit</code> 等，如果这个连接仍然存在且被下一个请求复用，那么可能会导致各种奇怪的问题，如无法获取数据、不能成功写入等。</p>
+<ul>
+<li>互相阻塞的问题</li>
+</ul>
+<p>假设多个 <code>session</code> 同时 <code>set autocommit = off</code>，那么，这些 <code>session</code> 之间的调用，就可能互相阻塞（本质也即开启了两个事务，可参考事务阻塞的分析）。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2017-03-16
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/mysql-ops/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/mysql/">mysql</a>
+          <a href="/tags/database/">database</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/php-fpm-tips/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">PHP-FPM 配置与实现</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/git-shell-config/">
+            <span class="next-text nav-default">Git Shell 便捷设置</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

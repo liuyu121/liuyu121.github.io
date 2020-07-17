@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>PHP on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/php/</link>
+    <description>Recent content in PHP on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 06 Jul 2018 19:39:56 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/php/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>PHP7 初识</title>
+      <link>https://liuyu121.github.io/post/php7-tips/</link>
+      <pubDate>Fri, 06 Jul 2018 19:39:56 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php7-tips/</guid>
+      <description>注：以下部分内容摘自 《PHP7 内核剖析》 与之前版本的区别 php7 相较于 php 5.x，号称性能得到了极大提升，从版本上看确实如此 :) 。那么，到底是哪些地方</description>
+    </item>
+    
+    <item>
+      <title>PHP-FPM 配置与实现</title>
+      <link>https://liuyu121.github.io/post/php-fpm-tips/</link>
+      <pubDate>Sat, 06 May 2017 11:36:13 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php-fpm-tips/</guid>
+      <description>配置 对于 php-fpm 的配置，其实无需阅读网上各种文章，因为大多数时候，百度搜索结果页前几页里，经常是重复的、概念性的、不全面的文章；或者在 CSDN 等网站上的</description>
+    </item>
+    
+    <item>
+      <title>PHP 处理 POST 请求</title>
+      <link>https://liuyu121.github.io/post/php-post-request/</link>
+      <pubDate>Thu, 12 Mar 2015 19:49:28 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php-post-request/</guid>
+      <description>默认的处理方式 我们知道，在 php 下获取 POST 数据极其简单，只需要使用 $_POST 的全局数组即可。 题外话：这种使用简单操作方便的特性，也是为什么 php 如此流行的关键</description>
+    </item>
+    
+    <item>
+      <title>PHP 生成 Excel</title>
+      <link>https://liuyu121.github.io/post/php-gen-excel/</link>
+      <pubDate>Fri, 12 Dec 2014 20:10:14 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/php-gen-excel/</guid>
+      <description>在 php 中，比如要下载一个表单，不一定必须要用诸如 PHPExcel，或在服务器上生成 txt、csv等文件。 我们可以利用 html 的 table，指定对应的</description>
+    </item>
+    
+  </channel>
+</rss>

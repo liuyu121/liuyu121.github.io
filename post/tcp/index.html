@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Tcp 连接的建立与关闭 - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/tcp/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Tcp 连接的建立与关闭" />
+<meta property="og:description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/tcp/" />
+<meta property="article:published_time" content="2020-07-16T14:03:29+08:00" />
+<meta property="article:modified_time" content="2020-07-16T14:03:29+08:00" />
+<meta itemprop="name" content="Tcp 连接的建立与关闭">
+<meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
+<meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
+<meta itemprop="wordCount" content="2598">
+
+
+
+<meta itemprop="keywords" content="tcp," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Tcp 连接的建立与关闭"/>
+<meta name="twitter:description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Tcp 连接的建立与关闭</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-16 </span>
+        <div class="post-category">
+            <a href="/categories/tcp/"> Tcp </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p><code>tcp（Transmission Control Protocol）</code> 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 <code>http</code>、<code>SMTP</code> 等。鼎鼎大名的 <code>三次握手</code>、<code>四次挥手</code>指的就是其建立与关闭的流程。</p>
+<p><code>tcp</code> 协议的生命周期，本质是一个<em>有限状态机</em> 的流转，从建立到数据传输再到关闭，伴随着不同状态的迁移。而在不同的状态中，又会有着一些优化与问题。</p>
+<p><code>tcp 协议</code>  本身及其复杂，除了建立与关闭涉及到多次交互外，还需要考虑  <code>滑动窗口</code>、<code>重传策略</code>、<code>状态复用</code>、<code>拥塞控制</code>、<code>RTT（Round Trip Time）</code> 等等，远古大神们真实费煞苦心。</p>
+<p>注：本文的图例来自网络，出处已经不可考，感谢原作者们清晰的图示 :)</p>
+<h1 id="首部结构">首部结构</h1>
+<p><code>tcp</code> 报文首部格式如下：</p>
+<p><img src="/img/tcp-segment-header.png" alt=""></p>
+<p>其中，在日常分析 <code>tcp</code> 的建立与关闭时，主要关注的是在 <code>FLAGS </code>字段，该字段也即所谓的 <code>tcp 状态机</code>，主要有如下字段（大写表示，与序列号区分开）：</p>
+<ul>
+<li><code>SYN</code>：表示建立连接。</li>
+<li><code>FIN</code>：表示关闭连接。</li>
+<li><code>ACK</code>：表示响应。</li>
+<li><code>PSH</code>： <code>push</code>，表示当前正在传输数据</li>
+<li><code>RST</code>： <code>reset</code>，表示连接重置。</li>
+</ul>
+<p>然后，有两个重要的 <code>32位</code> 序列号：</p>
+<ul>
+<li>
+<p><code>seq</code>：<code>Sequence number</code>，表示序列号，用来保证数据的有序传输。</p>
+<ul>
+<li>如果 <code>SYN</code> 设置为 <code>1</code>，其表示 <code>ISN（initial sequence number）</code>，也即，初始序列号，并期望对方能返回该 <code>ISN+1</code>  的 <code>ack</code>。</li>
+<li>如果 <code>SYN</code> 设置为 <code>0</code>，表示当前传输报文段中首字节的编号（在当前全部字节流中，通过 <code>mss</code> 分段后的编号。</li>
+</ul>
+</li>
+<li>
+<p>ack<code>： </code>Acknowledgment number (if ACK set)</p>
+<ul>
+<li>当且仅当 <code>ACK</code> 设置为  <code>1</code> 时，才有效。</li>
+<li>表示期望收到的下一个 <code>seq</code>，如果是 <code>SYN</code> 的 <code>ACK</code>，其值为发起方的 <code>ISN+1</code>。</li>
+</ul>
+</li>
+</ul>
+<h1 id="建立">建立</h1>
+<p>一个连接的建立，大致流程如下，我们使用 <code>client</code> 表示主动发起建立方，<code>server</code> 表示被动响应建立方：</p>
+<ul>
+<li>
+<p><code>server</code>  需要 <code>bind</code> 某个端口并 <code>listen</code>，做好随时迎接一个连接的准备。</p>
+</li>
+<li>
+<p>1、<code>client</code> 发送请求建立连接的报文，其中 <code>SYN = 1</code> ，<code>seq</code>  为一个随机值  <code>ISN1</code> ，注意这里必须是随机值而不能设为 <code>1</code>，防止被猜测序列号后恶意攻击（也即所谓的「<code>TCP序列猜测攻击</code>」）。</p>
+<ul>
+<li>此时，<code>client</code> 进入 <code>SYN-SENT</code> 状态。</li>
+</ul>
+</li>
+<li>
+<p>2、<code>server</code> 收到请求报文后，发送一个 <code>SYNC =1, ACK = 1</code>，也即 <code>SYN+ACK</code>，且同样的，随机一个  <code>ISN2</code> 作为 <code>seq</code>，并设 <code>ack = ISN1+1</code>，也即对请求报文的确认。其中 <code>ack</code> 表示希望 <code>client</code> 接下来传该字节开始的数据流。</p>
+<ul>
+<li>此时，<code>server</code> 进入 <code>SYN-RECEIVED</code> 状态。</li>
+</ul>
+</li>
+<li>
+<p>3、<code>client</code> 收到响应报文后，需要再次确认，发送一个 <code>ACK = 1</code>，并设 <code>ack = ISN2+1，seq = ISN1+1</code>，也即表示自己收到了 <code>server</code> 的确认报文。这里，<code>seq = ISN1+1</code>  是因为，从语义上来说，<code>server</code> 希望收到该序号的报文。</p>
+<ul>
+<li>自此，双方进入 <code>ESTABLISHED</code> 状态，全双工连接建立完成。</li>
+</ul>
+</li>
+</ul>
+<p>需要注意的是，上面的流程中，并没有真正的发送数据，双方只是进行一系列序列号交换的握手操作。</p>
+<p>整体示意图如下：</p>
+<p><img src="/img/tcp-connect.jpeg" alt=""></p>
+<h2 id="为什么是三次握手">为什么是三次握手</h2>
+<p>为什么是三次握手，而不是不是<code>2</code> 次或<code>4</code> 次呢？</p>
+<p>从建立的流程可以看出，<code>第一次</code> 发送，表示 <code>client</code> 请求建立连接；第二次表示 <code>server</code> 收到了请求并做了回复。这里如果没有第三次就  <code>ESTABLISHED</code>  了，开始传输数据，那么会有什么问题呢？</p>
+<p>这里，我们需要重点关注 <code>seq</code> ，<code>tcp</code> 就是依据这个字段进行所谓 <code>可靠传输</code> 的，也即，<code>tcp</code> 双方都依赖这个序列号来进行数据包的有序传输。</p>
+<p>所以，在前两次握手完成后，此时：</p>
+<ul>
+<li>
+<p><code>client</code> 得到了正确的返回 <code>ISN1+1</code>，且得到了 <code>server</code> 的 <code>seq</code>，也即 <code>cient</code> 知道 <code>server</code> 已经收到自己的数据包了，且知道 <code>server</code> 下一个要发的序列；</p>
+</li>
+<li>
+<p><code>server</code> 不确定自己的 <code>ACK</code>  是否成功被 <code>client</code> 接收，假设这时这个包丢了，  <code>server</code>  直接把自己置为  <code>ESTABLISHED</code> ，但这个时候 <code>client</code> 仍然处于 <code>SYN-SENT</code> 状态，全双工的连接并没建立起来！</p>
+</li>
+<li>
+<p>也即，此时，<code>client</code>  不知道 <code>server</code> 的 <code>seq</code>， <code>server</code>  就无法保证  <code>client</code>   是按照正确的顺序来接收数据包。如果 <code>server</code> 继续发送数据，<code>client</code> 无法做到有序接收。</p>
+</li>
+</ul>
+<p>为什么不是 <code>4</code> 次连接呢，但这里我们已经知道 <code>3</code> 次就已经可以建立了，所以，为什么还要多一次呢，浪费资源 。。。</p>
+<h2 id="backlog-是什么">backlog 是什么</h2>
+<p>在上面的示意图中，我们可以看到，<code>server</code> 端有两个 <code>qeue</code>：<code>syn queue</code>、<code>accept queue</code>，其含义为:</p>
+<ul>
+<li><code>syn queue</code>：半连接队列。当 <code>server</code> 第一次收到请求报文后，内核会将该连接放入 <code>syn queue</code>，然后发送 <code>SYN+ACK</code> 给 <code>client</code>。顾名思义，这个队列保存的都是正在建立中的连接列表。
+<ul>
+<li><code>syn queue</code>，可构造 <code>TCP SYN FLOOD</code> 攻击，发送大量的 <code>SYN</code> 报文，然后丢弃，导致 <code>server</code> 的该队列一直处于满负荷状态，无法处理其他正常的请求。</li>
+<li>当队列已满， <code>net.ipv4.tcp_syncookies</code> 会决定内核如何处理</li>
+</ul>
+</li>
+<li><code>accept queue</code>：全连接队列。。当 <code>server</code> 再次收到  <code>client</code> 的 <code>ACK</code> 后，从 <code>syn queue</code> 拿出该连接，这时，如果
+<ul>
+<li>队列未满：放入到全连接队列中，系统调用 <code>accept</code> 本质就是从该队列不断获取已经连接好的请求。</li>
+<li>队列已满：
+<ul>
+<li><code>tcp_abort_on_overflow = 0</code>：<code>server</code> 丢弃该 <code>ACK</code>，<code>client</code> 表现为  <code>read timeout</code> ，<code>tcp</code> 超时重传机制，<code>server</code> 会再次发送 <code>SYN+ACK</code>，也即重复第二次应答。</li>
+<li><code>tcp_abort_on_overflow = 1</code>：<code>server</code> 回复 <code>RST</code>，并从半连接队列中删除，<code>client</code> 表现为 <code>connection reset by peer</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>这里的逻辑比较复杂，涉及到内核很多参数的设置，具体可以参考相关书籍。</p>
+<p>我们回到标题的 <code>backlog</code> 上，之所以重点关注这个参数，是因为在日常的 <code>web 开发</code> 中，涉及到的 <code>nginx + redis + php-fpm</code> 等，配置项大多都有这个参数，而这些软件都是典型的  <code>server-client</code> 结构。</p>
+<p><code>server</code> 监听函数 <code>listen</code> 原型如下（<code>man listen</code>），这里第二个参数就是我们要讨论的 <code>backlog</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c">       <span class="kt">int</span> <span class="nf">listen</span><span class="p">(</span><span class="kt">int</span> <span class="n">sockfd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">backlog</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这个 <code>backlog</code> 参数，定义是 <em>已连接但未进行 <code>accept</code> 处理的 <code>SOCKET</code> 队列大小</em>，也即上面提到的 <code>accept queue</code>。如果这个队列满了，将会发送一个ECONNREFUSED错误信息给到客户端,即 linux 头文件 /usr/include/asm-generic/errno.h中定义的“Connection refused”，（如果协议不支持重传，该请求会被忽略）如下：</p>
+<ul>
+<li><code>nginx</code>：默认为 <code>511</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">backlog=number
+sets the backlog parameter in the listen() call that limits the maximum length for the queue of pending connections. By default, backlog is set to -1 on FreeBSD, DragonFly BSD, and macOS, and to 511 on other platforms.
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>redis</code>：默认为 <code>511</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># TCP listen() backlog.
+#
+# In high requests-per-second environments you need an high backlog in order
+# to avoid slow clients connections issues. Note that the Linux kernel
+# will silently truncate it to the value of /proc/sys/net/core/somaxconn so
+# make sure to raise both the value of somaxconn and tcp_max_syn_backlog
+# in order to get the desired effect.
+tcp-backlog 511
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>php-fpm</code>：默认为 <code>511</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">; Set listen(2) backlog.
+; Default Value: 511 (-1 on FreeBSD and OpenBSD)
+;listen.backlog = 511
+</code></pre></td></tr></table>
+</div>
+</div><p>所以，我们 <em>惊奇</em> 的发现，三者的默认值都为 <code>511</code>，但其实之前 <code>php-fpm</code> 设置的是 <code>65535</code>，后来在某个版本中 <code>fix</code> 了，<code>issue</code> 参见 <a href="https://github.com/php/php-src/commit/ebf4ffc9354f316f19c839a114b26a564033708a">Set FPM_BACKLOG_DEFAULT to 511</a>。</p>
+<p>那么，为什么要 <code>fix</code></p>
+<h1 id="关闭">关闭</h1>
+<p>关闭一个 <code>tcp</code>  链接的流程图如下（之前留的图，出处已不可考了）：</p>
+<p><img src="/img/tcp-close.png" alt=""></p>
+<p>可通俗解释为：</p>
+<h2 id="为什么需要四次">为什么需要四次</h2>
+<h2 id="代码示例">代码示例</h2>
+<h2 id="time_wait-问题">time_wait 问题</h2>
+<h2 id="优化">优化</h2>
+<ul>
+<li>
+<p><a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">wikipedia</a></p>
+</li>
+<li>
+<p>1、主动关闭方，发送 <code>FIN</code> 报文（<code>s</code>），告诉被动方「我想要关闭这个链接了」，然后主动关闭方进入 <code>FIN_WAIT_1</code>  状态；</p>
+</li>
+<li></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-07-16
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/tcp/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/tcp/">tcp</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/bit-twiddling-hacks/">
+            <span class="next-text nav-default">Bit Twiddling Hacks</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

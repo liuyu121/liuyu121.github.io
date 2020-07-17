@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MySQL on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/mysql/</link>
+    <description>Recent content in MySQL on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 31 Jul 2019 17:24:04 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/mysql/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Mysql Metadata Lock</title>
+      <link>https://liuyu121.github.io/post/mysql-metadata-lock/</link>
+      <pubDate>Wed, 31 Jul 2019 17:24:04 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-metadata-lock/</guid>
+      <description>环境说明 MySQL 版本：5.7.11 存储引擎：ENGINE=InnoDB 注：MySQL 在 5.5.3 版本引入了 MDL锁（metadata-lock） 场景复现 开</description>
+    </item>
+    
+    <item>
+      <title>Mysql Proxy</title>
+      <link>https://liuyu121.github.io/post/mysql-proxy/</link>
+      <pubDate>Sun, 26 Aug 2018 15:44:49 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-proxy/</guid>
+      <description>HA：High Available Mysql proxy Mysql proxy 的意义在于： 单机数据库不满足需求，需要多实例、多机部署 基于 mysql server 与 client 的中间层，对前端透明，对 DB 则是一个客户端 读写分离 分</description>
+    </item>
+    
+    <item>
+      <title>Mysql Order by 问题</title>
+      <link>https://liuyu121.github.io/post/mysql-order-by-problem/</link>
+      <pubDate>Mon, 06 Aug 2018 17:49:41 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-order-by-problem/</guid>
+      <description>环境说明 MySQL 版本：5.1.73-log 存储引擎：ENGINE=InnoDB 问题起因 某个需求实现中，采用的是通过使用「业务表」的某个时间字段 作为</description>
+    </item>
+    
+    <item>
+      <title>Mysql 归档</title>
+      <link>https://liuyu121.github.io/post/mysql-archiver/</link>
+      <pubDate>Mon, 16 Jul 2018 19:32:32 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-archiver/</guid>
+      <description>归档方案 pt-archiver 使用 pt-archiver 归档数据。 官方文档 mysql 分区 mysql 官方提供的分区方案。 mysql 分区 手动归档 场景：某业务单表几 kw，需要归档，一般地，以记录生成时间归档（t</description>
+    </item>
+    
+    <item>
+      <title>MySQL 语句类型以及提交类型</title>
+      <link>https://liuyu121.github.io/post/mysql-ops/</link>
+      <pubDate>Thu, 16 Mar 2017 14:18:07 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-ops/</guid>
+      <description>一、sql 语句类型 1.1 DQL DQL : Data Query Language DQL 也即 数据查询语言，语法定义为： 1 2 3 4 5 6 7 SELECT select_list [ INTO new_table ] FROM table_source [ WHERE search_condition ] [ GROUP BY group_by_expression ] [ HAVING search_condition ] [ ORDER BY order_expression [ ASC | DESC ] ]</description>
+    </item>
+    
+  </channel>
+</rss>

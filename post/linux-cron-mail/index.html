@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux 下使用 Cron Mail - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="注：本文对一些信息做了处理，不影响核心逻辑。 一、背景介绍 1.1 问题发现 在线上某台机器上，手动执行脚本，发现报错 Fatal Error，提示有个类的常量未定" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/linux-cron-mail/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Linux 下使用 Cron Mail" />
+<meta property="og:description" content="注：本文对一些信息做了处理，不影响核心逻辑。 一、背景介绍 1.1 问题发现 在线上某台机器上，手动执行脚本，发现报错 Fatal Error，提示有个类的常量未定" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/linux-cron-mail/" />
+<meta property="article:published_time" content="2019-05-24T10:01:35+08:00" />
+<meta property="article:modified_time" content="2019-05-24T10:01:35+08:00" />
+<meta itemprop="name" content="Linux 下使用 Cron Mail">
+<meta itemprop="description" content="注：本文对一些信息做了处理，不影响核心逻辑。 一、背景介绍 1.1 问题发现 在线上某台机器上，手动执行脚本，发现报错 Fatal Error，提示有个类的常量未定">
+<meta itemprop="datePublished" content="2019-05-24T10:01:35&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-24T10:01:35&#43;08:00" />
+<meta itemprop="wordCount" content="2299">
+
+
+
+<meta itemprop="keywords" content="linux,shell," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux 下使用 Cron Mail"/>
+<meta name="twitter:description" content="注：本文对一些信息做了处理，不影响核心逻辑。 一、背景介绍 1.1 问题发现 在线上某台机器上，手动执行脚本，发现报错 Fatal Error，提示有个类的常量未定"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Linux 下使用 Cron Mail</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-24 </span>
+        <div class="post-category">
+            <a href="/categories/linux/"> Linux </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>注：本文对一些信息做了处理，不影响核心逻辑。</p>
+<h2 id="一背景介绍">一、背景介绍</h2>
+<h3 id="11-问题发现">1.1 问题发现</h3>
+<p>在线上某台机器上，手动执行脚本，发现报错 <code>Fatal Error</code>，提示有个类的常量未定义。</p>
+<p>线上的 <code>crond</code> 一般都会配置 <code>MAILTO</code>，执行错误的脚本都会以邮件的形式发出来。但奇怪的是，这个脚本在 <code>crond</code> 部署很久了，为什么没收到相关的报警邮件呢？</p>
+<h3 id="12-问题分析">1.2 问题分析</h3>
+<p>登录服务器看了下，发现其实 <code>/var/spool/mail/work</code> 下有很多邮件，通过查看 <code>/var/log/maillog</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">May <span class="m">24</span> 03:34:19 xxxxx sendmail<span class="o">[</span>2049<span class="o">]</span>: x4NJYJDR002049: <span class="nv">to</span><span class="o">=</span>root, <span class="nv">ctladdr</span><span class="o">=</span>root <span class="o">(</span>0/0<span class="o">)</span>, <span class="nv">delay</span><span class="o">=</span>00:00:00, <span class="nv">xdelay</span><span class="o">=</span>00:00:00, <span class="nv">mailer</span><span class="o">=</span>relay, <span class="nv">pri</span><span class="o">=</span>30236, <span class="nv">relay</span><span class="o">=[</span>127.0.0.1<span class="o">]</span> <span class="o">[</span>127.0.0.1<span class="o">]</span>, <span class="nv">dsn</span><span class="o">=</span>4.0.0, <span class="nv">stat</span><span class="o">=</span>Deferred: Connection refused by <span class="o">[</span>127.0.0.1<span class="o">]</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>怀疑是<code>sendmail</code> 没启动，于是 <code>service sendmail start</code>。测试发送了邮件后，仍然无法发出。看日志：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">May <span class="m">24</span> 14:33:34 sendmail<span class="o">[</span>27641<span class="o">]</span>: x4J402nd011892: <span class="nv">to</span><span class="o">=</span>&lt;mail@demo.com&gt;, <span class="nv">ctladdr</span><span class="o">=</span>&lt;root@localhost.localdomain&gt; <span class="o">(</span>0/0<span class="o">)</span>, <span class="nv">delay</span><span class="o">=</span>5+02:33:31, <span class="nv">xdelay</span><span class="o">=</span>00:00:00, <span class="nv">mailer</span><span class="o">=</span>esmtp, <span class="nv">pri</span><span class="o">=</span>10651048, <span class="nv">relay</span><span class="o">=</span>mxbiz2.qq.com., <span class="nv">dsn</span><span class="o">=</span>4.0.0, <span class="nv">stat</span><span class="o">=</span>Deferred: Connection timed out with mxbiz2.qq.com.
+</code></pre></td></tr></table>
+</div>
+</div><p>通常情况下，邮件都默认通过 <code>25端口</code>进行发送，<code>telnet</code> 看下，发现连接超时：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">&gt; telnet mxbiz2.qq.com <span class="m">25</span>
+
+Trying 112.90.78.144...
+telnet: connect to address 112.90.78.144: Connection timed out
+Trying 163.177.89.176...
+telnet: connect to address 163.177.89.176: Connection timed out
+</code></pre></td></tr></table>
+</div>
+</div><p>于是猜测阿里云封禁了 <code>TCP 25 端口</code>的 <code>出向流量</code>，所以连接失败。</p>
+<p>我们知道常见的邮件服务器，一般使用 <code>25</code>、<code>465</code>、 <code>587</code> 等作为接收端口，所以尝试使用 <code>465</code> 端口进行发送。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">&gt; telnet smtp.exmail.qq.com <span class="m">465</span>
+
+Trying 163.177.72.143...
+Connected to smtp.exmail.qq.com.
+Escape character is <span class="s1">&#39;^]&#39;</span>.
+</code></pre></td></tr></table>
+</div>
+</div><p>也即，<code>smtp.exmail.qq.com</code> 的 <code>465</code> 端口是可用的。于是尝试使用 <code>mailx</code> 通过 <code>smtps</code> 的方式发送邮件。</p>
+<h2 id="二mailx-的安装与配置">二、mailx 的安装与配置</h2>
+<h3 id="21-一些解释">2.1 一些解释</h3>
+<ul>
+<li>操作系统</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">&gt; cat /proc/version
+
+Linux version 2.6.32-696.23.1.el6.x86_64 <span class="o">(</span>mockbuild@x86-01.bsys.centos.org<span class="o">)</span> <span class="o">(</span>gcc version 4.4.7 <span class="m">20120313</span> <span class="o">(</span>Red Hat 4.4.7-18<span class="o">)</span> <span class="o">(</span>GCC<span class="o">)</span> <span class="o">)</span> <span class="c1">#1 SMP Tue Mar 13 22:44:18 UTC 2018</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>首先科普一下相关概念。</p>
+<ul>
+<li>
+<p>邮件用户代理（MUA，Mail User Agent）：如 <code>mailx</code>、<code>foxmail</code>等</p>
+</li>
+<li>
+<p>邮件传送代理（MTA，Mail Transport Agent）：如 <code>sendmail</code>、<code>postfix</code>等</p>
+</li>
+<li>
+<p>邮件分发代理（MDA，Mail Deliver Agent）：如 <code>procmail</code></p>
+</li>
+<li>
+<p>sendmail：<code>sendmail - an electronic mail transport agent</code>，linux 各大发行版自带的邮件传输代理程序，一般作为默认的邮件处理程序。</p>
+</li>
+<li>
+<p>mailx：<code>mailx - send and receive Internet mail</code>，也即客户端，类似于各大邮箱的客户端等，配置 <code>smtp</code> 等，比 <code>sendmail</code> 要简单方便许多。</p>
+</li>
+</ul>
+<h3 id="22-安装--配置-mailx">2.2 安装 &amp;&amp; 配置 mailx</h3>
+<ul>
+<li>安装 mailx</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">yum install -y mailx
+rpm -q mailx
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>关闭 <code>sendmail</code>、<code>postfix</code> 等服务</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">service sendmail stop
+chkconfig sendmail off
+service postfix stop
+chkconfig postfix off
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>生成证书：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">mkdir -p /root/.certs/
+<span class="nb">echo</span> -n <span class="p">|</span> openssl s_client -connect smtp.exmail.qq.com:465 <span class="p">|</span> sed -ne <span class="s1">&#39;/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p&#39;</span> &gt; ~/.certs/qq.crt
+certutil -A -n <span class="s2">&#34;GeoTrust SSL CA&#34;</span> -t <span class="s2">&#34;C,,&#34;</span> -d ~/.certs -i ~/.certs/qq.crt
+certutil -A -n <span class="s2">&#34;GeoTrust Global CA&#34;</span> -t <span class="s2">&#34;C,,&#34;</span> -d ~/.certs -i ~/.certs/qq.crt
+certutil -L -d /root/.certs
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>调整 <code>certs</code> 的位置，并授予相关权限 （这一步可做适当调整）</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">cp -r /root/.certs /etc/mail/qq-certs
+chmod -R  <span class="m">755</span> /etc/mail/qq-certs/*
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>编辑 <code>vim /etc/mail.rc</code>，添加如下内容：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># user QQ smtp server</span>
+<span class="nb">set</span> <span class="nv">from</span><span class="o">=</span>mail@yourdomain.com
+<span class="nb">set</span> <span class="nv">smtp</span><span class="o">=</span>smtps://smtp.exmail.qq.com:465
+<span class="nb">set</span> smtp-auth-user<span class="o">=</span> mail@yourdomain.com
+<span class="nb">set</span> smtp-auth-password<span class="o">=</span>xxxxxx
+<span class="nb">set</span> smtp-auth<span class="o">=</span>login
+<span class="nb">set</span> ssl-verify<span class="o">=</span>ignore
+<span class="nb">set</span> nss-config-dir<span class="o">=</span>/etc/mail/qq-certs
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>问题解决</li>
+</ul>
+<p>解决如下报错：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">Error in certificate: Peer<span class="err">&#39;</span>s certificate issuer is not recognized.
+</code></pre></td></tr></table>
+</div>
+</div><p>需要信任证书：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nb">cd</span> /etc/mail/qq-certs
+certutil -A -n <span class="s2">&#34;GeoTrust SSL CA - G3&#34;</span> -t <span class="s2">&#34;Pu,Pu,Pu&#34;</span> -d ./ -i qq.crt
+</code></pre></td></tr></table>
+</div>
+</div><p>成功则返回：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">**Notice: Trust flag u is <span class="nb">set</span> automatically <span class="k">if</span> the private key is present.**
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="三crond-配合使用-mailx">三、crond 配合使用 mailx</h2>
+<h3 id="31-cornd-直接配置-mailx">3.1 cornd 直接配置 mailx</h3>
+<p>上面，我们已经配置好了 <code>mailx</code>，接下来讨论如何让 <code>crond</code> 使用其来发送邮件。</p>
+<p><code>crond</code> 可配置 <code>MAILTO=xx@mail.com</code> 将每个 <code>job</code> 的输出发送至 <code>job owner</code>, 默认是 <code>sendmail</code> 发送。在这里，我们需要改用 <code>mailx</code> 发送。</p>
+<p>通过阅读 <code>man crond</code>，发现可用 <code>-m</code> 参数启动 <code>crond</code>，使用别的程序发送邮件。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">   -m     This  option  allows  you to specify a shell <span class="nb">command</span> string to use <span class="k">for</span> sending cron mail output
+          instead of sendmail<span class="o">(</span>8<span class="o">)</span>.  This <span class="nb">command</span> must accept a fully formatted mail message <span class="o">(</span>with headers<span class="o">)</span>
+          on stdin and send it as a mail message to the recipients specified in the mail headers.             
+</code></pre></td></tr></table>
+</div>
+</div><p>首先编辑 <code>crond</code> 的配置 <code>vim /etc/sysconfig/crond</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Settings for the CRON daemon.</span>
+<span class="c1"># CRONDARGS= :  any extra command-line startup arguments for crond</span>
+
+<span class="nv">CRONDARGS</span><span class="o">=</span><span class="s2">&#34;-m &#39;mailx -s test@yourdomain.com -t&#39;&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>需要重新启动 <code>crond</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">sudo /etc/init.d/crond restart
+</code></pre></td></tr></table>
+</div>
+</div><p>写个错误的 <code>cron</code>，等待其触发：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">MAILTO=test@yourdomain.com
+
+* * * * * liuduoyu echo &#34;test cron mail 测试请忽略&#34;
+</code></pre></td></tr></table>
+</div>
+</div><p>一分钟左右，收到了邮件，内容形如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">From: root (Cron Daemon)
+To: test@yourdomain.com
+Subject: Cron &lt;xxxx&gt; liuduoyu echo &#34;test cron mail 测试请忽略&#34;
+Content-Type: text/plain; charset=UTF-8
+
+/* --- 省略 --- */
+
+/bin/sh: liuduoyu: command not found
+</code></pre></td></tr></table>
+</div>
+</div><p>这里我们发现，虽然邮件成功接收，但是内容却不是我们想要的。</p>
+<p>原因在于：<code>crond</code> 的输出，不能被 <code>mailx -t</code> 识别为一个有效的 <code>message header</code>，而是直接把其当做 <code>email body</code> 发出。</p>
+<p>所以这里，需要考虑别的实现。</p>
+<h3 id="32-分析-crond-的运行机制">3.2 分析 crond 的运行机制</h3>
+<p>我们来看看 <code>crond</code> 究竟是如何处理 <code>-m</code> 参数的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">&gt; ps aux <span class="p">|</span> grep -i crond
+root     <span class="m">25380</span>  0.0  0.0 <span class="m">117328</span>  <span class="m">1476</span> ?        Ss   May22   0:04 crond -m mailx
+</code></pre></td></tr></table>
+</div>
+</div><p><code>strace</code> 该进程：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">&gt; strace -fp <span class="m">25380</span> -s <span class="m">1024</span> -e <span class="nv">trace</span><span class="o">=</span>process 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">|</span> grep mail
+</code></pre></td></tr></table>
+</div>
+</div><p>输出形如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="o">[</span>pid  9002<span class="o">]</span> execve<span class="o">(</span><span class="s2">&#34;/bin/sh&#34;</span>, <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span>, <span class="s2">&#34;-c&#34;</span>, <span class="s2">&#34;liuduoyu echo \&#34;xxxx mail test\&#34;&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">9</span> vars */<span class="o">]</span> &lt;unfinished ...&gt;
+<span class="o">[</span>pid  9024<span class="o">]</span> execve<span class="o">(</span><span class="s2">&#34;/bin/mailx&#34;</span>, <span class="o">[</span><span class="s2">&#34;mailx&#34;</span>, <span class="s2">&#34;-s&#34;</span>, <span class="s2">&#34; Cron &lt;xxxxx&gt; liuduoyu echo \&#34;xxxx mail test\&#34;&#34;</span>, <span class="s2">&#34;test@yourdomain.com&#34;</span><span class="o">]</span>, <span class="o">[</span>/* <span class="m">6</span> vars */<span class="o">])</span> <span class="o">=</span> <span class="m">0</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在这里我们可以推断出如下结论：</p>
+<blockquote>
+<p><code>crond</code> 是将 <code>每个 job 的输出</code>，通过 <code>管道</code> 的形式，作为 <code>-m</code> 选项后配置的 <code>外部命令</code> 的 <code>STDIN</code> 传入。</p>
+</blockquote>
+<p>所以，我们可以自行编写脚本，进行测试。</p>
+<h3 id="33-crond-配置-mailx-的脚本">3.3 crond 配置 mailx 的脚本</h3>
+<p>我们已经知道，<code>crond</code> 会把每个子任务的输出，作为标准输入，通过管道，传给配置的邮件处理程序。那么，我们可以通过一个脚本，实现读取标准输入，进行文本处理，再发送邮件。</p>
+<p>动手实现该逻辑的脚本 <code>vim ~/mailx-t</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">
+<span class="c1">#!/bin/sh</span>
+
+<span class="c1"># 需要接受 cron 管道的输出 也即 STDIN</span>
+<span class="c1">## 这里用 argvs 是捕获不到的</span>
+<span class="nv">body</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+<span class="nv">line</span><span class="o">=</span><span class="m">0</span>
+<span class="nv">flag</span><span class="o">=</span><span class="m">0</span> <span class="c1"># flag the body</span>
+<span class="k">while</span> <span class="nb">read</span> input
+<span class="k">do</span>
+    <span class="nv">line</span><span class="o">=</span>$<span class="o">[</span> <span class="nv">$line</span> + <span class="m">1</span> <span class="o">]</span>
+
+    <span class="k">if</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$input</span><span class="s2">&#34;</span> <span class="o">=</span>~ <span class="s2">&#34;Subject&#34;</span> <span class="o">]]</span><span class="p">;</span><span class="k">then</span>
+        <span class="nv">subject</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$input</span> <span class="p">|</span> awk -F <span class="s1">&#39;:&#39;</span> <span class="s1">&#39;{print $2}&#39;</span><span class="sb">`</span>
+    <span class="k">fi</span>
+
+    <span class="k">if</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$input</span><span class="s2">&#34;</span> <span class="o">=</span>~ <span class="s2">&#34;MAILTO&#34;</span> <span class="o">]]</span><span class="p">;</span><span class="k">then</span>
+        <span class="nv">mailto</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$input</span> <span class="p">|</span> awk -F <span class="s1">&#39;MAILTO=&#39;</span> <span class="s1">&#39;{print $2}&#39;</span> <span class="p">|</span> awk -F <span class="s1">&#39;&gt;&#39;</span> <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
+    <span class="k">fi</span>
+
+    <span class="k">if</span> <span class="o">[</span> <span class="nv">$flag</span> -eq <span class="m">1</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+        <span class="nv">flag</span><span class="o">=</span><span class="m">2</span>
+        <span class="nv">body</span><span class="o">=</span><span class="nv">$input</span>
+    <span class="k">elif</span> <span class="o">[</span> <span class="nv">$flag</span> -eq <span class="m">2</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+        <span class="nv">body</span><span class="o">=</span><span class="nv">$body</span><span class="s2">&#34;\n&#34;</span><span class="nv">$input</span>
+    <span class="k">fi</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="s2">&#34;X</span><span class="nv">$input</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;X&#34;</span> <span class="o">&amp;&amp;</span> !<span class="nv">$flag</span> <span class="o">]]</span><span class="p">;</span><span class="k">then</span>
+        <span class="c1">## start body</span>
+        <span class="nv">flag</span><span class="o">=</span><span class="m">1</span>
+    <span class="k">fi</span>
+<span class="k">done</span>
+
+<span class="c1">#echo &#34;subject -&gt; $subject&#34;;</span>
+<span class="c1">#echo &#34;mailto -&gt; $mailto&#34;;</span>
+<span class="c1">#echo &#34;body -&gt; $body&#34;;</span>
+
+<span class="c1">## set default value</span>
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;X</span><span class="nv">$subject</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;X&#34;</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+    <span class="nv">subject</span><span class="o">=</span><span class="s2">&#34;[cron error] &lt;`whoami`@`hostname`&gt;&#34;</span>
+<span class="k">fi</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;X</span><span class="nv">$body</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;X&#34;</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+    <span class="nv">body</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$subject</span><span class="s2">&#34;</span>
+<span class="k">fi</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;X</span><span class="nv">$mailto</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s2">&#34;X&#34;</span> <span class="o">]</span><span class="p">;</span><span class="k">then</span>
+    <span class="nv">mailto</span><span class="o">=</span><span class="s2">&#34;default@yourdomain.com&#34;</span>
+<span class="k">fi</span><span class="p">;</span>
+
+<span class="nb">exec</span> <span class="nb">echo</span> -e <span class="nv">$body</span> <span class="p">|</span> mailx -s <span class="s2">&#34;</span><span class="nv">$subject</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="nv">$mailto</span><span class="s2">&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>配置到 <code>PATH</code> 下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">chmox +x ~/mailx-t
+cp -r ~/mailx-t /usr/local/sbin/mailx-t
+</code></pre></td></tr></table>
+</div>
+</div><p>修改 <code>crond</code> 配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># Settings for the CRON daemon.</span>
+<span class="c1"># CRONDARGS= :  any extra command-line startup arguments for crond</span>
+
+<span class="nv">CRONDARGS</span><span class="o">=</span><span class="s2">&#34;-m /usr/local/sbin/mailx-t&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>重新启动 <code>crond</code>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">sudo /etc/init.d/crond restart
+</code></pre></td></tr></table>
+</div>
+</div><p>稍等一会儿，收到了报警邮件，内容形如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">邮件标题：Cron &lt;xxx&gt; liuduoyu echo &#34;test cron mail测试请忽略&#34; 
+
+邮件正文：/bin/sh: liuduoyu: command not found
+</code></pre></td></tr></table>
+</div>
+</div><p>至此表明，<code>crond</code> 能成功使用 <code>mailx</code> 发送报警邮件了</p>
+<h2 id="四一些思考">四、一些思考</h2>
+<ul>
+<li>
+<p><code>「单元测试」</code> 应该是每个程序员都必须具备的基本素质，文首提到的脚本的 <code>「Fatal Error」</code>应该在自测期间就能发现。</p>
+</li>
+<li>
+<p>需要学会结合现象思考问题，熟练的使用 <code>linux</code> 下强大的命令工具集，探究问题发生的根本原因、解决方案等。</p>
+</li>
+<li>
+<p>扩展的思考下，其实在这里，是不是也可以使用别的方式来实现呢？比如，使用 <code>php</code>来发送邮件。</p>
+</li>
+<li>
+<p>对于 cron 任务过多的应用，应该将其 <code>web 化管理</code></p>
+</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-05-24
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/linux-cron-mail/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/linux/">linux</a>
+          <a href="/tags/shell/">shell</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/redis-cluster/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Redis Cluster</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/git-submodule/">
+            <span class="next-text nav-default">Git Submodule 简单使用</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

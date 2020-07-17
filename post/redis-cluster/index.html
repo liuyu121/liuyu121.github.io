@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Redis Cluster - 日拱一卒</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="本文所使用 Redis 版本为 Redis 5。 业界方案 codis： 本质是个 proxy，通过内存保存着槽位和实例节点之间的映射关系 槽位间的信息同步交给 ZooKeeper 管理 支持一些" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/redis-cluster/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Redis Cluster" />
+<meta property="og:description" content="本文所使用 Redis 版本为 Redis 5。 业界方案 codis： 本质是个 proxy，通过内存保存着槽位和实例节点之间的映射关系 槽位间的信息同步交给 ZooKeeper 管理 支持一些" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/redis-cluster/" />
+<meta property="article:published_time" content="2019-07-02T13:26:15+08:00" />
+<meta property="article:modified_time" content="2019-07-02T13:26:15+08:00" />
+<meta itemprop="name" content="Redis Cluster">
+<meta itemprop="description" content="本文所使用 Redis 版本为 Redis 5。 业界方案 codis： 本质是个 proxy，通过内存保存着槽位和实例节点之间的映射关系 槽位间的信息同步交给 ZooKeeper 管理 支持一些">
+<meta itemprop="datePublished" content="2019-07-02T13:26:15&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-02T13:26:15&#43;08:00" />
+<meta itemprop="wordCount" content="1563">
+
+
+
+<meta itemprop="keywords" content="redis,database," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis Cluster"/>
+<meta name="twitter:description" content="本文所使用 Redis 版本为 Redis 5。 业界方案 codis： 本质是个 proxy，通过内存保存着槽位和实例节点之间的映射关系 槽位间的信息同步交给 ZooKeeper 管理 支持一些"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Redis Cluster</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-02 </span>
+        <div class="post-category">
+            <a href="/categories/redis/"> Redis </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p>本文所使用 <code>Redis</code> 版本为 <code>Redis 5</code>。</p>
+<h2 id="业界方案">业界方案</h2>
+<ul>
+<li>
+<p><a href="https://github.com/CodisLabs/codis">codis</a>：</p>
+<ul>
+<li>本质是个 <code>proxy</code>，通过内存保存着槽位和实例节点之间的映射关系</li>
+<li>槽位间的信息同步交给 <code>ZooKeeper</code> 管理</li>
+<li>支持一些 <code>MGET</code> 等命令，实际是自身实现了 <code>Merge</code> 功能</li>
+<li><code>Pipeline</code> 操作</li>
+<li>不支持事务、<code>MSETNX</code> 等命令</li>
+</ul>
+</li>
+<li>
+<p><a href="https://github.com/twitter/twemproxy">twemproxy</a></p>
+</li>
+</ul>
+<h2 id="redis-cluster">Redis Cluster</h2>
+<p><code>Redis Cluster</code> 是 <code>Redis</code> 官方的集群方案，具体文档可阅读：</p>
+<ul>
+<li>
+<p><a href="https://redis.io/topics/cluster-tutorial">Redis cluster tutorial</a></p>
+</li>
+<li>
+<p><a href="https://redis.io/topics/cluster-spec">Redis Cluster Specification</a></p>
+</li>
+</ul>
+<p>大致总结下一些要点如下：</p>
+<ul>
+<li>
+<p>基本特性：全网状结构(<code>full mest</code>)，没有 <code>中央节点</code>、<code>调度器</code>、<code>Proxy</code>、<code>Merge</code> 的概念，也即是所谓的 <code>P2P</code> 架构。每个节点之间都可以通信，如 <code>Heartbeat</code>、<code>Failover</code>等。采用了一种类似 <code>Raft</code> 算法中 <code>term(任期)</code>的概念 <code>epoch</code>(纪元)，进行选举等。</p>
+</li>
+<li>
+<p><code>Redis Cluster Bus</code>：每个 <code>node</code> 需要开启两个监听端口，举例如使用 <code>6379</code> 用于监听 <code>redis-client</code> 请求，另一个端口 <code>16379</code>（默认 6379 offset 10000） 用于 <code>node</code> 之间的通信，如选举、侦测、节点变更等等。</p>
+</li>
+<li>
+<p><code>gossip protocol</code>：<code>gossip 协议</code>是一个<code>去中心化</code>、<code>容错</code>、<code>保证最终一致</code>性的协议。</p>
+</li>
+<li>
+<p><code>node</code>：每个 <code>node</code> 本质是全双工的通信(基于 <code>TCP</code>)。采用了分布式架构里常见的 <code>选举算法</code>，也即 <code>需要大于 1/2 个节点同意</code>，所以最少也会存在 <code>3个</code> 主节点，而通常主节点都会挂载 <code>1~n</code> 个 <code>slave</code>，所以一般情况下，<code>redis-cluster</code> 至少有 <code>6</code> 个 <code>nodes</code>。官方文档也是以 <code>6</code> 个作为示例。</p>
+</li>
+<li>
+<p><code>shard</code>：每个 <code>shard</code> 也即 <code>master-slave</code>架构，采用 <code>异步 replication</code> 方式进行数据同步。但不同于传统的主从架构，<code>master</code> 和 <code>slave</code> 本质也是个 <code>节点</code>，可通过协议实现角色互换等。</p>
+</li>
+<li>
+<p><code>slot 机制</code>： 使用 <code>pow(2, 14) = 1684</code> 个 <code>slot</code>，分配至各个 <code>master</code>，针对每个 <code>key</code> 进行 <code>一致性 hash</code>，将其存储至某个 <code>master</code>。其中 <code>一致性 hash 算法</code>为：</p>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">HASH_SLOT = CRC16(key) mod 16384 (slot 编号 区间[0, 13683])
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>MOVED 指令</code>：在集群下任何 <code>node</code> 针对 <code>key</code> 的操作，都会根据上述算法 <code>move</code> 到 <code>slot</code> 对应的节点。<code>redis-client</code> 必须处理该指令，就像操作<code>单机 redis</code> 一样。这里可以理解为 <code>301 Moved Permanently</code></p>
+</li>
+<li>
+<p><code>ASK 指令</code>：当 <code>node</code> 之间发生 <code>MIGRATING</code> 或 <code>IMPORTING</code> 的时候，也即表示正在进行 <code>slot</code> 的迁移，所以需要 <code>ASKING</code>。也即是个 <code>中间态</code>，因为最终肯定是要迁移完成的（变成 <code>MOVED</code>）。这里可以理解为 <code>307 Temporary Redirect</code></p>
+</li>
+<li>
+<p><code>readonly</code>：如果需要在 <code>slave</code> 上读数据，那么需要显示的执行 <code>readonly</code></p>
+</li>
+<li>
+<p>集群操作：<code>redis-cli</code> 提供了很多关于 <code>cluster</code> 的操作，可完全代替之前的 <code>redis-trib.rb</code> 脚本。<code>redis-cli --cluster help</code></p>
+</li>
+<li>
+<p><code>client slot map table</code>：客户端可以自己实现 <code>cache the map between keys and nodes</code></p>
+</li>
+<li>
+<p><code>hash tags</code>: 因为 <code>key</code> 是分布在不同 <code>slot</code>，所以在执行如 <code>multi</code> 等操作的时候，<code>redis-cluster</code> 是不支持 <code>CROSSSLOT Keys</code> 操作的。所以它提供一种 <code>hash tags</code> 的方案用于将某些 <code>key</code> 放到同一 <code>slot</code> 的方案。</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：这里使用了 <code>{}</code> 用于标记真正被 <code>hash</code> 的 <code>key</code>，第一个 <code>{</code> 与紧接着其的 <code>}</code>将被认为是 <code>key</code>。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">127.0.0.1:8002&gt; set {users}.xxooyu 2
+OK
+127.0.0.1:8002&gt; set {users}.liuduoyu 3
+OK
+
+127.0.0.1:8000&gt; mget {users}.xxooyu {users}.liuduoyu
+-&gt; Redirected to slot [14124] located at 127.0.0.1:8002
+2
+3
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>failover</code>：<code>redis cluster</code> 提供的容错机制，采取了 <code>ping-pong</code>机制进行侦测（是否超时）。：</p>
+<ul>
+<li>故障 failover：自动恢复集群的可用性</li>
+<li>人为 failover：支持集群的可运维操作</li>
+</ul>
+</li>
+<li>
+<p><code>write safety</code>：分区可用性分析（也即网络分区了，互相不可达），需要根据当前 <code>client</code> 处于何种 <code>分区环境</code>进行分析。</p>
+<ul>
+<li>
+<p><code>the minority side</code>：位于小分区一端，一直在 <code>master</code> 写数据，在此期间，因为 <code>Failover</code> 机制，其他分区的某个 <code>slave</code> 提升为了 <code>master</code>。那么当分区可用后，原 <code>master</code> 的数据丢失（因为该 <code>master</code> 的 <code>role</code> 成了 <code>slave</code>）。</p>
+</li>
+<li>
+<p><code>the majority side</code>：位于大分区一端，因为主从是异步同步的，写操作在 <code>master</code> 成功后但 <code>slave</code> 未同步完成，<code>master</code> 挂了（<code>master</code> 不可达的时间超过阈值 <code>node timeout</code> 的配置），集群通过选举，某 <code>slave</code> 为新的 <code>master</code>，那么之前写的数据丢失。</p>
+</li>
+<li>
+<p>这里需要注意的是，因为 <code>master</code> 之间存在心跳检测，所以当某 <code>master</code> 发现其与其他 <code>master</code> 的通信断了超过 <code>NODE_TIMEOUT</code> 后，则会拒绝 <code>write</code>，为 <code>readonly</code>。这时 <code>slave</code> 已经知道自己的 <code>master</code> 挂了，开始 <code>failover</code>，其他 <code>master</code> 在开始参与选举操作。所以如果网络分区时间大于 <code>node timeout</code>，则数据会丢失。</p>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2019-07-02
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/redis-cluster/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/redis/">redis</a>
+          <a href="/tags/database/">database</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/mysql-metadata-lock/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Mysql Metadata Lock</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/linux-cron-mail/">
+            <span class="next-text nav-default">Linux 下使用 Cron Mail</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
