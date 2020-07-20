@@ -49,7 +49,7 @@
 <meta itemprop="description" content="快速开始 blog 之前用的是 hexo 来实现，但换新环境都要搞一大堆东西，很麻烦，所以荒废了好久没写什么东西了。 这段时间打算迁移到 hugo1，一个 go 写的生成">
 <meta itemprop="datePublished" content="2020-07-06T18:45:20&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-06T18:45:20&#43;08:00" />
-<meta itemprop="wordCount" content="766">
+<meta itemprop="wordCount" content="654">
 
 
 
@@ -194,14 +194,7 @@ git submodule add  -f  -b master https://github.com/liuyu121/liuyu121.github.io.
     <span class="nx">repo</span> <span class="p">=</span> <span class="s2">&#34;liuyu121.github.io&#34;</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="图片处理">图片处理</h2>
-<ul>
-<li>图片都放在 <code>static/img</code> 目录下，在文章引用方式为：<code>![](/img/tcp-segment-header.png)</code></li>
-<li>在 <code>archetypes/default.md</code> 文件添加 <code>typora-root-url: ../../static</code></li>
-</ul>
-<p>这样，我们就可以正常的在 <code>MD</code> 文件插入图片，而服务器与本地都能正常展示了。</p>
-<h2 id="脚手架">脚手架</h2>
-<h3 id="deploy--publish">deploy &amp;&amp; publish</h3>
+</div><h2 id="deploy--publish">deploy &amp;&amp; publish</h2>
 <p>改写了下 官方的 <code>deploy.sh</code>，支持 <code>publish</code> 与 <code>deploy</code>，脚本很简单，本质就是封装一系列命令。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -219,23 +212,18 @@ Usage: deploy.sh
         d : deploy
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="push-">push &amp;&amp;</h3>
+</div><p>其他的一些脚手架：</p>
 <ul>
-<li>生成新的 <code>md</code> ，并自动打开（将 <code>.md</code>文件默认打开方式设置为<code>Typora</code>）</li>
-<li>自动 <code>pull</code></li>
+<li>生成新的 <code>md</code> ，并自动打开（将 <code>.md</code>文件默认打开方式设置为<code>Typora</code>）：</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">$ ./util.sh
-Usage: util.sh
-        new md-file-name : create the md file at content/post/md-file-name.md
-        pull : pull repo <span class="o">&amp;&amp;</span> submodules
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ ./post.sh rust-learn
+...content/post/rust-learn.md created
 </code></pre></td></tr></table>
 </div>
 </div><section class="footnotes" role="doc-endnotes">

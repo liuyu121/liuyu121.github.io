@@ -6,31 +6,13 @@
     <description>Recent content in Posts on 日拱一卒</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 16 Jul 2020 14:03:29 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 09 Jul 2020 15:36:15 +0800</lastBuildDate>
     
 	<atom:link href="https://liuyu121.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>TCP 连接的建立与关闭</title>
-      <link>https://liuyu121.github.io/post/tcp/</link>
-      <pubDate>Thu, 16 Jul 2020 14:03:29 +0800</pubDate>
-      
-      <guid>https://liuyu121.github.io/post/tcp/</guid>
-      <description>tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h</description>
-    </item>
-    
-    <item>
-      <title>Bit Twiddling Hacks</title>
-      <link>https://liuyu121.github.io/post/bit-twiddling-hacks/</link>
-      <pubDate>Tue, 14 Jul 2020 19:29:40 +0800</pubDate>
-      
-      <guid>https://liuyu121.github.io/post/bit-twiddling-hacks/</guid>
-      <description>算法里面有很多 位操作，看 redis 源码，看到 src/dict.c 下一个函数： 1 2 3 4 5 6 7 8 9 10 11 /* Function to reverse bits. Algorithm from: * http://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel */ static unsigned long rev(unsigned long v) { unsigned long s = CHAR_BIT * sizeof(v); // bit size; must be power of 2 unsigned long</description>
-    </item>
-    
-    <item>
-      <title>ES Nested 类型</title>
+      <title>Es Nested 类型</title>
       <link>https://liuyu121.github.io/post/es-nested-datatype/</link>
       <pubDate>Thu, 09 Jul 2020 15:36:15 +0800</pubDate>
       
