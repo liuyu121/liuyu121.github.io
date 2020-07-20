@@ -6,7 +6,7 @@
     <description>Recent content on 日拱一卒</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 16 Jul 2020 14:03:29 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 20 Jul 2020 18:45:05 +0800</lastBuildDate>
     
 	<atom:link href="https://liuyu121.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,15 @@
       
       <guid>https://liuyu121.github.io/about/</guid>
       <description>Don&amp;rsquo;t Look Back in Anger &amp;hellip; mysql、redis、kafka、es php、go、python、lua、rust、shell linux、mac、vim data st</description>
+    </item>
+    
+    <item>
+      <title>一些速记</title>
+      <link>https://liuyu121.github.io/post/shorthand/</link>
+      <pubDate>Mon, 20 Jul 2020 18:45:05 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/shorthand/</guid>
+      <description></description>
     </item>
     
     <item>
