@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Reading on 日拱一卒</title>
+    <link>https://liuyu121.github.io/categories/reading/</link>
+    <description>Recent content in Reading on 日拱一卒</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 20 Jul 2020 21:48:59 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/categories/reading/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>看过的书</title>
+      <link>https://liuyu121.github.io/post/reading/</link>
+      <pubDate>Mon, 20 Jul 2020 21:48:59 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/reading/</guid>
+      <description>看书原则： 力求理解本质：可以不求甚解，必须反复研读。 苦下笔头：认真做笔记，悟道了，赶紧记下来。 举一反三，融会贯通：很多书其实存在一定的同质化</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.73.0 with theme even" />
+<meta name="generator" content="Hugo 0.74.2 with theme even" />
 
 
 <link rel="canonical" href="https://liuyu121.github.io/post/tcp/" />
@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="4025">
+<meta itemprop="wordCount" content="4039">
 
 
 
@@ -137,7 +137,7 @@
     <div class="post-content">
       <p><code>tcp（Transmission Control Protocol）</code> 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 <code>http</code>、<code>SMTP</code> 等。鼎鼎大名的 <code>三次握手</code>、<code>四次挥手</code>指的就是其建立与关闭的流程。</p>
 <p><code>tcp</code> 协议的生命周期，本质是一个<em>有限状态机</em> 的流转，从建立到数据传输再到关闭，伴随着不同状态的迁移。而在不同的状态中，又会有着一些优化与问题。</p>
-<p><code>tcp 协议</code>  本身极其复杂，除了建立与关闭涉及到多次交互外，还需要考虑  <code>滑动窗口</code>、<code>重传策略</code>、<code>状态复用</code>、<code>拥塞控制</code>、<code>RTT（Round Trip Time）</code> 等等，远古大神们真是费煞苦心。</p>
+<p><code>tcp 协议</code>  本身极其复杂，除了建立与关闭涉及到多次交互外，还需要考虑  <code>差错检测</code>、<code>滑动窗口</code>、<code>重传策略</code>、<code>拥塞控制</code>、<code>RTT（Round Trip Time）</code>、<code>MSS(maximum segment size)</code> 等等，远古大神们真是费煞苦心。</p>
 <p>注：本文的图例来自网络，历史原因未标明出处，感谢原作者们清晰的图示 :)</p>
 <h1 id="首部结构">首部结构</h1>
 <p><code>tcp</code> 报文首部格式如下：</p>
