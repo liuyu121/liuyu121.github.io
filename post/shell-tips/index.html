@@ -49,7 +49,7 @@
 <meta itemprop="description" content="一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &#34;&lt;p&gt;$i&lt;/p&gt;&#34;;done &lt; test.txt 链接一行">
 <meta itemprop="datePublished" content="2014-09-18T19:51:01&#43;08:00" />
 <meta itemprop="dateModified" content="2014-09-18T19:51:01&#43;08:00" />
-<meta itemprop="wordCount" content="812">
+<meta itemprop="wordCount" content="956">
 
 
 
@@ -241,7 +241,72 @@ vim <span class="nb">set</span> nobomb
 </code></pre></td></tr></table>
 </div>
 </div><h2 id="字符串">字符串</h2>
-<h3 id="substr">substr</h3>
+<h3 id="spli">spli</h3>
+<ul>
+<li><code>tr</code>：先分割：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="cp">#!/usr/bin/env bash
+</span><span class="cp"></span>
+<span class="nv">IN</span><span class="o">=</span><span class="s2">&#34;zhangsan@gmail;lisi@qq.com&#34;</span>
+
+<span class="nv">arr</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$IN</span> <span class="p">|</span> tr <span class="s2">&#34;;&#34;</span> <span class="s2">&#34;\n&#34;</span><span class="k">)</span>
+
+<span class="k">for</span> x in <span class="nv">$arr</span>
+<span class="k">do</span>
+    <span class="nb">echo</span> <span class="s2">&#34;&gt; [</span><span class="nv">$x</span><span class="s2">]&#34;</span>
+<span class="k">done</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>借助系统输出分割符：<code>IFS</code>：默认为 &ldquo;\n&rdquo;，修改成 <code>;</code> 即可：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="cp">#!/usr/bin/env bash
+</span><span class="cp"></span>
+<span class="nv">IN</span><span class="o">=</span><span class="s2">&#34;zhangsan@gmail;lisi@qq.com&#34;</span>
+
+<span class="nv">OIFS</span><span class="o">=</span><span class="nv">$IFS</span>
+<span class="nv">IFS</span><span class="o">=</span><span class="s1">&#39;;&#39;</span>
+<span class="nv">arr2</span><span class="o">=</span><span class="nv">$IN</span>
+<span class="k">for</span> x in <span class="nv">$arr2</span>
+<span class="k">do</span>
+    <span class="nb">echo</span> <span class="s2">&#34;&gt; [</span><span class="nv">$x</span><span class="s2">]&#34;</span>
+<span class="k">done</span>
+
+<span class="nv">IFS</span><span class="o">=</span><span class="nv">$OIFS</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="substr">substr</h3>
 <ul>
 <li><code>awk</code>：使用 <code>substr</code>(源字符串,开始索引,长度)  ，索引以 <code>0</code> 开始：</li>
 </ul>
@@ -295,7 +360,12 @@ ab
 </div>
 </div><h2 id="进程">进程</h2>
 <ul>
-<li>查看进程端口的占用</li>
+<li>
+<p>查看进程正在进行的工作：<code>pstack $PID</code></p>
+</li>
+<li>
+<p>查看进程端口的占用</p>
+</li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -342,7 +412,7 @@ lsof -i:端口号
 <p><code>-A</code>：参数列出所有进程</p>
 <p><code>-o</code>： 自定义输出字段 我们设定显示字段为 <code>stat</code>（状态）, <code>ppid</code>（进程父 <code>id</code>）,<code> pid</code> (进程 <code>id</code>)，<code>cmd</code>（命令）这四个参数</p>
 <p>因为状态为  <code>z</code> 或 <code>Z</code> 的进程为僵尸进程，所以我们使用 <code>grep</code> 抓取 <code>stat</code> 状态为 <code>zZ</code> 进程，再 <code>kill -HUP $PID</code>，如果 <code>kill</code> 子进程的无效，可以尝试 <code>kill</code> 其父进程来解决。</p>
-<h2 id="wget-使用">wget 使用</h2>
+<h2 id="wget">wget</h2>
 <ul>
 <li>整站下载：http://fosswire.com/post/2008/04/create-a-mirror-of-a-website-with-wget/</li>
 </ul>
@@ -365,7 +435,9 @@ lsof -i:端口号
 <pre class="chroma"><code class="language-shell" data-lang="shell">wget -r -P /download/location -A jpg,jpeg,gif,png http://www.site.here
 </code></pre></td></tr></table>
 </div>
-</div>
+</div><h2 id="bash_profilebashrc-区别">bash_profile、bashrc 区别</h2>
+<p><img src="/img/profile-bashrc-diff.png" alt=""></p>
+
     </div>
 
     <div class="post-copyright">
