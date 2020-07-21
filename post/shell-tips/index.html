@@ -49,7 +49,7 @@
 <meta itemprop="description" content="一些常用的 shell 技巧分享，很多都可以举一反三的扩展 ：） 文本处理 逐行处理文本：这里不能用 for，空格会被分割，所以应该用 read 1 while read i;do echo &#34;&lt;p&gt;$i&lt;/p&gt;&#34;;done &lt; test.txt 链接一行">
 <meta itemprop="datePublished" content="2014-09-18T19:51:01&#43;08:00" />
 <meta itemprop="dateModified" content="2014-09-18T19:51:01&#43;08:00" />
-<meta itemprop="wordCount" content="360">
+<meta itemprop="wordCount" content="812">
 
 
 
@@ -240,6 +240,47 @@ grep -r -I -l <span class="s1">$&#39;^\xEF\xBB\xBF&#39;</span> ./*
 vim <span class="nb">set</span> nobomb
 </code></pre></td></tr></table>
 </div>
+</div><h2 id="字符串">字符串</h2>
+<h3 id="substr">substr</h3>
+<ul>
+<li><code>awk</code>：使用 <code>substr</code>(源字符串,开始索引,长度)  ，索引以 <code>0</code> 开始：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nb">echo</span> abcdefg <span class="p">|</span> awk <span class="s1">&#39;{$a=substr($0,0,2);print $a;}&#39;</span>
+ab
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>expr</code>：<code>expr substr</code> ，字符串 开始索引 长度 ，索引以 <code>1</code> 开始</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ expr substr <span class="s2">&#34;abcdefg&#34;</span> <span class="m">1</span> <span class="m">2</span>
+ab
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>echo</code>：${str:开始索引} 或 echo ${str:开始索引:长度}  ，索引从 <code>0</code> 开始：</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ <span class="nv">str</span><span class="o">=</span>abcdefg<span class="p">;</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">str</span><span class="p">:</span><span class="nv">0</span><span class="p">:</span><span class="nv">2</span><span class="si">}</span>
+ab
+</code></pre></td></tr></table>
+</div>
 </div><h2 id="awk">awk</h2>
 <ul>
 <li>统计某一列值大于等于 <code>5000</code> 的总行数：</li>
@@ -270,6 +311,58 @@ vim <span class="nb">set</span> nobomb
 ps aux <span class="p">|</span> grep -i mysql
 netstat -apn  <span class="p">|</span> grep -i mysqld 
 lsof -i:端口号
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>shel</code> 的多进程，如下所示，然后就可以读取了，不读取的话，会一直阻塞</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">mkfifo fifofile
+<span class="nb">echo</span> data &gt; fifofile
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>杀死僵尸进程</li>
+</ul>
+<p>用 <code>ps + grep</code> 命令寻找僵尸进程：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">ps -A -ostat,ppid,pid,cmd <span class="p">|</span> grep -e <span class="s1">&#39;^[Zz]&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>命令注解：</p>
+<p><code>-A</code>：参数列出所有进程</p>
+<p><code>-o</code>： 自定义输出字段 我们设定显示字段为 <code>stat</code>（状态）, <code>ppid</code>（进程父 <code>id</code>）,<code> pid</code> (进程 <code>id</code>)，<code>cmd</code>（命令）这四个参数</p>
+<p>因为状态为  <code>z</code> 或 <code>Z</code> 的进程为僵尸进程，所以我们使用 <code>grep</code> 抓取 <code>stat</code> 状态为 <code>zZ</code> 进程，再 <code>kill -HUP $PID</code>，如果 <code>kill</code> 子进程的无效，可以尝试 <code>kill</code> 其父进程来解决。</p>
+<h2 id="wget-使用">wget 使用</h2>
+<ul>
+<li>整站下载：http://fosswire.com/post/2008/04/create-a-mirror-of-a-website-with-wget/</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">wget --convert-links --recursive -l inf -N -e <span class="nv">robots</span><span class="o">=</span>off -R -nc  --default-page<span class="o">=</span>index.html -E -D<span class="nv">$URL1</span>,<span class="nv">$URL2</span>,<span class="nv">$URL0</span> --page-requisites  -B<span class="nv">$URL0</span> -X<span class="nv">$URL1</span>,<span class="nv">$URL2</span> --cut-dirs<span class="o">=</span><span class="m">1</span> -I*/wp-content/uploads/*, -H -F <span class="nv">$URL</span> www.douban.com
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>断点续传</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">wget -r -P /download/location -A jpg,jpeg,gif,png http://www.site.here
 </code></pre></td></tr></table>
 </div>
 </div>
