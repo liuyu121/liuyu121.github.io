@@ -6,7 +6,7 @@
     <description>Recent content on 日拱一卒</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 20 Jul 2020 21:48:59 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 22 Jul 2020 19:11:10 +0800</lastBuildDate>
     
 	<atom:link href="https://liuyu121.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,15 @@
       
       <guid>https://liuyu121.github.io/about/</guid>
       <description>Don&amp;rsquo;t Look Back in Anger &amp;hellip; mysql、redis、kafka、es php、go、python、lua、rust、shell linux、mac、vim data st</description>
+    </item>
+    
+    <item>
+      <title>Tcpdump</title>
+      <link>https://liuyu121.github.io/post/tcpdump/</link>
+      <pubDate>Wed, 22 Jul 2020 19:11:10 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/tcpdump/</guid>
+      <description>1 2 3 sudo tcpdump -nn -i lo0 port 6379 and tcp -X -s 0 &amp;gt; redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &amp;#39;LISTEN&amp;#39; 重点关注 FLAGS 如下字段： [S]：SYN [F]：FIN [.]：ACK Linux： 1 2</description>
     </item>
     
     <item>

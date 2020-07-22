@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>TCP on 日拱一卒</title>
-    <link>https://liuyu121.github.io/categories/tcp/</link>
-    <description>Recent content in TCP on 日拱一卒</description>
+    <title>tcpdump on 日拱一卒</title>
+    <link>https://liuyu121.github.io/tags/tcpdump/</link>
+    <description>Recent content in tcpdump on 日拱一卒</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 22 Jul 2020 19:11:10 +0800</lastBuildDate>
     
-	<atom:link href="https://liuyu121.github.io/categories/tcp/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liuyu121.github.io/tags/tcpdump/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -18,15 +18,6 @@
       
       <guid>https://liuyu121.github.io/post/tcpdump/</guid>
       <description>1 2 3 sudo tcpdump -nn -i lo0 port 6379 and tcp -X -s 0 &amp;gt; redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &amp;#39;LISTEN&amp;#39; 重点关注 FLAGS 如下字段： [S]：SYN [F]：FIN [.]：ACK Linux： 1 2</description>
-    </item>
-    
-    <item>
-      <title>TCP 连接的建立与关闭</title>
-      <link>https://liuyu121.github.io/post/tcp/</link>
-      <pubDate>Thu, 16 Jul 2020 14:03:29 +0800</pubDate>
-      
-      <guid>https://liuyu121.github.io/post/tcp/</guid>
-      <description>tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h</description>
     </item>
     
   </channel>

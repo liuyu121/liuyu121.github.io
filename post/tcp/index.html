@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="4109">
+<meta itemprop="wordCount" content="4612">
 
 
 
@@ -144,11 +144,11 @@
 <p><img src="/img/tcp-segment-header.png" alt=""></p>
 <p>其中，在日常分析 <code>tcp</code> 的建立与关闭时，主要关注的是在 <code>FLAGS </code>字段，该字段也即所谓的 <code>tcp 状态机</code>，主要有如下字段（大写表示，与序列号区分开）：</p>
 <ul>
-<li><code>SYN</code>：<code>Synchronize Sequence Numbers</code>，同步序列号，表示建立连接。</li>
-<li><code>FIN</code>：表示关闭连接。</li>
-<li><code>ACK</code>：<code>Acknowledge Sequence Numbers</code>，确认序列号，表示响应。</li>
-<li><code>PSH</code>： <code>push</code>，表示当前正在传输数据</li>
-<li><code>RST</code>： <code>reset</code>，表示连接重置。</li>
+<li><code>SYN</code>：<code>Synchronize</code>，表示建立连接。</li>
+<li><code>FIN</code>：<code>Finish</code>，表示关闭连接。</li>
+<li><code>ACK</code>：<code>Acknowledge</code>，表示确认。</li>
+<li><code>PSH</code>： <code>Push</code>，表示当前正在传输数据</li>
+<li><code>RST</code>： <code>Reset</code>，表示连接重置。</li>
 </ul>
 <p>然后，有两个重要的 <code>32位</code> 序列号：</p>
 <ul>
@@ -215,16 +215,16 @@
 <p><code>client</code> 先后发送了两次 <code>SYN</code>，第一个 <code>SYN</code> 延时了，第二个 <code>SYN</code> 先行到达 <code>server</code>；</p>
 </li>
 <li>
-<p>此后双方建立了连接，传输数据，关闭连接；</p>
+<p>此后双方基于第二个 <code>SYN</code> 建立了连接，传输数据，关闭连接；</p>
 </li>
 <li>
-<p>这时，延时的第一个 <code>SYN</code> 又到了 <code>server</code>，然后 <code>server</code> 回复 <code>ACK</code>，又进入了 <code>ESTABLISHED</code>。但其实这是个无效的报文，建立了一个多余的连接。</p>
+<p>这时，延时的第一个 <code>SYN</code> 又到了 <code>server</code>，然后 <code>server</code> 回复 <code>ACK</code>，又进入了 <code>ESTABLISHED</code>。但这时  <code>client</code> 不会接收这个 <code>ACK</code>，更不会发送数据了，所以导致 <code>server</code> 一直处于等待数据传输状态，直至被内核关闭。</p>
 </li>
 <li>
-<p>而如果使用 <code>三次握手</code> 机制，此时  <code>client</code> 可以直接丢弃该无效报文，而 <code>server</code> 收不到 <code>client</code> 的 <code>ACK</code>，也不会建立连接。</p>
+<p>而如果使用 <code>三次握手</code> 机制，此时  <code>server</code> 收不到 <code>client</code> 的 <code>ACK</code>，也不会建立连接。</p>
 </li>
 </ul>
-<p>为什么不是 <code>4</code> 次握手 呢，但这里我们已经知道最少需要 <code>3</code> 次就已经可以建立了，所以，为什么还要多一次呢，浪费资源 。。。</p>
+<p>为什么不是 <code>4</code> 次握手 呢，因为 <code>TCP</code> 协议允许同时发送 <code>ACK + SYN</code>，也即握手的第二步。然后通过以上分析，这里我们已经知道最少需要 <code>3</code> 次就已经可以建立了，所以，为什么还要多一次呢，浪费资源 。。。</p>
 <h2 id="backlog-是什么">backlog 是什么</h2>
 <p>在上面的示意图中，我们可以看到，<code>server</code> 端有两个 <code>queue</code>：<code>syn queue</code>、<code>accept queue</code>，其含义为:</p>
 <ul>
@@ -351,6 +351,77 @@ tcp-backlog 511
 </li>
 </ul>
 <p>所以， <code>php-fpm</code> 的就设置为 <code>nginx</code> 一样，<code>511</code>，因为内核源码的判断条件是 <code>&gt;</code>，因而这些常见的应用最多能 <code>accept 512</code> 个请求。</p>
+<h1 id="keepalive">KeepAlive</h1>
+<p>也即 <code>keep TCP alive</code>，因为 <code>TCP</code> 本质是基于 <code>传输层</code> 建立的连接，对 <code>链路层</code> 而言，只是，很多硬件设备会主动断开不活跃的连接，比如几大运营商、一些中间网络设备、甚至代理服务器等，都会主动 <code>drop</code> 一定时间不活跃的链接。</p>
+<p>比如 <code>nginx</code>，默认 <code>75s</code> 关闭连接，但这里是基于 <code>http keep alive</code> 设置的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">Syntax:	keepalive_timeout timeout [header_timeout];
+Default:	
+keepalive_timeout 75s;
+Context:	http, server, location
+The first parameter sets a timeout during which a keep-alive client connection will stay open on the server side. The zero value disables keep-alive client connections. The optional second parameter sets a value in the “Keep-Alive: timeout=time” response header field. Two parameters may differ.
+
+The “Keep-Alive: timeout=time” header field is recognized by Mozilla and Konqueror. MSIE closes keep-alive connections by itself in about 60 seconds.
+</code></pre></td></tr></table>
+</div>
+</div><p>此外，而且上层程序也需要对当前的连接进行探活，下面看 <code>reids</code> 的相关配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># Close the connection after a client is idle for N seconds (0 to disable)
+timeout 0
+
+
+# TCP keepalive.
+#
+# If non-zero, use SO_KEEPALIVE to send TCP ACKs to clients in absence
+# of communication. This is useful for two reasons:
+#
+# 1) Detect dead peers.
+# 2) Take the connection alive from the point of view of network
+#    equipment in the middle.
+#
+# On Linux, the specified value (in seconds) is the period used to send ACKs.
+# Note that to close the connection the double of the time is needed.
+# On other kernels the period depends on the kernel configuration.
+#
+# A reasonable value for this option is 300 seconds, which is the new
+# Redis default starting with Redis 3.2.1.
+tcp-keepalive 300
+</code></pre></td></tr></table>
+</div>
+</div><p>也即，对于 <code>redis</code> 来说，为了避免太多空闲的 <code>client</code>，最大化利用性能</p>
 <h1 id="关闭">关闭</h1>
 <p>我们使用 <code>client</code> 表示主动发起关闭方，<code>server</code> 表示被动响应关闭方。</p>
 <p>关闭一个 <code>TCP</code> 连接，大致流程如下：</p>
@@ -435,7 +506,7 @@ tcp-backlog 511
 <h1 id="参考">参考</h1>
 <p>最后，用一张图结束本文：</p>
 <p><img src="/img/tcp.png" alt=""></p>
-<p>下面有一些有用到文章，都是干货。</p>
+<p>参考：</p>
 <ul>
 <li>
 <p><a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">wikipedia - TCP</a></p>
@@ -447,7 +518,10 @@ tcp-backlog 511
 <p><a href="https://www.cnblogs.com/grey-wolf/p/10999342.html">How TCP backlog works in Linux - 中文翻译</a></p>
 </li>
 <li>
-<p><a href="%5Bhttps://plantegg.github.io/2017/06/07/%E5%B0%B1%E6%98%AF%E8%A6%81%E4%BD%A0%E6%87%82TCP--%E5%8D%8A%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97%E5%92%8C%E5%85%A8%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97/%5D(https://plantegg.github.io/2017/06/07/%E5%B0%B1%E6%98%AF%E8%A6%81%E4%BD%A0%E6%87%82TCP--%E5%8D%8A%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97%E5%92%8C%E5%85%A8%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97/)">就是要你懂TCP&ndash;半连接队列和全连接队列</a></p>
+<p><a href="http://www.tldp.org/HOWTO/html_single/TCP-Keepalive-HOWTO/">TCP-Keepalive-HOWTO</a></p>
+</li>
+<li>
+<p><a href="%5Bhttps://plantegg.github.io/2017/06/07/%E5%B0%B1%E6%98%AF%E8%A6%81%E4%BD%A0%E6%87%82TCP--%E5%8D%8A%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97%E5%92%8C%E5%85%A8%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97/%5D(https://plantegg.github.io/2017/06/07/%E5%B0%B1%E6%98%AF%E8%A6%81%E4%BD%A0%E6%87%82TCP--%E5%8D%8A%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97%E5%92%8C%E5%85%A8%E8%BF%9E%E6%8E%A5%E9%98%9F%E5%88%97/)">半连接队列和全连接队列</a></p>
 </li>
 <li>
 <p><a href="https://cjting.me/2019/08/28/tcp-queue/">从一次 Connection Reset 说起，TCP 半连接队列与全连接队列</a></p>
@@ -457,6 +531,9 @@ tcp-backlog 511
 </li>
 <li>
 <p><a href="https://www.cnxct.com/something-about-phpfpm-s-backlog/">TCP SOCKET中backlog参数的用途是什么？</a></p>
+</li>
+<li>
+<p><a href="https://blog.51cto.com/welcomeweb/1931087">详解Nginx中HTTP的keepalive相关配置</a></p>
 </li>
 </ul>
 
