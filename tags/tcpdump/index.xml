@@ -17,7 +17,7 @@
       <pubDate>Wed, 22 Jul 2020 19:11:10 +0800</pubDate>
       
       <guid>https://liuyu121.github.io/post/tcpdump/</guid>
-      <description>1 2 3 sudo tcpdump -nn -i lo0 port 6379 and tcp -X -s 0 &amp;gt; redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &amp;#39;LISTEN&amp;#39; 重点关注 FLAGS 如下字段： [S]：SYN [F]：FIN [.]：ACK Linux： 1 2</description>
+      <description>1 2 3 sudo tcpdump -l -vv -nn -X -s 0 -i lo0 tcp port 6379 &amp;gt; redis2.log &amp;amp; tail -f redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &amp;#39;LISTEN&amp;#39; 其中： -l：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就</description>
     </item>
     
   </channel>
