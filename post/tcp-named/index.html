@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="Liuduoyu" /><meta name="description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+<meta name="author" content="Liuduoyu" /><meta name="description" content="MSL、TTL、RTT、RTO、MSS、MTU TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
 
 
 
@@ -40,22 +40,22 @@
 
 
 <meta property="og:title" content="TCP 名词解释" />
-<meta property="og:description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重" />
+<meta property="og:description" content="MSL、TTL、RTT、RTO、MSS、MTU TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://liuyu121.github.io/post/tcp-named/" />
 <meta property="article:published_time" content="2020-07-22T19:11:10+08:00" />
 <meta property="article:modified_time" content="2020-07-22T19:11:10+08:00" />
 <meta itemprop="name" content="TCP 名词解释">
-<meta itemprop="description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重">
+<meta itemprop="description" content="MSL、TTL、RTT、RTO、MSS、MTU TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的">
 <meta itemprop="datePublished" content="2020-07-22T19:11:10&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-22T19:11:10&#43;08:00" />
-<meta itemprop="wordCount" content="1316">
+<meta itemprop="wordCount" content="949">
 
 
 
 <meta itemprop="keywords" content="tcp," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="TCP 名词解释"/>
-<meta name="twitter:description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重"/>
+<meta name="twitter:description" content="MSL、TTL、RTT、RTO、MSS、MTU TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -135,11 +135,10 @@
 
     
     <div class="post-content">
-      <h1 id="mslttlrtt">MSL、TTL、RTT</h1>
+      <h1 id="mslttlrttrtomssmtu">MSL、TTL、RTT、RTO、MSS、MTU</h1>
 <h2 id="ttl">TTL</h2>
 <p><code>ip</code> 首部 有个  <code>8bits</code> 的域 <code>TTL</code> ，本意为 <code>time to live</code>（单位秒），具体实现时，用来表示一个 <code>ip</code> 数据报可以经过的最大路由数，所以 <code>IPv6</code> 直接重命名为了 <code>hop limit</code>，也即所谓跳数。</p>
 <p>该值由源主机设置，每过一个路由器则减一，减至 <code>0</code> 时会被丢弃，同时发送 <code>ICMP</code> 报文通知源主机。</p>
-<p>TTL字段的目的是避免这样一种情况:无法交付的数据报一直在Internet系统上循环，而这样的系统最终会被这样的“神仙”淹没。</p>
 <p>之所以存在 <code>TTL</code>，是为了避免无法正常交付的数据包在网络中循环，成为了 <code>永不消散的幽灵</code>，最后网络就被越来越多的这种报文淹没，无法正常工作。</p>
 <p>因为 <code>8bits</code>，所以最多长度为 <code>255</code>，一个推荐的值是 <code>64</code>。</p>
 <p>查看方式如下：</p>
@@ -176,8 +175,8 @@ net.inet.ip.ttl: <span class="m">64</span>
 </code></pre></td></tr></table>
 </div>
 </div><h2 id="msl">MSL</h2>
-<p><code>MSL</code>  也即  <code>Maximum segment lifetime</code>，表示任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。</p>
-<p><code>RFC 793</code> 中规定 <code>MSL</code> 为 <code>2</code> 分钟，实际应用中常用的是30秒，1分钟和2分钟等。</p>
+<p><code>MSL</code>  也即  <code>Maximum segment lifetime</code>，表示任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。这个值需要大于 <code>TTL</code>。</p>
+<p><code>RFC 793</code> 中规定 <code>MSL</code> 为 <code>2</code> 分钟，实际应用中常用的是 <code>30秒</code>。</p>
 <p>查看方式如下：</p>
 <ul>
 <li><code>Linux</code></li>
@@ -205,7 +204,7 @@ net.inet.ip.ttl: <span class="m">64</span>
 net.inet.tcp.msl: <span class="m">15000</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><code>MSL</code> 常被用于<code>TCP</code> 连接维持在 <code>TIME_WAIT</code> 的最长时间，也即 <code>2*MSL</code>，这里，为什么需要  <code>2MSL</code> 呢</p>
+</div><p><code>MSL</code> 常被用于<code>TCP</code> 连接维持在 <code>TIME_WAIT</code> 的最长时间，也即 <code>2*MSL</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -217,13 +216,16 @@ net.ipv4.tcp_orphan_retries = 0
 </code></pre></td></tr></table>
 </div>
 </div><h2 id="rtt">RTT</h2>
-<p><code>RTT</code> 表示 <code>round-trip time</code>，</p>
-<pre><code> 2MSL即两倍的MSL，TCP的TIME_WAIT状态也称为2MSL等待状态，当TCP的一端发起主动关闭，在发出最后一个ACK包后，即第3次握手完成后发送了第四次握手的ACK包后就进入了TIME_WAIT状态，必须在此状态上停留两倍的MSL时间，等待2MSL时间主要目的是怕最后一个ACK包对方没收到，那么对方在超时后将重发第三次握手的FIN包，主动关闭端接到重发的FIN包后可以再发一个ACK应答包。在TIME_WAIT状态时两端的端口不能使用，要等到2MSL时间结束才可继续使用。当连接处于2MSL等待阶段时任何迟到的报文段都将被丢弃。不过在实际应用中可以通过设置SO_REUSEADDR选项达到不必等待2MSL时间结束再使用此端口。
-
-TTL与MSL是有关系的但不是简单的相等的关系，MSL要大于等于TTL。   （MSL要大于TTL       要知道为什么？）
-</code></pre>
-<p>3、 RTT是客户到服务器往返所花时间（round-trip time，简称RTT），TCP含有动态估算RTT的算法。TCP还持续估算一个给定连接的RTT，这是因为RTT受网络传输拥塞程序的变化而变化</p>
-<p>4、 2MSL即两倍的MSL，TCP的TIME_WAIT状态也称为2MSL等待状态，当TCP的一端发起主动关闭，在发出最后一个ACK包后，即第3次握 手完成后发送了第四次握手的ACK包后就进入了TIME_WAIT状态，必须在此状态上停留两倍的MSL时间，等待2MSL时间主要目的是怕最后一个 ACK包对方没收到，那么对方在超时后将重发第三次握手的FIN包，主动关闭端接到重发的FIN包后可以再发一个ACK应答包。在TIME_WAIT状态 时两端的端口不能使用，要等到2MSL时间结束才可继续使用。当连接处于2MSL等待阶段时任何迟到的报文段都将被丢弃。不过在实际应用中可以通过设置 SO_REUSEADDR选项达到不必等待2MSL时间结束再使用此端口。对于TCP中的各种控制字段，接下来进行具体说明。</p>
+<p><code>RTT</code> 全称为 <code>round-trip time</code>，也即 <code>往返时间</code>，在 <code>TCP</code> 协议下，表示数据发送至收到对方确认接收的总时间。<code>TCP</code>会 根据一套算法动态估算 <code>RTT</code>，用与流量控制、滑动窗口收缩等</p>
+<h2 id="rto">RTO</h2>
+<p><code>RTO</code>：<code>Retransmission TimeOut</code>，也即超时重传时间，比如 <code>TCP</code> 主动关闭方在 <code>FIN_WAIT_1</code> 下没收到对方的 <code>ACK</code> 会自动重传等。同样的，<code>TCP</code> 会根据要算法动态估算 <code>RTO</code>，所以与 <code>RTT</code> 一样，都是动态变化的。</p>
+<p><code>RTO</code> 与 <code>RTT</code> 直接相关，当 <code>RTO &lt; RTT</code> 时, 将会导致过多重传；当 <code>RTO &gt; RTT</code> 时, 如果网络状况糟糕，频繁出现丢包，重传不及时会恶化网络。综合考虑，所以一般 <code>RTO</code> 会少大于 <code>RTT</code>。</p>
+<p>指数退避算法：每发生一次重传，<code>RTO</code> 就加倍，即 <code>RTO=2*RTO</code>。类似于滑动窗口的增大与收缩算法。</p>
+<h2 id="mtu">MTU</h2>
+<p><code>MTU</code>（<code>Maximum Transmission Unit</code>），最大传输单元。表示 <code>IP</code> 数据报经过一个物理网络所被允许的最大报文长度，其中包括了 <code>IP首部</code>(<code>20~60</code> 字节不等)，一般以太网的 <code>MTU</code> 设为 <code>1500</code> 字节，加上以太帧首部的长度 <code>14</code> 字节，也就是一个数据帧不会超过 <code>1500+14 = 1514</code> 字节。</p>
+<h2 id="mss">MSS</h2>
+<p><code>MSS</code>（<code>Maximum Segment Size</code>），表示最大报文段，也即 <code>TCP</code> 通信双方在三次握手阶段，根据 <code>win</code> 窗口协商后得出的一个值（取双方最小值），其中不包括 <code>TCP</code>首部长度。</p>
+<p>一般来说，<code>MSS = MTU - IP首部大小 - TCP首部大小</code>。</p>
 
     </div>
 

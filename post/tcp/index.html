@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="6263">
+<meta itemprop="wordCount" content="6264">
 
 
 
@@ -226,7 +226,7 @@
 </ul>
 <p>为什么不是 <code>4</code> 次握手 呢，因为 <code>TCP</code> 协议允许同时发送 <code>ACK + SYN</code>，也即握手的第二步。然后通过以上分析，这里我们已经知道最少需要 <code>3</code> 次就已经可以建立了，所以，为什么还要多一次呢，浪费资源 。。。</p>
 <h2 id="backlog-是什么">backlog 是什么</h2>
-<p>在上面的示意图中，我们可以看到，<code>server</code> 端有两个 <code>queue</code>：<code>syn queue</code>、<code>accept queue</code>，其含义为:</p>
+<p>在上面的示意图中，我们可以看到，<code>server</code> 端有两个 <code>queue</code>：<code>syn queue</code>、<code>accept queue</code>，其含义为：</p>
 <ul>
 <li>
 <p><code>syn queue</code>：半连接队列（<code>Half-open Connection</code>)。当 <code>server</code> 收到 <code>SYN</code> 报文后（<code>&gt;=1</code> 个），内核需要维护这些连接，所以需要一个队列保存下来，也即这里的 <code>syn queue</code>，同时发送 <code>SYN+ACK</code> 给 <code>client</code>。</p>
@@ -546,7 +546,7 @@ net.ipv4.tcp_orphan_retries <span class="o">=</span> <span class="m">0</span>
 net.ipv4.tcp_fin_timeout <span class="o">=</span> <span class="m">30</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><code>linux</code> 下，提供了 <code>net.ipv4.tcp_max_tw_buckets</code> 参数来控制 <code>TIME_WAIT</code> 的连接数量，超过后，新关闭的连接就不再经历 <code>TIME_WAIT</code> 而直接关闭。如果服务器的并发连接增多时，<code>TIME_WAIT</code> 状态的连接数也会变多，此时就应当调大 <code>tcp_max_tw_buckets</code>，减少不同连接间数据错乱的概率。因为系统的内存和端口号都是有限的，还可以让新连接复用 <code>TIME_WAIT</code> 状态的端口，配置 <code>net.ipv4.tcp_tw_reuse = 1</code>，同时需要双方都把 `net.ipv4.tcp_timestamps = 1</p>
+</div><p><code>linux</code> 下，提供了 <code>net.ipv4.tcp_max_tw_buckets</code> 参数来控制 <code>TIME_WAIT</code> 的连接数量，超过后，新关闭的连接就不再经历 <code>TIME_WAIT</code> 而直接关闭。如果服务器的并发连接增多时，<code>TIME_WAIT</code> 状态的连接数也会变多，此时就应当调大 <code>tcp_max_tw_buckets</code>，减少不同连接间数据错乱的概率。因为系统的内存和端口号都是有限的，还可以让新连接复用 <code>TIME_WAIT</code> 状态的端口，配置 <code>net.ipv4.tcp_tw_reuse = 1</code>，同时需要双方都把 <code>net.ipv4.tcp_timestamps = 1</code>。</p>
 <h2 id="流程图">流程图</h2>
 <p>关闭一个 <code>tcp</code>  链接的流程图如下：</p>
 <p><img src="/img/tcp-close.png" alt=""></p>

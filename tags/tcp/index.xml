@@ -17,7 +17,16 @@
       <pubDate>Wed, 22 Jul 2020 19:11:10 +0800</pubDate>
       
       <guid>https://liuyu121.github.io/post/tcp-named/</guid>
-      <description>MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重</description>
+      <description>MSL、TTL、RTT、RTO、MSS、MTU TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的</description>
+    </item>
+    
+    <item>
+      <title>Tcpdump</title>
+      <link>https://liuyu121.github.io/post/tcpdump/</link>
+      <pubDate>Wed, 22 Jul 2020 19:11:10 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/tcpdump/</guid>
+      <description>1 2 3 sudo tcpdump -l -vv -nn -X -s 0 -i lo0 tcp port 6379 &amp;gt; redis2.log &amp;amp; tail -f redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &amp;#39;LISTEN&amp;#39; 其中： -l：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就</description>
     </item>
     
     <item>
