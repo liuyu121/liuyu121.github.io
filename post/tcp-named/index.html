@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Tcpdump - 日拱一卒</title>
+  <title>TCP 名词解释 - 日拱一卒</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="Liuduoyu" /><meta name="description" content="1 2 3 sudo tcpdump -l -vv -nn -X -s 0 -i lo0 tcp port 6379 &amp;gt; redis2.log &amp;amp; tail -f redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &amp;#39;LISTEN&amp;#39; 其中： -l：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+<meta name="author" content="Liuduoyu" /><meta name="description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
 
 
 
@@ -26,7 +26,7 @@
 <meta name="generator" content="Hugo 0.73.0 with theme even" />
 
 
-<link rel="canonical" href="https://liuyu121.github.io/post/tcpdump/" />
+<link rel="canonical" href="https://liuyu121.github.io/post/tcp-named/" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -39,23 +39,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="Tcpdump" />
-<meta property="og:description" content="1 2 3 sudo tcpdump -l -vv -nn -X -s 0 -i lo0 tcp port 6379 &gt; redis2.log &amp; tail -f redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &#39;LISTEN&#39; 其中： -l：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就" />
+<meta property="og:title" content="TCP 名词解释" />
+<meta property="og:description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://liuyu121.github.io/post/tcpdump/" />
+<meta property="og:url" content="https://liuyu121.github.io/post/tcp-named/" />
 <meta property="article:published_time" content="2020-07-22T19:11:10+08:00" />
 <meta property="article:modified_time" content="2020-07-22T19:11:10+08:00" />
-<meta itemprop="name" content="Tcpdump">
-<meta itemprop="description" content="1 2 3 sudo tcpdump -l -vv -nn -X -s 0 -i lo0 tcp port 6379 &gt; redis2.log &amp; tail -f redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &#39;LISTEN&#39; 其中： -l：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就">
+<meta itemprop="name" content="TCP 名词解释">
+<meta itemprop="description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重">
 <meta itemprop="datePublished" content="2020-07-22T19:11:10&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-22T19:11:10&#43;08:00" />
-<meta itemprop="wordCount" content="1613">
+<meta itemprop="wordCount" content="1316">
 
 
 
-<meta itemprop="keywords" content="tcpdump," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Tcpdump"/>
-<meta name="twitter:description" content="1 2 3 sudo tcpdump -l -vv -nn -X -s 0 -i lo0 tcp port 6379 &gt; redis2.log &amp; tail -f redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &#39;LISTEN&#39; 其中： -l：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就"/>
+<meta itemprop="keywords" content="tcp," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="TCP 名词解释"/>
+<meta name="twitter:description" content="MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -122,7 +122,7 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">Tcpdump</h1>
+      <h1 class="post-title">TCP 名词解释</h1>
 
       <div class="post-meta">
         <span class="post-time"> 2020-07-22 </span>
@@ -135,82 +135,53 @@
 
     
     <div class="post-content">
-      <div class="highlight"><div class="chroma">
+      <h1 id="mslttlrtt">MSL、TTL、RTT</h1>
+<h2 id="ttl">TTL</h2>
+<p><code>ip</code> 首部 有个  <code>8bits</code> 的域 <code>TTL</code> ，本意为 <code>time to live</code>（单位秒），具体实现时，用来表示一个 <code>ip</code> 数据报可以经过的最大路由数，所以 <code>IPv6</code> 直接重命名为了 <code>hop limit</code>，也即所谓跳数。</p>
+<p>该值由源主机设置，每过一个路由器则减一，减至 <code>0</code> 时会被丢弃，同时发送 <code>ICMP</code> 报文通知源主机。</p>
+<p>TTL字段的目的是避免这样一种情况:无法交付的数据报一直在Internet系统上循环，而这样的系统最终会被这样的“神仙”淹没。</p>
+<p>之所以存在 <code>TTL</code>，是为了避免无法正常交付的数据包在网络中循环，成为了 <code>永不消散的幽灵</code>，最后网络就被越来越多的这种报文淹没，无法正常工作。</p>
+<p>因为 <code>8bits</code>，所以最多长度为 <code>255</code>，一个推荐的值是 <code>64</code>。</p>
+<p>查看方式如下：</p>
+<ul>
+<li><code>Linux</code></li>
+</ul>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">sudo tcpdump -l -vv  -nn -X -s <span class="m">0</span> -i lo0 tcp port <span class="m">6379</span> &gt; redis2.log <span class="p">&amp;</span> tail -f redis.log
-
-netstat -anl <span class="p">|</span> grep -i <span class="m">6379</span> <span class="p">|</span> grep -i tcp4 <span class="p">|</span> grep -iv <span class="s1">&#39;LISTEN&#39;</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>其中：</p>
-<ul>
-<li>
-<p><code>-l</code>：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就马上把这行的内容打印出来。因为 <code>tcpdump</code> 默认会将输出写到缓冲区，只有缓冲区内容达到一定的大小，或者 <code>tcpdump</code> 退出时，才会将输出写到本地磁盘。我们为了 <code>tail</code> 查看，需要设置。</p>
-</li>
-<li>
-<p><code>-vv</code>：更详细显示指令执行过程</p>
-</li>
-<li>
-<p><code>-nn</code>：<code>-n</code> 不显示主机名等，<code>-nn</code> 在此之外还把端口显示为数值，否则显示端口服务名。</p>
-</li>
-<li>
-<p><code>-x</code>：用十六进制字码列出数据包资料</p>
-</li>
-<li>
-<p><code>-s</code> ：不设置数据包大小</p>
-</li>
-<li>
-<p><code>-i</code>：指定网卡，这里是 <code>mac</code> 机器的 <code>lo0</code></p>
-</li>
-<li>
-<p><code>tcp port 6379</code>：指定为 <code>tcp</code> 协议的  <code>6379</code> 端口，因为五元组 <code>&lt;协议 + 源ip + 源端口 + 目的ip + 目的端口&gt;</code> 可唯一判断一个传输层协议。</p>
-</li>
-</ul>
-<p>重点关注 <code>FLAGS</code> 如下字段：</p>
-<ul>
-<li><code>[S]</code>：<code>SYN</code></li>
-<li><code>[F]</code>：<code>FIN</code></li>
-<li><code>[.]</code>：表示没有 <code>Flag</code>，其实也即 <code>ACK</code>。</li>
-<li><code>[S.]</code> ：表示 <code>SYN + ACK</code>，也即 <code>SYN</code> 的应答报文。</li>
-<li><code>[F.]</code> ：表示 <code>FIN + ACK</code>，也即 <code>FIN</code> 的应答报文。</li>
-</ul>
-<h2 id="mslttlrtt">MSL、TTL、RTT</h2>
-<h3 id="ttl">TTL</h3>
-<p><code>ip</code> 首部 有个 <code>TTL</code> ，本意为 <code>time to live</code>（单位秒），具体实现时，用来表示一个 <code>ip</code> 数据报可以经过的最大路由数，所以 <code>IPv6</code> 直接重命名为了 <code>hop limit</code>，也即所谓跳数。</p>
-<p>该值由源主机设置，每过一个路由器则减一，减至 <code>0</code> 时会被丢弃，同时发送 <code>ICMP</code> 报文通知源主机。</p>
-<p>TTL字段的目的是避免这样一种情况:无法交付的数据报一直在Internet系统上循环，而这样的系统最终会被这样的“神仙”淹没。</p>
-<p>之所以存在 <code>TTL</code>，是为了避免无法正常交付的数据包在网络中循环，成为了 <code>永不消散的幽灵</code>，最后网络就被越来越多的这种报文淹没，无法正常工作。</p>
-<p><code>linux</code> 下可以这么查看：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
+</span><span class="lnt">4
+</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-shell" data-lang="shell">$ cat  /proc/sys/net/ipv4/ip_default_ttl
 <span class="m">255</span>
+
+$ sudo sysctl -a <span class="p">|</span> grep -i <span class="s1">&#39;net.ipv4.ip_default_ttl&#39;</span>
+net.ipv4.ip_default_ttl <span class="o">=</span> <span class="m">255</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>或</p>
+</div><ul>
+<li><code>Mac</code> ：</li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo sysctl -a <span class="p">|</span> grep -i <span class="s1">&#39;net.ipv4.ip_default_ttl&#39;</span>
-net.ipv4.ip_default_ttl <span class="o">=</span> <span class="m">255</span>
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sysctl -a <span class="p">|</span> grep -i net.inet.ip.ttl
+net.inet.ip.ttl: <span class="m">64</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="msl">MSL</h3>
-<p><code>MSL</code>  也即 <code>Maximum segment lifetime</code>，表示任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。</p>
-<p>RFC 793中规定MSL为2分钟，实际应用中常用的是30秒，1分钟和2分钟等。</p>
-<p><code>Linux</code>：</p>
+</div><h2 id="msl">MSL</h2>
+<p><code>MSL</code>  也即  <code>Maximum segment lifetime</code>，表示任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。</p>
+<p><code>RFC 793</code> 中规定 <code>MSL</code> 为 <code>2</code> 分钟，实际应用中常用的是30秒，1分钟和2分钟等。</p>
+<p>查看方式如下：</p>
+<ul>
+<li><code>Linux</code></li>
+</ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -222,7 +193,7 @@ net.ipv4.ip_default_ttl <span class="o">=</span> <span class="m">255</span>
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><code>Mac os x</code>：</li>
+<li><code>Mac</code></li>
 </ul>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -234,8 +205,19 @@ net.ipv4.ip_default_ttl <span class="o">=</span> <span class="m">255</span>
 net.inet.tcp.msl: <span class="m">15000</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="rtt">RTT</h3>
-<p><code>RTT</code> 表示 <code>round-trip time</code></p>
+</div><p><code>MSL</code> 常被用于<code>TCP</code> 连接维持在 <code>TIME_WAIT</code> 的最长时间，也即 <code>2*MSL</code>，这里，为什么需要  <code>2MSL</code> 呢</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ sudo sysctl -a | grep -i tcp_orphan_retries
+net.ipv4.tcp_orphan_retries = 0
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="rtt">RTT</h2>
+<p><code>RTT</code> 表示 <code>round-trip time</code>，</p>
 <pre><code> 2MSL即两倍的MSL，TCP的TIME_WAIT状态也称为2MSL等待状态，当TCP的一端发起主动关闭，在发出最后一个ACK包后，即第3次握手完成后发送了第四次握手的ACK包后就进入了TIME_WAIT状态，必须在此状态上停留两倍的MSL时间，等待2MSL时间主要目的是怕最后一个ACK包对方没收到，那么对方在超时后将重发第三次握手的FIN包，主动关闭端接到重发的FIN包后可以再发一个ACK应答包。在TIME_WAIT状态时两端的端口不能使用，要等到2MSL时间结束才可继续使用。当连接处于2MSL等待阶段时任何迟到的报文段都将被丢弃。不过在实际应用中可以通过设置SO_REUSEADDR选项达到不必等待2MSL时间结束再使用此端口。
 
 TTL与MSL是有关系的但不是简单的相等的关系，MSL要大于等于TTL。   （MSL要大于TTL       要知道为什么？）
@@ -261,21 +243,17 @@ TTL与MSL是有关系的但不是简单的相等的关系，MSL要大于等于TT
   
   <p class="copyright-item">
     <span class="item-title">Permalink</span>
-    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/tcpdump/" target="_blank">Permalink to this page</a></span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/tcp-named/" target="_blank">Permalink to this page</a></span>
   </p>
 </div>
 <footer class="post-footer">
       <div class="post-tags">
-          <a href="/tags/tcpdump/">tcpdump</a>
+          <a href="/tags/tcp/">tcp</a>
           </div>
       <nav class="post-nav">
-        <a class="prev" href="/post/tcp-named/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">TCP 名词解释</span>
-            <span class="prev-text nav-mobile">Prev</span>
-          </a>
-        <a class="next" href="/post/reading/">
-            <span class="next-text nav-default">看过的书</span>
+        
+        <a class="next" href="/post/tcpdump/">
+            <span class="next-text nav-default">Tcpdump</span>
             <span class="next-text nav-mobile">Next</span>
             <i class="iconfont icon-right"></i>
           </a>

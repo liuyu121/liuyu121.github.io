@@ -12,6 +12,15 @@
     
     
     <item>
+      <title>TCP 名词解释</title>
+      <link>https://liuyu121.github.io/post/tcp-named/</link>
+      <pubDate>Wed, 22 Jul 2020 19:11:10 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/tcp-named/</guid>
+      <description>MSL、TTL、RTT TTL ip 首部 有个 8bits 的域 TTL ，本意为 time to live（单位秒），具体实现时，用来表示一个 ip 数据报可以经过的最大路由数，所以 IPv6 直接重</description>
+    </item>
+    
+    <item>
       <title>Tcpdump</title>
       <link>https://liuyu121.github.io/post/tcpdump/</link>
       <pubDate>Wed, 22 Jul 2020 19:11:10 +0800</pubDate>

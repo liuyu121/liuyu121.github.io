@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="4612">
+<meta itemprop="wordCount" content="6263">
 
 
 
@@ -148,7 +148,7 @@
 <li><code>FIN</code>：<code>Finish</code>，表示关闭连接。</li>
 <li><code>ACK</code>：<code>Acknowledge</code>，表示确认。</li>
 <li><code>PSH</code>： <code>Push</code>，表示当前正在传输数据</li>
-<li><code>RST</code>： <code>Reset</code>，表示连接重置。</li>
+<li><code>RST</code>： <code>Reset</code>，表示连接重置，一方可以主动发送该状态断开连接。</li>
 </ul>
 <p>然后，有两个重要的 <code>32位</code> 序列号：</p>
 <ul>
@@ -424,33 +424,29 @@ tcp-keepalive 300
 </div><p>也即，对于 <code>redis</code> 来说，为了避免太多空闲的 <code>client</code>，最大化利用性能</p>
 <h1 id="关闭">关闭</h1>
 <p>我们使用 <code>client</code> 表示主动发起关闭方，<code>server</code> 表示被动响应关闭方。</p>
+<h2 id="四次挥手">四次挥手</h2>
 <p>关闭一个 <code>TCP</code> 连接，大致流程如下：</p>
 <ul>
 <li>
-<p>1、<code>client</code> 发送请求关闭连接的报文，其中 <code>FIN = 1, seq = x</code>。</p>
+<p>1、<code>client</code> 调用  <code>close</code> 发送请求关闭连接的 <code>FIN</code> 报文，此后，<code>client</code> 进入 <code>FIN_WAIT_1</code> 状态。</p>
+</li>
+<li>
+<p>2、<code>server</code> 收到 <code>FIN</code> 报文后，内核自动回复 <code>ACK</code>，然后连接进入 <code>CLOSE_WAIT</code> 状态。该状态表示该连接正在等待进程调用 <code>close</code> 关闭，此时，进程可能还有别的事情要处理。</p>
 <ul>
-<li>此时，<code>client</code> 进入 <code>FIN_WAIT_1</code> 状态。</li>
+<li><code>client</code> 收到 <code>ACK</code> 后，进入 <code>FIN_WAIT_2</code> 状态，表示等待 <code>server</code> 主动关闭连接。此时，实际上 <code>client</code> 的<strong>发送通道已经关闭了，但连接还未关闭</strong>。</li>
 </ul>
 </li>
 <li>
-<p>2、<code>server</code> 收到 <code>FIN</code> 报文后，发送一个 <code>ACK = 1, ack = x+1</code>，表示已经收到了关闭的请求。注意，这里不是立即关闭，因为此时可能还要别的数据要接收、处理等。</p>
-<ul>
-<li>此时，<code>server</code> 进入 <code>CLOSE_WAIT</code> 状态；<code>client</code> 收到 <code>ACK</code> 后 进入 <code>FIN_WAIT_2</code> 状态。</li>
-</ul>
+<p>3、当 <code>server</code> 进入 <code>CLOSE_WAIT</code> 状态时，进程继续 <code>read</code> 时会返回 <code>0</code>，通常的处理逻辑是在这个 <code>if (read() == 0)</code> 下调用 <code>close</code>，触发内核发送 <code>FIN</code> 报文，此时状态变为 <code>LAST_ACK</code>。</p>
 </li>
 <li>
-<p>3、<code>server</code> 处理完了当前工作，可以关闭了，发送一个 <code>FIN = 1, seq = y</code> 的报文，然后等待 <code>client</code> 的响应，就可以关闭当前连接了。</p>
+<p>4、<code>client</code> 收到这个 <code>FIN</code> 后，内核会自动回复 <code>ACK</code>，然后连接进入 <code>TIME_WAIT</code> 状态，然后继续等待 <code>2MSL</code> 后关闭连接。</p>
 <ul>
-<li>此时，<code>server</code> 进入 <code>LAST_ACK</code> 状态。</li>
-</ul>
-</li>
-<li>
-<p>4、<code>client</code> 收到 <code>FIN</code> 报文，发送一个 <code>ACK = 1, seq = y+1</code>，此时</p>
-<ul>
-<li>此时，<code>client</code>  进入 <code>TIME_WAIT</code> 状态，等待一段时间后，关闭连接；<code>server</code> 收到 <code>ACK</code>  关闭连接；</li>
+<li><code>server</code> 收到 <code>ACK</code> 后，关闭连接，至此，双方都成功关闭。</li>
 </ul>
 </li>
 </ul>
+<p>大体流程如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -489,19 +485,81 @@ tcp-keepalive 300
       CLOSED
 </code></pre></td></tr></table>
 </div>
-</div><p>关闭一个 <code>tcp</code>  链接的流程图如下：</p>
+</div><p>这里，需要强调的是：</p>
+<ul>
+<li>
+<p><code>TCP</code> 必须保证报文是有序发送的，<code>FIN</code> 报文也需要遵循这个规则，当 <code>发送缓冲区</code>还有数据没发送时，<code>FIN</code> 报文不能提前发送。</p>
+</li>
+<li>
+<p>如果是调用  <code>close 函数</code> 主动关闭，处于 <code>FIN_WAIT_1</code> 或 <code>FIN_WAIT_2</code> 状态下的连接，则会成为 <code>孤儿连接</code>，通过  <code>netstat  -anp | grep -i fin</code> 查看，是看不到 <code>进程</code> 相关信息的。这时，即便对方继续传输数据，进程也接收不到了。也即，<strong>这个连接已经和之前所属的进程无关了</strong>。</p>
+</li>
+<li>
+<p>如果是调用 <code>shutdown 函数</code> 主动关闭，<code>TCP</code> 允许在半关闭的连接上长时间传输数据，处于 <code>FIN_WAIT_1</code> 或 <code>FIN_WAIT_2</code> 状态下的连接，不是孤儿连接，进程仍然可以继续接收数据。</p>
+</li>
+</ul>
+<h2 id="参数调优">参数调优</h2>
+<h3 id="主动关闭方">主动关闭方</h3>
+<p>看完上面的流程，针对主动关闭方，就会有些疑问了，比如，假设 <code>client</code> 一直没收到 <code>ACK</code> 怎么办，会一直处于 <code>FIN_WAIT_1</code> 状态吗？<code>client</code>  处于 <code>TIME_WAIT</code> 后如何处理？<code>server</code> 到底什么时候真正关闭连接？</p>
+<p>下面逐个状态具体分析。</p>
+<ul>
+<li><code>FIN_WAIT_1</code></li>
+</ul>
+<p>如果  <code>client</code> 一直没收到 <code>ACK</code>，也就会一直处于 <code>FIN_WAIT_1</code>  状态。此时，内核会根据 <code>net.ipv4.tcp_orphan_retries</code> 的配置定时重发 <code>FIN</code>，直至重试失败，直接关闭。该参数会对所有处于 <code>FIN_WAIT_1</code> 的连接生效，不仅仅是 <code>孤儿连接</code>，默认重试发送 <code>8</code> 次，也即如果没收到 <code>ACK</code>，主动关闭方会发送 <code>9</code> 次 <code>FIN</code> ！至于这个定时时间是多久，取决于当前的 <code>RTO</code>，一般是经过采样然后加权计算出来的。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1">## 这里，默认为 0，表示取默认值 8</span>
+net.ipv4.tcp_orphan_retries <span class="o">=</span> <span class="m">0</span>
+
+<span class="c1">## 默认值参见头文件 /usr/include/netinet/tcp.h 定义</span>
+<span class="c1">#define TCP_LINGER2	 8	/* Life time of orphaned FIN-WAIT-2 state */</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>所以，如果服务器有大量的 <code>FIN_WAIT_1</code>，可以考虑减少 <code>net.ipv4.tcp_orphan_retries</code> 的值，避免过多的重试。</p>
+<p>在 <code>FIN_WAIT_1</code> 状态下，还有一个很重要的参数：<code>net.ipv4.tcp_max_orphans</code>，用来控制系统所维持的该状态下连接数的最大值。如果孤儿连接数量大于该值，新增的孤儿连接将不再走四次挥手过程，而是直接发送  <code>RST</code> 报文强制关闭该连接。</p>
+<p>该参数主要是用来防范恶意攻击，比如攻击者恶意构造 <code>接收窗口为 0</code> 的报文，因为 <code>TCP</code> 的流量控制策略，此时不能继续发送数据了，导致 <code>FIN</code> 无法发送，然后越来越多的连接一直处于 <code>FIN_WAIT_1</code> 状态，最终系统不可用。</p>
+<ul>
+<li><code>FIN_WAIT_2</code></li>
+</ul>
+<p>前面已经提到，<code>shutdown</code>、<code>close</code> 的关闭模式不一样，前者关闭，连接可以一直处于 <code>FIN_WAIT_2</code>  状态了；而 <code>close</code> 下的关闭，这个状态不能存在太久，取决于 <code>net.ipv4.tcp_fin_timeout</code> 参数的配置，其实这个参数控制的就是有名的 <code>MSL</code>。如果一直没收到对端发送的 <code>FIN</code>，在超过这个时间后， 这个连接会被直接关闭。</p>
+<ul>
+<li><code>TIME_WAIT</code></li>
+</ul>
+<p>从四次挥手的过程，可以知道，<code>client</code> 收到 <code>server</code> 的 <code>FIN</code> 后，进入 <code>TIME_WAIT</code>，然后需要等待 <code>2MSL</code> 也即 <code>2 * net.ipv4.tcp_fin_timeout</code> 时间，再关闭连接。</p>
+<p>为什么要等 <code>2MSL</code> 这么多时间呢？</p>
+<p>从 <code>server</code> 的视角去看，发送 <code>FIN</code> 后，连接处于 <code>LAST_ACK</code> 状态，等待 <code>client</code> 的 <code>ACK</code>，再关闭连接。如果这个 <code>ACK</code> 没有到达，同样的，<code>server</code> 会根据 <code>net.ipv4.tcp_orphan_retries</code> 的配置定时重发，直至收到 <code>ACK</code> 或重试次数到达上限，再关闭该连接。</p>
+<p>如果 <code>client</code>在发送 <code>ACK</code> 后就关闭连接，释放的端口可能被复用于新的连接，但上面提到，<code>server</code> 可能会重发 <code>FIN</code>，就干扰了新建的连接。所以需要在 <code>TIME_WAIT</code>  下保留一段时间，防止 <code>server</code> 的 <code>FIN</code> 重发，以及其他可能的数据重发，避免数据错乱。</p>
+<p>至于为什么是 <code>2 倍</code> 的 <code>MSL</code>，而不是更多倍呢，这就是在设计时的一种平衡了。<code>2MSL</code> 下，允许对方重发一次，而如果超过 <code>2</code> 次都丢弃了，说明网络本身状况很糟糕，与其继续等待，不如主动关闭。所以与 <code>FIN_WAIT_2</code>  一样，都会在该状态下保存 <code>2MSL</code> 的时长。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1">## 一般设置为 30s，所以 2MSL 就为 1 分钟了</span>
+net.ipv4.tcp_fin_timeout <span class="o">=</span> <span class="m">30</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>linux</code> 下，提供了 <code>net.ipv4.tcp_max_tw_buckets</code> 参数来控制 <code>TIME_WAIT</code> 的连接数量，超过后，新关闭的连接就不再经历 <code>TIME_WAIT</code> 而直接关闭。如果服务器的并发连接增多时，<code>TIME_WAIT</code> 状态的连接数也会变多，此时就应当调大 <code>tcp_max_tw_buckets</code>，减少不同连接间数据错乱的概率。因为系统的内存和端口号都是有限的，还可以让新连接复用 <code>TIME_WAIT</code> 状态的端口，配置 <code>net.ipv4.tcp_tw_reuse = 1</code>，同时需要双方都把 `net.ipv4.tcp_timestamps = 1</p>
+<h2 id="流程图">流程图</h2>
+<p>关闭一个 <code>tcp</code>  链接的流程图如下：</p>
 <p><img src="/img/tcp-close.png" alt=""></p>
 <h2 id="为什么需要四次">为什么需要四次</h2>
 <p>相同的问题来了，为什么需要 <code>4</code> 次挥手呢，而不是 <code>3</code> 、<code>5</code> 次？</p>
-<p>其实本质原因与需要 <code>3次握手</code> 类似，因为 <code>TCP</code> 是一个 <code>全双工</code>（<code>full-duplex</code>）的协议。</p>
+<p>其实本质原因与需要 <code>3次握手</code> 类似，因为 <code>TCP</code> 是一个 <code>全双工</code>（<code>full-duplex</code>）的协议，通道双方互相独立。当 <code>client</code> 关闭连接时，<code>server</code> 仍然可以在不调用  <code>close</code>  函数的状态下，继续发送数据，此时连接处于 <code>半关闭状态</code>。</p>
 <ul>
-<li><code>1</code> 次肯定不行，<code>client</code> 根本不确定对方是否收到了自己的 <code>FIN</code>，直接关闭太简单粗暴</li>
-<li><code>2</code> 次的话，<code>server</code> 不能保证能立即关闭，因为其需要一个处理当前逻辑的时间</li>
-<li><code>3</code>次时，同理，<code>server</code> 也不能保证 <code>client</code> 收到了自己的 <code>FIN</code></li>
+<li><code>1</code> 次肯定不行，<code>client</code> 根本不确定对方是否收到了自己的 <code>FIN</code>，直接关闭太简单粗暴，除非发送 <code>RST</code>。</li>
+<li><code>2</code> 次的话，<code>server</code> 不能保证能立即关闭，因为其可能需要继续处理、发送数据等。</li>
+<li><code>3</code>次时，同理，<code>server</code> 也不能保证 <code>client</code> 收到了自己的 <code>FIN</code>。</li>
 </ul>
 <p>所以，因为是 <code>全双工</code>，所以一来一回<code>*2</code>，最少需要<code>4次</code> 握手机制，才能保证一个连接正确关闭。</p>
-<h2 id="time_wait-与-close_wait">TIME_WAIT 与 CLOSE_WAIT</h2>
-<p><code>TIME_WAIT</code> 与 <code>CLOSE_WAIT</code> 应该是 <code>web</code> 服务中，最常见的几个 <code>TCP</code> 状态，通常，也是我们需要重点关注的网络指标。</p>
+<p>在 <code>web</code> 应用中，大多情况下，<strong>服务器才是主动关闭连接的一方</strong>，比如 <code>nginx</code>。这是因为 <code>HTTP</code> 消息是单向传输协议，服务器接收完请求才能生成响应，发送完响应后就会立刻关闭 <code>TCP</code> 连接，及时释放资源，才能够承载更多的用户请求。</p>
 <h1 id="代码示例">代码示例</h1>
 <h1 id="参考">参考</h1>
 <p>最后，用一张图结束本文：</p>
