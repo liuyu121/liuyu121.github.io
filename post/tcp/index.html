@@ -49,7 +49,7 @@
 <meta itemprop="description" content="tcp（Transmission Control Protocol） 是一种位于传输层、面向字节流、保证可靠传输的全双工协议，作为底层协议，支撑着着应用层如 h">
 <meta itemprop="datePublished" content="2020-07-16T14:03:29&#43;08:00" />
 <meta itemprop="dateModified" content="2020-07-16T14:03:29&#43;08:00" />
-<meta itemprop="wordCount" content="6594">
+<meta itemprop="wordCount" content="6916">
 
 
 
@@ -552,7 +552,9 @@ net.ipv4.tcp_orphan_retries <span class="o">=</span> <span class="m">0</span>
 net.ipv4.tcp_fin_timeout <span class="o">=</span> <span class="m">30</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><code>linux</code> 下，提供了 <code>net.ipv4.tcp_max_tw_buckets</code> 参数来控制 <code>TIME_WAIT</code> 的连接数量，超过后，新关闭的连接就不再走 <code>TIME_WAIT</code> 阶段，而是直接关闭。如果服务器的并发连接增多时，<code>TIME_WAIT</code> 状态的连接数也会变多，此时就应当调大 <code>tcp_max_tw_buckets</code>，减少不同连接间数据错乱的概率。因为系统的内存和端口号都是有限的，还可以让新连接复用 <code>TIME_WAIT</code> 状态的端口，配置 <code>net.ipv4.tcp_tw_reuse = 1</code>，同时需要双方都把 <code>net.ipv4.tcp_timestamps = 1</code>。</p>
+</div><p><code>linux</code> 下，提供了 <code>net.ipv4.tcp_max_tw_buckets</code> 参数来控制 <code>TIME_WAIT</code> 的连接数量，超过后，新关闭的连接就不再走 <code>TIME_WAIT</code> 阶段，而是直接关闭。如果服务器的并发连接增多时，<code>TIME_WAIT</code> 状态的连接数也会变多，此时就应当调大 <code>tcp_max_tw_buckets</code>，减少不同连接间数据错乱的概率。因为系统的内存和端口号都是有限的，还可以让新连接复用 <code>TIME_WAIT</code> 状态的端口，配置 <code>net.ipv4.tcp_tw_reuse = 1</code>，同时需要双方都把 <code>net.ipv4.tcp_timestamps = 1</code>，<code>tcp_timestamps</code> 是用来保证是按照时间顺序来传输的。</p>
+<p>而对于 <code>tcp_tw_recycle</code> 这个参数，不推荐使用，会出现数据包错乱的问题，<code>Linux 4.12</code> 后直接废弃了这个参数。</p>
+<p><code>TCP</code> 会缓存每个连接的最后一次时间戳（最新的），这个值在 <code>PAWS</code> 机制（<code>PROTECT AGAINST WRAPPED SEQUENCE NUMBERS</code>）迎来放置序列号环绕问题（<code>recycle</code>、<code>wrapped</code>），比如在高带宽下序列号可能就会在较短时间内重用，这样可以用这个时间戳来区分是否为合法的数据（<code>有序</code>），以及拒绝过期的数据（来自之前的连接的重复报文等）。也即，<code>TCP</code> 会拒绝四元组中 <code>&lt;源ip、目的端口&gt;</code> 的数据，在 <code>NAT</code> 网络下，就可能出现问题，因为多个客户端可能共用同一个出口 <code>IP</code>，但 <code>timestamps</code> 却可能不相同。这种机制的开启，取决于 <code>tcp_tw_recycle</code> 与 <code>tcp_timestamps</code> 同时开启。</p>
 <h3 id="被动关闭方">被动关闭方</h3>
 <p>被动关闭方收到 <code>FIN</code> 后进入 <code>CLOSE_WAIT</code> 状态，此时连接处于半关闭状态，<strong>内核等待进程主动调用 <code>CLOSE</code> 关闭连接</strong>，触发 <code>FIN</code> 给主动关闭方。如果系统中存在大量的 <code>CLOSE_WAIT</code>，说明是程序出现了问题，可以从这方面入手，比如在 <code>read == 0</code> 后忘记调用 <code>close</code> 等。</p>
 <p>被动关闭发发出 <code>FIN</code> 后，进入 <code>LAST_ACK</code>，此时如果一直没收到对方的 <code>ACk</code>，也会重试，策略和上面提到的主动关闭发重发 <code>FIN</code> 策略一致。</p>
@@ -610,6 +612,9 @@ net.ipv4.tcp_fin_timeout <span class="o">=</span> <span class="m">30</span>
 </li>
 <li>
 <p><a href="https://blog.51cto.com/welcomeweb/1931087">详解Nginx中HTTP的keepalive相关配置</a></p>
+</li>
+<li>
+<p><a href="http://perthcharles.github.io/2015/08/27/timestamp-intro/">TCP timestamp</a></p>
 </li>
 </ul>
 
