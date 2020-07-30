@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>阅读 - 日拱一卒，反求诸己</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="看书原则： 力求理解本质：可以不求甚解，必须反复研读。 苦下笔头：认真做笔记，悟道了，赶紧记下来。 举一反三，融会贯通：很多书其实存在一定的同质化" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.73.0 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/reading/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="阅读" />
+<meta property="og:description" content="看书原则： 力求理解本质：可以不求甚解，必须反复研读。 苦下笔头：认真做笔记，悟道了，赶紧记下来。 举一反三，融会贯通：很多书其实存在一定的同质化" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/reading/" />
+<meta property="article:published_time" content="2020-07-20T21:48:59+08:00" />
+<meta property="article:modified_time" content="2020-07-20T21:48:59+08:00" />
+<meta itemprop="name" content="阅读">
+<meta itemprop="description" content="看书原则： 力求理解本质：可以不求甚解，必须反复研读。 苦下笔头：认真做笔记，悟道了，赶紧记下来。 举一反三，融会贯通：很多书其实存在一定的同质化">
+<meta itemprop="datePublished" content="2020-07-20T21:48:59&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-20T21:48:59&#43;08:00" />
+<meta itemprop="wordCount" content="1114">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="阅读"/>
+<meta name="twitter:description" content="看书原则： 力求理解本质：可以不求甚解，必须反复研读。 苦下笔头：认真做笔记，悟道了，赶紧记下来。 举一反三，融会贯通：很多书其实存在一定的同质化"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/reading/">
+        <li class="mobile-menu-item">阅读</li>
+      </a><a href="/shorthand/">
+        <li class="mobile-menu-item">速记</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/reading/">阅读</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shorthand/">速记</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+  <div class="post-content">
+    <blockquote>
+<p>看书原则：</p>
+</blockquote>
+<ul>
+<li>力求理解本质：可以不求甚解，必须反复研读。</li>
+<li>苦下笔头：认真做笔记，悟道了，赶紧记下来。</li>
+<li>举一反三，融会贯通：很多书其实存在一定的同质化，所以广泛涉猎，形成自己的方法论。</li>
+<li>发散思维：有意识的培养与锻炼计算机思维。</li>
+</ul>
+<h1 id="操作系统">操作系统</h1>
+<p>这个系列的都是神书，值得反复研读。但因为都是厚本书，所以我一般都是在特定时期查看特定章节。</p>
+<ul>
+<li>
+<p>《深入理解计算机系统》：☆☆☆☆</p>
+</li>
+<li>
+<p>《Unix 高级环境编程》：☆☆☆☆</p>
+</li>
+<li>
+<p>《程序员的自我修养 - 链接、装载与库》：☆☆☆</p>
+</li>
+<li>
+<p>《现代操作系统》：☆☆</p>
+</li>
+</ul>
+<h1 id="计算机网络">计算机网络</h1>
+<p>计算机网络特别是 <code>TCP</code> 协议，是 <code>web</code> 开发程序员必备素养之一，</p>
+<ul>
+<li>《计算机网络-自顶向下方法》：☆☆☆☆☆</li>
+</ul>
+<p>国外经典教材，深度与广度俱佳，重点关注的 <code>tcp</code>  部分，循循善诱谆谆教导，较为详细的介绍了 <code>tcp</code> 各种原理和技术细节等。常读常新，</p>
+<ul>
+<li>《图解 TCP/IP》：☆☆☆</li>
+</ul>
+<p>图例较多，相当于一个概览，较通俗且简浅。</p>
+<h1 id="go">go</h1>
+<p><code>go</code> 相关书籍，看得较多且杂，本身 <code>go</code> 语法较简单，但是底层原理，如 <code>goroutine</code>、<code>MPG 模型</code>、<code>GC</code> 等，看起来还是会比较吃力。</p>
+<p>下面这些书都挺不错，语法 <code>+</code> 示例 都较全面。</p>
+<ul>
+<li>《go 趣学指南》：☆☆☆</li>
+</ul>
+<p>大量的编程实例撑起来的一本书，也较为详细的介绍了相关语法，可作为入门级</p>
+<ul>
+<li>《go web编程》：☆☆☆</li>
+</ul>
+<p>主要是结合 <code>web</code> 开发来学习，可以深入了解一个项目构建的完整过程。</p>
+<ul>
+<li>《go 语言实战》：☆☆☆</li>
+</ul>
+<p>初学者其实不建议读这本书，有些地方还是较混沌和啰嗦，有些则是一笔带过，但基本涵盖了主要的特性。</p>
+<ul>
+<li>《go 语言学习笔记》：☆☆☆☆</li>
+</ul>
+<p>真的是一个 <code>笔记</code>，雨痕大神涉猎太广，除了逐个介绍相关特性外，还有一些 <code>tricky</code>、<code>hack</code> 的介绍。后面还从 <code>汇编</code> 级别来介绍底层原理。</p>
+<p>也许真的是 <code>笔记</code> ，大多</p>
+<ul>
+<li>《go 并发编程实战》：☆☆☆☆</li>
+</ul>
+<p>不多的详细介绍了 <code>MPG 模型</code> 的书，很多原理性的介绍，有些枯燥，但值得细读和反复阅读。</p>
+<ul>
+<li>《自动动手实现 Lua》</li>
+</ul>
+<p>还没仔细看，作者是用 <code>go</code> 来实现 <code>lua</code> 的虚拟机，应该比较有趣。</p>
+<h1 id="php">php</h1>
+<p><code>php</code> 看到都是源码相关的书籍，<code>php</code>程序员必看。</p>
+<ul>
+<li>《PHP 7 内核剖析》：☆☆☆☆</li>
+<li>《PHP 7 底层设计与源码实现》 ：☆☆☆☆</li>
+</ul>
+<p>这本和下面的 <code>《Redis 5设计与源码分支》</code> 都是 <code>滴滴</code> 一个团队合作编写的。</p>
+<h1 id="redis">Redis</h1>
+<ul>
+<li>《Redis 设计与实现》：☆☆☆☆</li>
+</ul>
+<p>国内第一本（？）源码级介绍 <code>Redis</code> 的书籍了，但 <code>Redis</code> 已经到 <code>6</code> 了，变化较大，但仍值得一看。</p>
+<ul>
+<li>《Redis 5设计与源码分析》：☆☆☆☆</li>
+</ul>
+<p>介绍了 <code>Redis 5</code> 的实现，这个组的同学都是各自认领一些任务来编写，所以相对会比较细致。</p>
+<ul>
+<li>《Redis 使用手册》：☆☆☆</li>
+</ul>
+<p>参考书</p>
+<h1 id="mysql">MySQL</h1>
+<ul>
+<li>《MySQL 技术内幕 - InnoDB 存储引擎》：☆☆☆</li>
+</ul>
+<p>较少的能全面介绍 <code>innodb</code> 相关知识的书籍。</p>
+<ul>
+<li>《MySQL DBA 工作笔记》：☆☆☆</li>
+</ul>
+<p>笔记类书籍，可以当做笔记来看，也即遇到问题可参考查阅等。</p>
+<ul>
+<li>《高性能 MySQL》：☆☆☆☆</li>
+</ul>
+<p>很多人都看过的科普书籍。</p>
+
+  </div>
+</article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

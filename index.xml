@@ -12,12 +12,21 @@
     
     
     <item>
+      <title>阅读</title>
+      <link>https://liuyu121.github.io/reading/</link>
+      <pubDate>Mon, 20 Jul 2020 21:48:59 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/reading/</guid>
+      <description>看书原则： 力求理解本质：可以不求甚解，必须反复研读。 苦下笔头：认真做笔记，悟道了，赶紧记下来。 举一反三，融会贯通：很多书其实存在一定的同质化</description>
+    </item>
+    
+    <item>
       <title>速记</title>
       <link>https://liuyu121.github.io/shorthand/</link>
       <pubDate>Mon, 20 Jul 2020 18:45:05 +0800</pubDate>
       
       <guid>https://liuyu121.github.io/shorthand/</guid>
-      <description></description>
+      <description>一些片段，方便查阅。</description>
     </item>
     
     <item>
@@ -45,15 +54,6 @@
       
       <guid>https://liuyu121.github.io/post/tcpdump/</guid>
       <description>1 2 3 sudo tcpdump -l -vv -nn -X -s 0 -i lo0 tcp port 6379 &amp;gt; redis2.log &amp;amp; tail -f redis.log netstat -anl | grep -i 6379 | grep -i tcp4 | grep -iv &amp;#39;LISTEN&amp;#39; 其中： -l：对标准输出进行行缓冲，也即使标准输出设备遇到一个换行符就</description>
-    </item>
-    
-    <item>
-      <title>看过的书</title>
-      <link>https://liuyu121.github.io/post/reading/</link>
-      <pubDate>Mon, 20 Jul 2020 21:48:59 +0800</pubDate>
-      
-      <guid>https://liuyu121.github.io/post/reading/</guid>
-      <description>看书原则： 力求理解本质：可以不求甚解，必须反复研读。 苦下笔头：认真做笔记，悟道了，赶紧记下来。 举一反三，融会贯通：很多书其实存在一定的同质化</description>
     </item>
     
     <item>
