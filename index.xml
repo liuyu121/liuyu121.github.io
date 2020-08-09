@@ -40,10 +40,10 @@
     
     <item>
       <title>进程与 IO</title>
-      <link>https://liuyu121.github.io/post/nio-goroutine/</link>
+      <link>https://liuyu121.github.io/post/process-and-io/</link>
       <pubDate>Sat, 08 Aug 2020 16:03:20 +0800</pubDate>
       
-      <guid>https://liuyu121.github.io/post/nio-goroutine/</guid>
+      <guid>https://liuyu121.github.io/post/process-and-io/</guid>
       <description>对于这么互联网从业者来说，IO 特别是 网络 IO从来都是大问题，尤其是在当前大行其道的 微服务 体系下，大厂可能有上万个微服务，某个接口可能有数十个</description>
     </item>
     
