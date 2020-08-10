@@ -6,7 +6,7 @@
     <description>Recent content on 日拱一卒，反求诸己</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 08 Aug 2020 16:03:20 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 10 Aug 2020 13:29:39 +0800</lastBuildDate>
     
 	<atom:link href="https://liuyu121.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -36,6 +36,15 @@
       
       <guid>https://liuyu121.github.io/about/</guid>
       <description>Don&amp;rsquo;t Look Back in Anger &amp;hellip; web 开发 php、go、shell、python、lua、rust(???) MySQL、Redis、Kafka、ES gRPC、soc</description>
+    </item>
+    
+    <item>
+      <title>Mysql 细节</title>
+      <link>https://liuyu121.github.io/post/mysql-details/</link>
+      <pubDate>Mon, 10 Aug 2020 13:29:39 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-details/</guid>
+      <description>MySql 架构 大体来说，MySQL 可以分为 Server 层和存储引擎层两大部分。 Server 层 Server 层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖 MySQL 的大多数核心服务功</description>
     </item>
     
     <item>

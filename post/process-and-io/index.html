@@ -49,7 +49,7 @@
 <meta itemprop="description" content="对于这么互联网从业者来说，IO 特别是 网络 IO从来都是大问题，尤其是在当前大行其道的 微服务 体系下，大厂可能有上万个微服务，某个接口可能有数十个">
 <meta itemprop="datePublished" content="2020-08-08T16:03:20&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-08T16:03:20&#43;08:00" />
-<meta itemprop="wordCount" content="6676">
+<meta itemprop="wordCount" content="6700">
 
 
 
@@ -642,7 +642,7 @@
 <p><code>epoll_create</code> 会创建一个 <code>epoll</code> 句柄；</p>
 </li>
 <li>
-<p><code>epoll_ctl</code> 负责监听的事件类型，在有新的需要监听的 <code>fd</code> 加入后，就将该 <code>fd</code> 拷贝至内核空间，而不是像 <code>select</code> 或 <code>poll</code> 一样每次都需要拷贝，这样就能保证每个 <code>fd</code> 只被拷贝进内核一次；</p>
+<p><code>epoll_ctl</code> 负责监听的事件类型，在有新的需要监听的 <code>fd</code> 加入后，就将该 <code>fd</code> 拷贝至内核空间，加入内核专属的 <code>epoll</code> 高速缓存，并存储在一棵红黑树中。而不是像 <code>select</code> 或 <code>poll</code> 一样每次都需要拷贝，这样就能保证每个 <code>fd</code> 只被拷贝进内核一次；</p>
 </li>
 <li>
 <p><code>epoll</code> 在注册 <code>fd</code> 时，为每一个 <code>fd</code> 指定对应的回调函数（<code>callback</code>），当设备就绪，唤醒等待队列上的等待进程时，就会调用这个回调函数，回调函数则会把就绪的 <code>fd</code> 加入一个<code>就绪链表</code> 。</p>
@@ -689,7 +689,11 @@
           <a href="/tags/io/">IO</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/mysql-details/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Mysql 细节</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         <a class="next" href="/post/tcp-named/">
             <span class="next-text nav-default">TCP 名词解释</span>
             <span class="next-text nav-mobile">Next</span>

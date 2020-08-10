@@ -6,10 +6,19 @@
     <description>Recent content in MySQL on 日拱一卒，反求诸己</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 31 Jul 2019 17:24:04 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 10 Aug 2020 13:29:39 +0800</lastBuildDate>
     
 	<atom:link href="https://liuyu121.github.io/categories/mysql/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Mysql 细节</title>
+      <link>https://liuyu121.github.io/post/mysql-details/</link>
+      <pubDate>Mon, 10 Aug 2020 13:29:39 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/mysql-details/</guid>
+      <description>MySql 架构 大体来说，MySQL 可以分为 Server 层和存储引擎层两大部分。 Server 层 Server 层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖 MySQL 的大多数核心服务功</description>
+    </item>
     
     <item>
       <title>Mysql Metadata Lock</title>
