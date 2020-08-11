@@ -49,7 +49,7 @@
 <meta itemprop="description" content="MySql 架构 大体来说，MySQL 可以分为 Server 层和存储引擎层两大部分。 Server 层 Server 层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖 MySQL 的大多数核心服务功">
 <meta itemprop="datePublished" content="2020-08-10T13:29:39&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-10T13:29:39&#43;08:00" />
-<meta itemprop="wordCount" content="2724">
+<meta itemprop="wordCount" content="2864">
 
 
 
@@ -174,6 +174,7 @@
 </li>
 </ul>
 <p><code>MySql</code> 基于 <code>redo log</code> 实现了数据恢复的功能，也即 <code>crash safe</code> 机制。因为所有为落盘的记录都在 <code>redo log</code> 中，可以通过 <code>redo log</code> 恢复。</p>
+<p>关于 <code>redo log</code>，语义上包括两部分：一是内存中的日志缓冲（<code>redo log buffer</code>)，该部分日志是易失性的；二是磁盘上的重做日志文件（<code>redo log file</code>），该部分日志是持久性的（表示事务以及提交）。</p>
 <p>这里可能有个问题，比如先 <code>update</code> 再立即 <code>select</code>，如果没设置自动提交，能否读取到该 <code>update</code> 后的新值呢？答案是可以读到的，直接读取内存即可。</p>
 <p>将 <code>innodb_flush_log_at_trx_commit</code> 参数设置成 <code>1</code>，保证每次事务的 <code>redo log</code> 都直接持久化到磁盘。</p>
 <h3 id="binlog">binlog</h3>
@@ -204,6 +205,7 @@
 <p><code>update</code> 操作，如果是是主键列，先删除一行再插入一行；如果不是主键列，记录该 <code>update</code> 的反向操作。</p>
 </li>
 </ul>
+<p>所以如果数据库很多长事务，或未提交的事务，<code>undo log</code> 将会变得巨大，因为保存了太多回滚段。</p>
 
     </div>
 

@@ -49,7 +49,7 @@
 <meta itemprop="description" content="对于这么互联网从业者来说，IO 特别是 网络 IO从来都是大问题，尤其是在当前大行其道的 微服务 体系下，大厂可能有上万个微服务，某个接口可能有数十个">
 <meta itemprop="datePublished" content="2020-08-08T16:03:20&#43;08:00" />
 <meta itemprop="dateModified" content="2020-08-08T16:03:20&#43;08:00" />
-<meta itemprop="wordCount" content="6700">
+<meta itemprop="wordCount" content="6788">
 
 
 
@@ -165,7 +165,7 @@
 <p><code>1 号进程</code>：<code>init 进程</code>。在内核自举过程中，<code>0 号进程</code> 派生的内核线程 <code>init</code> 完成后调用 <code>execve</code> ，载入用户空间的可执行程序 <code>/sbin/init</code>，拥有了自己的属性资源，变成了 <code>1 号进程</code>，成为一个普通的用户进程。注意，<code>init 进程</code> 不是内核的系统进程，但是它以 <code>root</code> 权限运行，也是所有孤儿进程的父进程。</p>
 </li>
 </ul>
-<p>在 <code>Linux</code> 系统下，整个进程是从 <code>0-1-...</code> 的进程树结构存在的。<code>fork</code> 可用于创建子进程，子进程拥有父进程的数据空间、堆和栈的副本（非共享，注意与线程的区别），与父进程共享正文段。这里开销较大，后来优化成了 <code>Copy On Write， COWW</code> 机制，也即所谓的写时复制。在 <code>COW</code> 机制下，父进程与子进程共享数据空间、堆、栈等，内核负责将其访问权限改为<code>只读</code>，当父、子进程需要修改这些区域的内容时，再 <code>copy</code> 一份副本。</p>
+<p>在 <code>Linux</code> 系统下，整个进程是从 <code>0-1-...</code> 的进程树结构存在的。<code>fork</code> 可用于创建子进程，子进程拥有父进程的数据空间、堆和栈的副本（非共享，注意与线程的区别），与父进程共享正文段。这里开销较大，后来优化成了 <code>Copy On Write， COW</code> 机制，也即所谓的写时复制。在 <code>COW</code> 机制下，父进程与子进程共享数据空间、堆、栈等，内核负责将其访问权限改为<code>只读</code>，当父、子进程需要修改这些区域的内容时，再 <code>copy</code> 一份副本。</p>
 <p>子进程可以通过 <code>getppid</code> 获取父进程的进程 <code>id</code>，并会继承父进程众多熟悉，如文件描述符、所属组、资源限制、信号处理、环境等等。<code>fork</code> 使用范式如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -223,7 +223,7 @@
 </div>
 </div><ul>
 <li>
-<p><code>wait</code>：如果子进程已经终止，并且是一个僵尸进程，<code>wait</code> 立即返回并取得子进程的状态；否则使其调用者阻塞，直到一个子进程终止。如果该父进程you多个子进程，则在任一子进程终止时，<code>wait</code> 立即返回该终止的子进程 <code>id</code>。</p>
+<p><code>wait</code>：如果子进程已经终止，并且是一个僵尸进程，<code>wait</code> 立即返回并取得子进程的状态；否则使其调用者阻塞，直到一个子进程终止。如果该父进程有多个子进程，则在任一子进程终止时，<code>wait</code> 立即返回该终止的子进程 <code>id</code>。</p>
 </li>
 <li>
 <p><code>waitpid</code>：除了能够提供与 <code>wait</code> 一样的功能外，还能通过设置 <code>pid</code> 参数，实现等待某一特定子进程的终止，以及实现进程组的等待等，也可以通过设置 <code>option</code> 实现作业控制，如设置为 <code>WNOHANG</code> 不阻塞，立即返回 <code>0</code>。</p>
@@ -357,7 +357,7 @@
 <p>这里解释下何为<code>原子性</code>，简而言之，<code>CPU</code> 对一个变量的写操作，一般是需要多于一个存储器访问周期的：<code>存储器读</code>与<code>存储器写</code>，也即：</p>
 <ul>
 <li>1、从内存单元读入寄存器；</li>
-<li>2、在寄存器中对便利做修改操作；</li>
+<li>2、在寄存器中对变量做修改操作；</li>
 <li>3、将新值写回内存。</li>
 </ul>
 <p>那么，在这两个读写周期交叉内，就可能会出现不一致问题。例如，在第二步另一个线程读取了内存的值，可能不是预期想要的结果。</p>
@@ -533,6 +533,8 @@
 </span><span class="lnt">28
 </span><span class="lnt">29
 </span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">// 1 - create：创建 tcp socket fd
@@ -556,12 +558,14 @@
 <span class="c1">// 5 - 消息处理
 </span><span class="c1"></span><span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="n">fork</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// 使用子进程（或线程）处理
-</span><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
-      <span class="c1">// 读取 socket 数据
-</span><span class="c1"></span>      <span class="n">read</span><span class="p">(</span><span class="n">conn_fd</span><span class="p">);</span>
-      <span class="c1">// 发送数据至 socket
-</span><span class="c1"></span>      <span class="n">send</span><span class="p">(</span><span class="n">conn_fd</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">conn_fd</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">listen_fd</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 使用子进程（或线程）处理
+</span><span class="c1"></span>      <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 读取 socket 数据
+</span><span class="c1"></span>        <span class="n">read</span><span class="p">(</span><span class="n">conn_fd</span><span class="p">);</span>
+        <span class="c1">// 发送数据至 socket
+</span><span class="c1"></span>        <span class="n">send</span><span class="p">(</span><span class="n">conn_fd</span><span class="p">);</span>
+      <span class="p">}</span>
     <span class="p">}</span>
   <span class="p">}</span>
 <span class="p">}</span>
@@ -615,7 +619,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>这里，需要注意的是，同步非阻塞 <code>IO</code> 在通过 <code>recvfrom</code> 获取数据时，还是通过 <code>BIO</code> 方式获得，也即，两者都是 <code>copy data from kernel to user</code>。换言之，这里还是需要同步获取，进程会被 <code>block</code>。</p>
-<h4 id="io-multiplexing"><code>IO Multiplexing</code></h4>
+<h4 id="io-multiplexing">IO Multiplexing</h4>
 <p><code>io 多路复用</code> 本质是通过一种机制使得一个进程能同时等待多个 <code>fd</code>，而这些 <code>fd</code> 中任意一个进入读就绪状态时，对应的多路复用处理器就能返回。</p>
 <p>最常见的 <code>io</code> 多路复用处理器有 <code>select</code>、<code>poll</code>、<code>epoll</code> 等。<code>select</code> 与 <code>poll</code> 本质都是维护一个 <code>fd</code> 列表，并对可读、可写、异常条件进行轮询，所以时间复杂度都是 <code>O(n)</code>，俩者实质差不多，本质都是将 <code>自身进程</code> 挂到设备的等待队列中，不同的设备有不同的等待队列。当设备驱动发生自身资源可读写事件后，会唤醒其等待队列上睡眠的进程。轮询不到就进入休眠，轮询到了拷贝至用户空间。俩者区别在于：</p>
 <ul>
@@ -626,13 +630,18 @@
 <p><code>poll</code>：传入一个 <code>pollfd</code> 的数组，内核以链表形式存储。所以没有最大 <code>fd</code> 限制，但多了一次从用户态拷贝数组到内核态生成链表的开销，</p>
 </li>
 </ul>
-<p>这里，需要提到设备就绪时两种不同的触发通知方式：</p>
+<p>这里，需要提到设备就绪时两种不同的触发通知方式：
+#ifdef LEVEL_TRIGGER
+ev.events = EPOLLIN;
+#else
+ev.events = EPOLLIN | EPOLLET;
+#endif</p>
 <ul>
 <li>
-<p>水平触发：<code>level-trggered</code>，<code>select</code>、<code>poll</code> 轮询 <code>fd</code> 时，会将满足条件（可读、可写）的 <code>fd</code> 通知至进程，比如进程可能按照 <code>10 kb</code>读取数据，但缓冲区可能有 <code>20 kb</code> 可读，那么下次轮询内核仍然会通知该进程有可读数据。</p>
+<p>水平触发：<code>level-trggered</code>，<code>select</code>、<code>poll</code> 轮询 <code>fd</code> 时，会将满足条件（可读、可写）的 <code>fd</code> 通知至进程，比如进程可能按照 <code>10 kb</code>读取数据，但缓冲区可能有 <code>20 kb</code> 可读，那么下次轮询内核仍然会通知该进程有可读数据。通过设置 <code>epoll_event.events</code>为 <code>EPOLLIN</code> 可配置为水平触发。</p>
 </li>
 <li>
-<p>边缘触发：<code>edge-triggered</code>，当第一次可读或可写时，才触发通知，同样的上面的例子，该进程只有在第一次收到信号通知，即便没有读完（缓冲区还剩 <code>10 kb</code>），下一次也不会被触发到。</p>
+<p>边缘触发：<code>edge-triggered</code>，当第一次可读或可写时，才触发通知，同样的上面的例子，该进程只有在第一次收到信号通知，即便没有读完（缓冲区还剩 <code>10 kb</code>），下一次也不会被触发到。通过设置 <code>epoll_event.events</code>为 <code>EPOLLIN | EPOLLET</code> 可配置为边缘触发。</p>
 </li>
 </ul>
 <p>从俩者特点来看，水平触发总是能够保证数据一直可被读写，问题在于每次都需要通知，会导致整体吞吐量地下；而边缘触发，能最大程度保证并发能力，但因为只是在临界态才触发，所以需要应用程序自己保证，如使用非阻塞 <code>IO</code> 一次性读取完数据（<code>read</code> 返回 <code>0</code>，表示已经读完了；返回 <code>EAGAIN</code> 或 <code>EWOULDBLOCK</code> 错误，表示当前没有数据可读等下再来）。<code>epoll</code> 对俩者都支持，默认为水平触发。下面，重点说下 <code>epoll</code> 机制以及与上面俩者之间的区别。</p>
