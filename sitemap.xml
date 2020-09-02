@@ -23,49 +23,70 @@
   </url>
   
   <url>
+    <loc>https://liuyu121.github.io/tags/boltdb/</loc>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://liuyu121.github.io/post/learn-boltdb/</loc>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://liuyu121.github.io/categories/</loc>
-    <lastmod>2020-08-24T21:30:23+08:00</lastmod>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://liuyu121.github.io/categories/database/</loc>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://liuyu121.github.io/tags/go/</loc>
-    <lastmod>2020-08-24T21:30:23+08:00</lastmod>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://liuyu121.github.io/categories/go/</loc>
-    <lastmod>2020-08-24T21:30:23+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://liuyu121.github.io/post/go-sort/</loc>
-    <lastmod>2020-08-24T21:30:23+08:00</lastmod>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://liuyu121.github.io/post/</loc>
-    <lastmod>2020-08-24T21:30:23+08:00</lastmod>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://liuyu121.github.io/tags/</loc>
-    <lastmod>2020-08-24T21:30:23+08:00</lastmod>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://liuyu121.github.io/</loc>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://liuyu121.github.io/post/go-sort/</loc>
     <lastmod>2020-08-24T21:30:23+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
