@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Boltdb 源码学习 - 基础（一） - 日拱一卒，反求诸己</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Liuduoyu" /><meta name="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.74.3 with theme even" />
+
+
+<link rel="canonical" href="https://liuyu121.github.io/post/learn-boltdb-1/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="https://liuyu121.github.io/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Boltdb 源码学习 - 基础（一）" />
+<meta property="og:description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liuyu121.github.io/post/learn-boltdb-1/" />
+<meta property="article:published_time" content="2020-09-02T11:04:39+08:00" />
+<meta property="article:modified_time" content="2020-09-02T11:04:39+08:00" />
+<meta itemprop="name" content="Boltdb 源码学习 - 基础（一）">
+<meta itemprop="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，">
+<meta itemprop="datePublished" content="2020-09-02T11:04:39+08:00" />
+<meta itemprop="dateModified" content="2020-09-02T11:04:39+08:00" />
+<meta itemprop="wordCount" content="404">
+
+
+
+<meta itemprop="keywords" content="go,BoltDB,Database," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Boltdb 源码学习 - 基础（一）"/>
+<meta name="twitter:description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Liuduoyu</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/post/">
+        <li class="mobile-menu-item">文章</li>
+      </a><a href="/reading/">
+        <li class="mobile-menu-item">书单</li>
+      </a><a href="/shorthand/">
+        <li class="mobile-menu-item">速记</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Liuduoyu</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/post/">文章</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/reading/">书单</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shorthand/">速记</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Boltdb 源码学习 - 基础（一）</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-02 </span>
+        <div class="post-category">
+            <a href="/categories/go/"> go </a>
+            </div>
+        
+      </div>
+    </header>
+
+    
+    <div class="post-content">
+      <p><a href="https://github.com/boltdb/bolt">boltDB</a> 是用 <code>go</code> 写的一款基于本地内存的 <code>k-v 存储引擎</code>，<code>etcd</code> 底层就使用了 <code>boltDB</code>。相对于其他常见的如 <code>MySQL</code>、<code>redis</code> 等，实现的公功能较简单，所以可以通过阅读源码，加强对数据库、操作系统（特别是文件这一块）以及 <code>go</code> 语言本身的理解。</p>
+<p>在阅读源码前，先要了解一些概念，比如操作系统（基于 <code>Linux</code>）的 <code>page</code>、<code>页表项</code>、<code>mmap</code> 、<code>虚拟内存</code>、<code>COW</code>、<code>B+ tree</code> 等。</p>
+<h2 id="page">page</h2>
+<p>操作系统操作文件无非主要就是：</p>
+<ul>
+<li>从磁盘 <code>load</code> 数据到内存</li>
+<li>从内存写入数据到磁盘</li>
+</ul>
+<p>而所谓的  <code>page</code> （内存页），就是操作系统操作文件时的单位，也即不管是上述哪一种情况，操作系统都会整 <code>page</code> 大小的读取或写入，一般地，<code>page</code> 最常见的大小为 <code>4kb</code>。之所以按照 <code>page</code> 进行操作，是因为：</p>
+<ul>
+<li><code>page</code> 过小，页表寻址时开销较大，效率较低。所谓余额表</li>
+<li><code>page</code> 过大，可能会造成内存空间的浪费，导致内存碎片产生，且内存利用率较低。</li>
+</ul>
+<p>所以，在当时的硬件架构体系下，远古大神们权衡后，默认大小设置为了 <code>4kb</code>。</p>
+<h2 id="虚拟内存--与-mmap">虚拟内存  与 mmap</h2>
+<h2 id="cow-技术">COW 技术</h2>
+<h2 id="b-tree">B+ tree</h2>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">Liuduoyu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+        2020-09-02
+        
+    </span>
+  </p>
+  
+  
+  <p class="copyright-item">
+    <span class="item-title">Permalink</span>
+    <span class="item-content"><a class="link-to-markdown" href="https://liuyu121.github.io/post/learn-boltdb-1/" target="_blank">Permalink to this page</a></span>
+  </p>
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/go/">go</a>
+          <a href="/tags/boltdb/">BoltDB</a>
+          <a href="/tags/database/">Database</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/learn-boltdb-2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Boltdb 源码学习 - 组织结构（二）</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        <a class="next" href="/post/go-sort/">
+            <span class="next-text nav-default">Go Sort 使用</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+    <script src="https://utteranc.es/client.js"
+            repo="liuyu121/liuyu121.github.io"
+            issue-term="pathname"
+            theme="github-light"
+            crossorigin="anonymous"
+            async>
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://github.com/utterance">comments powered by utterances.</a></noscript>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:liuynope@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://github.com/liuyu121" class="iconfont icon-github" title="github"></a>
+  <a href="https://liuyu121.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2014 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Liuduoyu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+
+
+
+<script type="text/javascript" src="https://liuyu121.github.io/js/main.4d21c1cefdf1cd0b77ef59bab2d1bbe3112fc9d6cc04710bb1f0b1fd7b891f11.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

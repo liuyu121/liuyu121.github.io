@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>投资 on 日拱一卒，反求诸己</title>
+    <link>https://liuyu121.github.io/tags/%E6%8A%95%E8%B5%84/</link>
+    <description>Recent content in 投资 on 日拱一卒，反求诸己</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 08 Jul 2020 19:35:04 +0800</lastBuildDate>
+    
+	<atom:link href="https://liuyu121.github.io/tags/%E6%8A%95%E8%B5%84/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>量化交易</title>
+      <link>https://liuyu121.github.io/post/quantitative_trade/</link>
+      <pubDate>Wed, 08 Jul 2020 19:35:04 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/quantitative_trade/</guid>
+      <description>量化交易平台 几个不错的量化交易平台： 聚宽：https://www.joinquant.com/ 米筐：https://www.ricequan</description>
+    </item>
+    
+  </channel>
+</rss>

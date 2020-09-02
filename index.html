@@ -45,7 +45,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://liuyu121.github.io/" />
-<meta property="og:updated_time" content="2020-09-02T11:04:39+08:00" />
+<meta property="og:updated_time" content="2020-09-02T15:34:42+08:00" />
 <meta itemprop="name" content="日拱一卒，反求诸己">
 <meta itemprop="description" content="">
 <meta name="twitter:card" content="summary"/>
@@ -117,12 +117,32 @@
           <section id="posts" class="posts">
     <article class="post">
   <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/learn-boltdb/">Boltdb 源码学习 （一）</a></h1>
+    <h1 class="post-title"><a class="post-link" href="/post/learn-boltdb-2/">Boltdb 源码学习 - 组织结构（二）</a></h1>
     <div class="post-meta">
       <span class="post-time"> 2020-09-02 </span>
       <div class="post-category">
           <a href="/categories/go/"> go </a>
-          <a href="/categories/database/"> database </a>
+          </div>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      架构图 bolt 主要文件如下，共 4k+ 行，其他形如 bolt_* 的文件，是为了兼容各个操作系统而存在的，统一封装了不同操作系统的一些系统调用： 1 2 3 4 5 6 7 8 9 10 $
+    </div>
+    <div class="read-more">
+      <a href="/post/learn-boltdb-2/" class="read-more-link">Read more...</a>
+    </div>
+  </div>
+</article>
+
+    <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="/post/learn-boltdb-1/">Boltdb 源码学习 - 基础（一）</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2020-09-02 </span>
+      <div class="post-category">
+          <a href="/categories/go/"> go </a>
           </div>
     </div>
   </header>
@@ -132,7 +152,7 @@
       boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，
     </div>
     <div class="read-more">
-      <a href="/post/learn-boltdb/" class="read-more-link">Read more...</a>
+      <a href="/post/learn-boltdb-1/" class="read-more-link">Read more...</a>
     </div>
   </div>
 </article>
@@ -185,7 +205,7 @@
     <div class="post-meta">
       <span class="post-time"> 2020-08-10 </span>
       <div class="post-category">
-          <a href="/categories/mysql/"> MySql </a>
+          <a href="/categories/mysql/"> MySQL </a>
           </div>
     </div>
   </header>
@@ -301,27 +321,6 @@
     </div>
     <div class="read-more">
       <a href="/post/bit-twiddling-hacks/" class="read-more-link">Read more...</a>
-    </div>
-  </div>
-</article>
-
-    <article class="post">
-  <header class="post-header">
-    <h1 class="post-title"><a class="post-link" href="/post/es-nested-datatype/">ES Nested 类型</a></h1>
-    <div class="post-meta">
-      <span class="post-time"> 2020-07-09 </span>
-      <div class="post-category">
-          <a href="/categories/es/"> ES </a>
-          </div>
-    </div>
-  </header>
-  
-  <div class="post-content">
-    <div class="post-summary">
-      有个服务写 es，遇到了以下报错： 1 2 3 4 5 Failed to execute bulk item (index) BulkShardRequest ... limit of total fields [1000] in index 使用的 es版本为5.3.2，在 es 的数据项中，使用了 nested 类型，字面意思是
-    </div>
-    <div class="read-more">
-      <a href="/post/es-nested-datatype/" class="read-more-link">Read more...</a>
     </div>
   </div>
 </article>
