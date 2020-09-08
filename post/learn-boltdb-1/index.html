@@ -49,7 +49,7 @@
 <meta itemprop="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，">
 <meta itemprop="datePublished" content="2020-09-02T11:04:39+08:00" />
 <meta itemprop="dateModified" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="wordCount" content="404">
+<meta itemprop="wordCount" content="1335">
 
 
 
@@ -137,14 +137,25 @@
     
     <div class="post-content">
       <p><a href="https://github.com/boltdb/bolt">boltDB</a> 是用 <code>go</code> 写的一款基于本地内存的 <code>k-v 存储引擎</code>，<code>etcd</code> 底层就使用了 <code>boltDB</code>。相对于其他常见的如 <code>MySQL</code>、<code>redis</code> 等，实现的公功能较简单，所以可以通过阅读源码，加强对数据库、操作系统（特别是文件这一块）以及 <code>go</code> 语言本身的理解。</p>
-<p>在阅读源码前，先要了解一些概念，比如操作系统（基于 <code>Linux</code>）的 <code>page</code>、<code>页表项</code>、<code>mmap</code> 、<code>虚拟内存</code>、<code>COW</code>、<code>B+ tree</code> 等。</p>
-<h2 id="page">page</h2>
-<p>操作系统操作文件无非主要就是：</p>
+<p>在阅读源码前，先要了解一些概念，比如操作系统（基于 <code>Linux</code>）的 <code>虚拟内存</code>、<code>MMU</code>、<code>TLB</code>、<code>page</code>、<code>mmap</code> 、<code>COW</code>、<code>B+ tree</code> 等。</p>
+<h2 id="基础概念">基础概念</h2>
+<p>操作系统操作文件无非主要就是（通过 <code>cpu</code>、<a href="https://en.wikipedia.org/wiki/Direct_memory_access">DMA</a>）：</p>
 <ul>
 <li>从磁盘 <code>load</code> 数据到内存</li>
 <li>从内存写入数据到磁盘</li>
 </ul>
-<p>而所谓的  <code>page</code> （内存页），就是操作系统操作文件时的单位，也即不管是上述哪一种情况，操作系统都会整 <code>page</code> 大小的读取或写入，一般地，<code>page</code> 最常见的大小为 <code>4kb</code>。之所以按照 <code>page</code> 进行操作，是因为：</p>
+<h4 id="物理内存与虚拟内存">物理内存与虚拟内存</h4>
+<p>物理内存，也即我们常说的内存条，是  <code>cpu</code> 的地址线可以直接进行寻址的内存空间大小，常见的如 <code>512MB</code>、<code>4GB</code>、<code>	8GB</code>。也即，物理内存的大小，本质是 <code>min(内存条大小, cpu 总线可寻址大小)</code>。</p>
+<p>从物理内存的定义即可知，其空间有限，所以不一定能满足实际中的需求，比如要读取一个大于物理内存的文件。另外，操作系统设计时，为了方便程序员编写程序，如果直接使用物理内存，多个程序可能会产生混用破坏，且所持有的空间大多是非连续的。</p>
+<p>所以，操作系统就通过把一部分<strong>硬盘空间</strong>，当做一段连续的物理内存来使用，这就是所谓的<strong>虚拟内存</strong>，对于程序编写者来说，可以同视为一段连续的、私有的、独享的内存块。</p>
+<h4 id="页表tlb-与-mmu">页表、TLB 与 MMU</h4>
+<p>上面提到物理内存与虚拟内存的关系，虚拟内存本质是把文件映射在物理内存中，那么操作系统是怎么管理这种映射呢？</p>
+<p>首先，操作系统会把虚拟内存与物理内存分割成大小固定的区块（<code>page</code>），然后以 <code>page</code> 为单位进行传输，可分别称之为 <code>virtual page, VP</code> 与 <code>physical page, PP</code>。</p>
+<p>然后，操作系统有一个叫做页表（<code>page table</code>）的东西，本质是一个存放在物理内存中的数据结构，其中的元素成为页表条目（<code>PTE：page table entry</code>），这些条目记录了 <code>VP</code> 与 <code>PP</code> 的映射关系，其中有个 <code>有效标记位</code> 标志如虚拟页是否已经在内存中了。</p>
+<p>有了页表的机制后，虚拟内存与物理内存的映射就可被表述出来，但还需要一套机制来管理这种映射。 <code>MMU</code>（<code>Memory Management Unit</code>，内存管理单元）就是这样的一种技术（硬件方式）来翻译这种映射。当应用程序请求访问某段虚拟内存时，<code>MMU</code> 访问页表，检测是否在页表内，不在则发生缺页中断，待数据装载到内存中后，会更新页表。此外，因为页表是存储在主内中，速度比 <code>cpu</code> 要慢，所以 <code>cpu</code> 会将页表存储在高速缓存和 <code>TLB</code> 中。</p>
+<p>所谓 <code>TLB：Translation lookaside buffer</code>，旁路缓冲器，因为页表寻址的代价较大（内存速度远小于 <code>cpu</code> 的速度），是存放页表的缓存。当 <code>cpu</code> 收到程序请求访问虚拟地址时，首先到 <code>TLB</code> 中查找相应的页表数据，如果 <code>TLB</code> 中命中则会访问 <code>L0</code>、<code>L1</code> 等高速缓存获取对应内存地址的数据，获取不到则读取内存；若 <code>TLB</code> 未命中，或页表的数据不在内存中，则发生缺页中断，从磁盘装载数据至内存，并更新页表。</p>
+<h2 id="page">page</h2>
+<p>上面提到的 <code>page</code>，常称为<strong>内存页</strong>，就是操作系统操作文件时的传输单位，也即操作系统都会整 <code>page</code> 大小的读取或写入，一般地，<code>page</code> 最常见的大小为 <code>4kb</code>。之所以按照 <code>page</code> 进行操作，是因为：</p>
 <ul>
 <li><code>page</code> 过小，页表寻址时开销较大，效率较低。所谓余额表</li>
 <li><code>page</code> 过大，可能会造成内存空间的浪费，导致内存碎片产生，且内存利用率较低。</li>
@@ -153,6 +164,12 @@
 <h2 id="虚拟内存--与-mmap">虚拟内存  与 mmap</h2>
 <h2 id="cow-技术">COW 技术</h2>
 <h2 id="b-tree">B+ tree</h2>
+<blockquote>
+<p>参考文献</p>
+</blockquote>
+<ul>
+<li><a href="https://sylvanassun.github.io/2017/10/29/2017-10-29-virtual_memory/">虚拟内存的那点事儿</a></li>
+</ul>
 
     </div>
 
