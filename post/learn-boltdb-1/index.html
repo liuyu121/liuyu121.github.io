@@ -49,7 +49,7 @@
 <meta itemprop="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，">
 <meta itemprop="datePublished" content="2020-09-02T11:04:39+08:00" />
 <meta itemprop="dateModified" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="wordCount" content="1335">
+<meta itemprop="wordCount" content="2044">
 
 
 
@@ -144,24 +144,65 @@
 <li>从磁盘 <code>load</code> 数据到内存</li>
 <li>从内存写入数据到磁盘</li>
 </ul>
+<h2 id="内存管理">内存管理</h2>
+<p>首先，放一张经典图：</p>
+<p><img src="/img/MMU_principle_updated.png" alt=""></p>
 <h4 id="物理内存与虚拟内存">物理内存与虚拟内存</h4>
 <p>物理内存，也即我们常说的内存条，是  <code>cpu</code> 的地址线可以直接进行寻址的内存空间大小，常见的如 <code>512MB</code>、<code>4GB</code>、<code>	8GB</code>。也即，物理内存的大小，本质是 <code>min(内存条大小, cpu 总线可寻址大小)</code>。</p>
 <p>从物理内存的定义即可知，其空间有限，所以不一定能满足实际中的需求，比如要读取一个大于物理内存的文件。另外，操作系统设计时，为了方便程序员编写程序，如果直接使用物理内存，多个程序可能会产生混用破坏，且所持有的空间大多是非连续的。</p>
 <p>所以，操作系统就通过把一部分<strong>硬盘空间</strong>，当做一段连续的物理内存来使用，这就是所谓的<strong>虚拟内存</strong>，对于程序编写者来说，可以同视为一段连续的、私有的、独享的内存块。</p>
-<h4 id="页表tlb-与-mmu">页表、TLB 与 MMU</h4>
+<h4 id="分页机制">分页机制</h4>
 <p>上面提到物理内存与虚拟内存的关系，虚拟内存本质是把文件映射在物理内存中，那么操作系统是怎么管理这种映射呢？</p>
-<p>首先，操作系统会把虚拟内存与物理内存分割成大小固定的区块（<code>page</code>），然后以 <code>page</code> 为单位进行传输，可分别称之为 <code>virtual page, VP</code> 与 <code>physical page, PP</code>。</p>
-<p>然后，操作系统有一个叫做页表（<code>page table</code>）的东西，本质是一个存放在物理内存中的数据结构，其中的元素成为页表条目（<code>PTE：page table entry</code>），这些条目记录了 <code>VP</code> 与 <code>PP</code> 的映射关系，其中有个 <code>有效标记位</code> 标志如虚拟页是否已经在内存中了。</p>
-<p>有了页表的机制后，虚拟内存与物理内存的映射就可被表述出来，但还需要一套机制来管理这种映射。 <code>MMU</code>（<code>Memory Management Unit</code>，内存管理单元）就是这样的一种技术（硬件方式）来翻译这种映射。当应用程序请求访问某段虚拟内存时，<code>MMU</code> 访问页表，检测是否在页表内，不在则发生缺页中断，待数据装载到内存中后，会更新页表。此外，因为页表是存储在主内中，速度比 <code>cpu</code> 要慢，所以 <code>cpu</code> 会将页表存储在高速缓存和 <code>TLB</code> 中。</p>
-<p>所谓 <code>TLB：Translation lookaside buffer</code>，旁路缓冲器，因为页表寻址的代价较大（内存速度远小于 <code>cpu</code> 的速度），是存放页表的缓存。当 <code>cpu</code> 收到程序请求访问虚拟地址时，首先到 <code>TLB</code> 中查找相应的页表数据，如果 <code>TLB</code> 中命中则会访问 <code>L0</code>、<code>L1</code> 等高速缓存获取对应内存地址的数据，获取不到则读取内存；若 <code>TLB</code> 未命中，或页表的数据不在内存中，则发生缺页中断，从磁盘装载数据至内存，并更新页表。</p>
-<h2 id="page">page</h2>
+<p>首先，操作系统会把虚拟内存与物理内存分割成大小相同的区块（<code>page</code>），通过编号将进程的各个页离散地存储在内存中（注意：内存的地址可能不是连续的），然后以该区块大小为单位进行传输。</p>
+<ul>
+<li>
+<p><code>virtual page, VP</code>：将应用程序的逻辑地址空间分割并编号，可称之为 <code>page</code>。从进程的角度看来，它可认为自己持有一段连续的内存，进程实际运行时，可认为编号是总是从 <code>0</code> 开始的。</p>
+</li>
+<li>
+<p><code>physical page, PP</code>：对应的，也会将内存地址空间分割并编号，可称之为 <code>frame</code>。</p>
+</li>
+</ul>
+<p>然后，操作系统有一个叫做页表（<code>page table</code>）的东西，本质是一个存放在物理内存中的数据结构，其中的元素成为页表项（<code>PTE：page table entry</code>），这些条目记录了 <code>page</code> 与 <code>frame</code> 的映射关系，形如 <code>&lt;page-no, frame-no&gt;</code>，且有如下标记位：</p>
+<ul>
+<li>
+<p><code>P</code>：存在（·Present·）标志，用于指明表项对地址转换是否有效。<code>P=1</code> 表示有效；<code>P=0</code> 表示无效。如果无效，则会产生缺页异常，通过中断的形式装载磁盘数据至内存。</p>
+</li>
+<li>
+<p><code>R/W</code>：读/写（<code>Read/Write</code>）标志。其中，<code>1</code> 表示页面可以被读、写或执行，<code>0</code> 表示页面只读或可执行。</p>
+</li>
+</ul>
+<h4 id="转换流程">转换流程</h4>
+<p>系统会为每一个进程建立一张页表，页表在内存中起始地址与页表长度，维护在 <code>process control block，PCB</code> 中），进程执行时，通过查找进程自己的页表，找到每页在内存中的物理块号。页表一般通过<strong>硬件实现（页表寄存器, PTR）</strong>，且常驻于内存。</p>
+<p>大概转换流程流程如下：</p>
+<ul>
+<li>1、进程访问某个逻辑地址（<code>page-no + 偏移量</code>），触发寻址操作。</li>
+<li>2、将页表起始地址、页表长度读入页表寄存器（<code>PTR</code>），然后根据 <code>page-no</code>，以及起始地址，查询页表项`。</li>
+<li>3、通过页表项上的映射找到  <code>frame-no</code>。</li>
+<li>4、通过  <code>frame-no</code>，加上逻辑地址的页内地址，定位到具体的物理地址（ <code>frame-no + 偏移量</code>）。</li>
+<li>5、进程访问该物理地址。</li>
+</ul>
+<p>在转换流程中，会有地址保护机制，也即不能越界访问到非当前进程的地址，否则会发生段错误（<code>Segmentation fault</code>，<code>SIGSEGV</code> 信号被触发）。如果访问的页不在内存中，则会产生<strong>缺页中断</strong>，从磁盘装载数据至内存，并更新页表（按需调用）。</p>
+<p>因为程序实际运行时，大多只需要极少的页表，所以现代操作系统常用的是<strong>多级页表机制</strong>，在单级页表上，通过增加多层级页号，如主页号、次页号等，实现按需加载。</p>
+<p>由以上流程可知，整个过程需要访问两次内存：查找页表中的 <code>frame-no</code>，以及根据 <code>frame-no</code> 访问物理地址的数据；且多级页表需要访问多次页表数据。所以寻址的代价较大（内存速度远小于 <code>cpu</code> 的速度），解决方案是给 <code>CPU</code> 增加所谓  <code>TLB：Translation lookaside buffer</code> 的高速缓存，常称之为 <strong>转址旁路缓存</strong>，或称之为<strong>快表</strong>，用于缓存页表数据。有了 <code>TLB</code> 后，寻址流程就如下：</p>
+<ul>
+<li>第 <code>2</code> 步从 <code>TLB</code> 中查找页表项，找到则为命中（<code>TLB hit</code>）：
+<ul>
+<li>通过上述 <code>3~4</code> 流程，找到具体的物理地址。</li>
+<li>从 <code>CPU</code> 的 <code>L0\L1</code> 高速缓存中查找数据，没找到再从内存中查找。</li>
+</ul>
+</li>
+<li>如果 <code>TLB</code> 不存在该页号，则等同于上述 <code>2~5</code> 流程。</li>
+</ul>
+<p>一般地，上述寻址过程，是由一个叫 <code>MMU</code>（<code>Memory Management Unit</code>，内存管理单元）的硬件来实现的。</p>
+<p><code>TLB</code> 机制较为复杂，可查看这篇文深入理解：<a href="https://zhuanlan.zhihu.com/p/108425561">TLB原理</a></p>
+<h4 id="page">page</h4>
 <p>上面提到的 <code>page</code>，常称为<strong>内存页</strong>，就是操作系统操作文件时的传输单位，也即操作系统都会整 <code>page</code> 大小的读取或写入，一般地，<code>page</code> 最常见的大小为 <code>4kb</code>。之所以按照 <code>page</code> 进行操作，是因为：</p>
 <ul>
 <li><code>page</code> 过小，页表寻址时开销较大，效率较低。所谓余额表</li>
 <li><code>page</code> 过大，可能会造成内存空间的浪费，导致内存碎片产生，且内存利用率较低。</li>
 </ul>
 <p>所以，在当时的硬件架构体系下，远古大神们权衡后，默认大小设置为了 <code>4kb</code>。</p>
-<h2 id="虚拟内存--与-mmap">虚拟内存  与 mmap</h2>
+<h2 id="mmap">mmap</h2>
 <h2 id="cow-技术">COW 技术</h2>
 <h2 id="b-tree">B+ tree</h2>
 <blockquote>
