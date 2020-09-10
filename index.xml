@@ -39,21 +39,21 @@
     </item>
     
     <item>
-      <title>Boltdb 源码学习 - 组织结构（二）</title>
-      <link>https://liuyu121.github.io/post/learn-boltdb-2/</link>
-      <pubDate>Wed, 02 Sep 2020 15:34:42 +0800</pubDate>
-      
-      <guid>https://liuyu121.github.io/post/learn-boltdb-2/</guid>
-      <description>架构图 bolt 主要文件如下，共 4k+ 行，其他形如 bolt_* 的文件，是为了兼容各个操作系统而存在的，统一封装了不同操作系统的一些系统调用： 1 2 3 4 5 6 7 8 9 10 $</description>
-    </item>
-    
-    <item>
-      <title>Boltdb 源码学习 - 基础（一）</title>
+      <title>Boltdb 源码学习 - 组织结构（一）</title>
       <link>https://liuyu121.github.io/post/learn-boltdb-1/</link>
-      <pubDate>Wed, 02 Sep 2020 11:04:39 +0800</pubDate>
+      <pubDate>Wed, 02 Sep 2020 15:34:42 +0800</pubDate>
       
       <guid>https://liuyu121.github.io/post/learn-boltdb-1/</guid>
       <description>boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，</description>
+    </item>
+    
+    <item>
+      <title>Linux 文件系统相关概念</title>
+      <link>https://liuyu121.github.io/post/linux-filesystem/</link>
+      <pubDate>Wed, 02 Sep 2020 11:04:39 +0800</pubDate>
+      
+      <guid>https://liuyu121.github.io/post/linux-filesystem/</guid>
+      <description>基础概念 操作系统操作文件无非主要就是（通过 cpu、DMA）： 从磁盘 load 数据到内存 从内存写入数据到磁盘 DMA（Direct Memory Access） 意为直</description>
     </item>
     
     <item>

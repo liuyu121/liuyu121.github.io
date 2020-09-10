@@ -30,7 +30,7 @@
   </url>
   
   <url>
-    <loc>https://liuyu121.github.io/post/learn-boltdb-2/</loc>
+    <loc>https://liuyu121.github.io/post/learn-boltdb-1/</loc>
     <lastmod>2020-09-02T15:34:42+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -86,7 +86,21 @@
   </url>
   
   <url>
-    <loc>https://liuyu121.github.io/post/learn-boltdb-1/</loc>
+    <loc>https://liuyu121.github.io/tags/linux/</loc>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://liuyu121.github.io/categories/linux/</loc>
+    <lastmod>2020-09-02T11:04:39+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://liuyu121.github.io/post/linux-filesystem/</loc>
     <lastmod>2020-09-02T11:04:39+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -199,20 +213,6 @@
   
   <url>
     <loc>https://liuyu121.github.io/post/bit-twiddling-hacks/</loc>
-    <lastmod>2020-07-14T19:29:40+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://liuyu121.github.io/tags/linux/</loc>
-    <lastmod>2020-07-14T19:29:40+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://liuyu121.github.io/categories/linux/</loc>
     <lastmod>2020-07-14T19:29:40+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Boltdb 源码学习 - 基础（一） - 日拱一卒，反求诸己</title>
+  <title>Boltdb 源码学习 - 组织结构（一） - 日拱一卒，反求诸己</title>
   <meta name="renderer" content="webkit" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -39,23 +39,23 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
 
 
-<meta property="og:title" content="Boltdb 源码学习 - 基础（一）" />
+<meta property="og:title" content="Boltdb 源码学习 - 组织结构（一）" />
 <meta property="og:description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://liuyu121.github.io/post/learn-boltdb-1/" />
-<meta property="article:published_time" content="2020-09-02T11:04:39+08:00" />
-<meta property="article:modified_time" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="name" content="Boltdb 源码学习 - 基础（一）">
+<meta property="article:published_time" content="2020-09-02T15:34:42+08:00" />
+<meta property="article:modified_time" content="2020-09-02T15:34:42+08:00" />
+<meta itemprop="name" content="Boltdb 源码学习 - 组织结构（一）">
 <meta itemprop="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，">
-<meta itemprop="datePublished" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="dateModified" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="wordCount" content="3704">
+<meta itemprop="datePublished" content="2020-09-02T15:34:42+08:00" />
+<meta itemprop="dateModified" content="2020-09-02T15:34:42+08:00" />
+<meta itemprop="wordCount" content="273">
 
 
 
 <meta itemprop="keywords" content="go,BoltDB,Database," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Boltdb 源码学习 - 基础（一）"/>
+<meta name="twitter:title" content="Boltdb 源码学习 - 组织结构（一）"/>
 <meta name="twitter:description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，"/>
 
 <!--[if lte IE 9]>
@@ -123,7 +123,7 @@
           <article class="post">
     
     <header class="post-header">
-      <h1 class="post-title">Boltdb 源码学习 - 基础（一）</h1>
+      <h1 class="post-title">Boltdb 源码学习 - 组织结构（一）</h1>
 
       <div class="post-meta">
         <span class="post-time"> 2020-09-02 </span>
@@ -137,69 +137,8 @@
     
     <div class="post-content">
       <p><a href="https://github.com/boltdb/bolt">boltDB</a> 是用 <code>go</code> 写的一款基于本地内存的 <code>k-v 存储引擎</code>，<code>etcd</code> 底层就使用了 <code>boltDB</code>。相对于其他常见的如 <code>MySQL</code>、<code>redis</code> 等，实现的公功能较简单，所以可以通过阅读源码，加强对数据库、操作系统（特别是文件这一块）以及 <code>go</code> 语言本身的理解。</p>
-<p>在阅读源码前，先要了解一些概念，比如操作系统（基于 <code>Linux</code>）的 <code>虚拟内存</code>、<code>MMU</code>、<code>TLB</code>、<code>page</code>、<code>mmap</code> 、<code>COW</code>、<code>B+ tree</code> 等。</p>
-<h2 id="基础概念">基础概念</h2>
-<p>操作系统操作文件无非主要就是（通过 <code>cpu</code>、<a href="https://en.wikipedia.org/wiki/Direct_memory_access">DMA</a>）：</p>
-<ul>
-<li>从磁盘 <code>load</code> 数据到内存</li>
-<li>从内存写入数据到磁盘</li>
-</ul>
-<p><code>DMA</code>（<code>Direct Memory Access</code>） 意为直接内存访问。因为<code>cpu</code> 一个总线周期最多只能存取一次总线，且在 <code>ARM</code> 架构下，对于赋值等操作，不能把内存中 <code>A</code> 地址的值直接 <code>copy</code> 到 <code>B</code> 地址，而需要使用寄存器作为中间存储。这样一来，对于 <code>ARM</code>，<code>copy</code> 的代价需要花费两个总线周期。而有了 <code>DMA</code> 后，则可以直接访问内存地址而无需 <code>cpu</code> 参与，直接由 <code>DMA</code> 控制器建立源与目的传输，从而可以解放 <code>cpu</code>。</p>
-<p>另外，广义上而言，<em>内存是外存的 <code>cache</code>，寄存器和 <code>cpu</code> 多级高速缓存是内存的 <code>cache</code></em>。</p>
-<h2 id="内存管理">内存管理</h2>
-<p>首先，放一张经典图：</p>
-<p><img src="/img/MMU_principle_updated.png" alt=""></p>
-<h4 id="物理内存与虚拟内存">物理内存与虚拟内存</h4>
-<p>物理内存，也即我们常说的内存条，是  <code>cpu</code> 的地址线可以直接进行寻址的内存空间大小，常见的如 <code>512MB</code>、<code>4GB</code>、<code>	8GB</code>。也即，物理内存的大小，本质是 <code>min(内存条大小, cpu 总线可寻址大小)</code>。</p>
-<p>从物理内存的定义即可知，其空间有限，所以不一定能满足实际中的需求，比如要读取一个大于物理内存的文件。另外，操作系统设计时，为了方便程序员编写程序，如果直接使用物理内存，多个程序可能会产生混用破坏，且所持有的空间大多是非连续的。</p>
-<p>所以，操作系统就通过把一部分<strong>硬盘空间</strong>，当做一段连续的物理内存来使用，这就是所谓的<strong>虚拟内存</strong>，对于程序编写者来说，可以同视为一段连续的、私有的、独享的内存沙箱。</p>
-<h4 id="分页机制">分页机制</h4>
-<p>上面提到物理内存与虚拟内存的关系，虚拟内存本质是把文件映射在物理内存中，那么操作系统是怎么管理这种映射呢？</p>
-<p>首先，操作系统会把虚拟内存与物理内存分割成大小相同的区块，通过编号将进程的各个页离散地存储在内存中（注意：内存的地址可能不是连续的），然后以该区块大小为单位进行传输。</p>
-<ul>
-<li>
-<p><code>virtual page, VP</code>：将应用程序的逻辑地址空间分割并编号，可称之为 <code>page</code>。从进程的角度看来，它可认为自己持有一段连续的内存，进程实际运行时，可认为编号是总是从 <code>0</code> 开始的。</p>
-</li>
-<li>
-<p><code>physical page, PP</code>：对应的，也会将内存地址空间分割并编号，也即所谓的 <code>frame</code>，是物理内存管理的单元。。</p>
-</li>
-</ul>
-<p>然后，操作系统有一个叫做页表（<code>page table</code>）的东西，本质是一个存放在物理内存中的数据结构，其中的元素成为页表项（<code>PTE：page table entry</code>），这些条目记录了 <code>page</code> 与 <code>frame</code> 的映射关系，形如 <code>&lt;page-no, frame-no&gt;</code>，且有如下标记位：</p>
-<ul>
-<li>
-<p><code>P</code>：存在（·Present·）标志，用于指明表项对地址转换是否有效。<code>P=1</code> 表示有效；<code>P=0</code> 表示无效。如果无效，则会产生缺页异常，通过中断的形式装载磁盘数据至内存。</p>
-</li>
-<li>
-<p><code>R/W</code>：读/写（<code>Read/Write</code>）标志。其中，<code>1</code> 表示页面可以被读、写或执行，<code>0</code> 表示页面只读或可执行。</p>
-</li>
-</ul>
-<h4 id="转换流程">转换流程</h4>
-<p>我们知道，进程在运行时，其要访问的页表必须在内存中，否则就找不到数据了，所以需要实现一套转换机制。</p>
-<p>系统会为每一个进程建立一张页表，页表在内存中起始地址与页表长度，维护在 <code>process control block，PCB</code> 中），进程执行时，通过查找进程自己的页表，找到每页在内存中的物理块号。页表一般通过<strong>硬件实现（页表寄存器, PTR）</strong>，且常驻于内存。</p>
-<p>大概转换流程流程如下：</p>
-<ul>
-<li>1、进程访问某个逻辑地址（<code>page-no + 偏移量</code>），触发寻址操作。</li>
-<li>2、将页表起始地址、页表长度读入页表寄存器（<code>PTR</code>），然后根据 <code>page-no</code>，以及起始地址，查询页表项`。</li>
-<li>3、通过页表项上的映射找到  <code>frame-no</code>。</li>
-<li>4、通过  <code>frame-no</code>，加上逻辑地址的页内地址，定位到具体的物理地址（ <code>frame-no + 偏移量</code>）。</li>
-<li>5、进程访问该物理地址。</li>
-</ul>
-<p>在转换流程中，会有地址保护机制，也即不能越界访问到非当前进程的地址，否则会发生段错误（<code>Segmentation fault</code>，<code>SIGSEGV</code> 信号被触发）。如果访问的页不在内存中，则会产生<strong>缺页中断</strong>，从磁盘装载数据至内存，并更新页表（按需调用）。</p>
-<p>因为程序实际运行时，大多只需要极少的页表，所以现代操作系统常用的是<strong>多级页表机制</strong>，在单级页表上，通过增加多层级页号，如主页号、次页号等，实现按需加载。</p>
-<p>由以上流程可知，整个过程需要访问两次内存：查找页表中的 <code>frame-no</code>，以及根据 <code>frame-no</code> 访问物理地址的数据；且多级页表需要访问多次页表数据。所以寻址的代价较大（内存速度远小于 <code>cpu</code> 的速度），解决方案是给 <code>CPU</code> 增加所谓  <code>TLB：Translation lookaside buffer</code> 的高速缓存，常称之为 <strong>转址旁路缓存</strong>，或称之为<strong>快表</strong>，用于缓存页表数据。有了 <code>TLB</code> 后，寻址流程就如下：</p>
-<ul>
-<li>第 <code>2</code> 步从 <code>TLB</code> 中查找页表项，找到则为命中（<code>TLB hit</code>）：
-<ul>
-<li>通过上述 <code>3~4</code> 流程，找到具体的物理地址。</li>
-<li>从 <code>CPU</code> 的 <code>L0\L1</code> 高速缓存中查找数据，没找到再从内存中查找。</li>
-</ul>
-</li>
-<li>如果 <code>TLB</code> 不存在该页号，则等同于上述 <code>2~5</code> 流程。</li>
-</ul>
-<p>一般地，上述寻址过程，是由一个叫 <code>MMU</code>（<code>Memory Management Unit</code>，内存管理单元）的硬件来实现的。</p>
-<p><code>TLB</code> 机制较为复杂，可查看这篇文深入理解：<a href="https://zhuanlan.zhihu.com/p/108425561">TLB原理</a></p>
-<h4 id="blockpagepage-cache">block、page、page cache</h4>
-<p>先来看一个现象，文件系统为 <code>ext3</code>：</p>
+<h2 id="架构">架构</h2>
+<p><code>bolt</code> 主要文件如下，共 <code>4k+</code> 行，其他形如 <code>bolt_*</code> 的文件，是为了兼容各个操作系统而存在的，统一封装了不同操作系统的一些系统调用：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -212,150 +151,23 @@
 </span><span class="lnt"> 8
 </span><span class="lnt"> 9
 </span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1">## 创建一个空文件</span>
-$ touch empty_file
-$ stat empty_file
-  File: <span class="s2">&#34;empty_file&#34;</span>
-  Size: <span class="m">0</span>         	Blocks: <span class="m">0</span>          IO Block: <span class="m">4096</span>   普通空文件
-Device: 806h/2054d	Inode: <span class="m">20716695</span>    Links: <span class="m">1</span>
-Access: <span class="o">(</span>0664/-rw-rw-r--<span class="o">)</span>  Uid: <span class="o">(</span>***<span class="o">)</span>   Gid: <span class="o">(</span>***<span class="o">)</span>
-Access: 2020-09-10 15:54:02.254443022 +0800
-Modify: 2020-09-10 15:54:02.254443022 +0800
-Change: 2020-09-10 15:54:02.254443022 +0800
-
-<span class="c1">## 创建一个空目录</span>
-$ mkdir empty_dir
-$ stat empty_dir/
-  File: <span class="s2">&#34;empty_dir/&#34;</span>
-  Size: <span class="m">4096</span>      	Blocks: <span class="m">8</span>          IO Block: <span class="m">4096</span>   目录
-Device: 806h/2054d	Inode: <span class="m">20840775</span>    Links: <span class="m">2</span>
-Access: <span class="o">(</span>0775/drwxrwxr-x<span class="o">)</span>  Uid: <span class="o">(</span>***<span class="o">)</span>   Gid: <span class="o">(</span>***<span class="o">)</span>
-Access: 2020-09-10 15:54:07.320487479 +0800
-Modify: 2020-09-10 15:54:07.320487479 +0800
-Change: 2020-09-10 15:54:07.320487479 +0800
-
-<span class="c1">## 创建一个 1字节 文件</span>
-$ <span class="nb">echo</span> <span class="m">1</span> &gt; 1_file
-$ stat 1_file
-  File: <span class="s2">&#34;1_file&#34;</span>
-  Size: <span class="m">2</span>         	Blocks: <span class="m">8</span>          IO Block: <span class="m">4096</span>   普通文件
-Device: 806h/2054d	Inode: <span class="m">20716697</span>    Links: <span class="m">1</span>
-Access: <span class="o">(</span>0664/-rw-rw-r--<span class="o">)</span>  Uid: <span class="o">(</span>***<span class="o">)</span>   Gid: <span class="o">(</span>***<span class="o">)</span>
-Access: 2020-09-10 15:54:30.408690079 +0800
-Modify: 2020-09-10 15:54:30.408690079 +0800
-Change: 2020-09-10 15:54:30.408690079 +0800
-
-<span class="c1">## 查看大小</span>
-$ du -sh 1_file empty_file empty_dir/
-4.0K	1_file
-0	empty_file
-4.0K	empty_dir/
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ wc -l `ls *.go  | grep -iv bolt_ | grep -iv test | grep -iv doc | grep -iv unix`
+     777 bucket.go
+     400 cursor.go
+    1037 db.go
+      71 errors.go
+     252 freelist.go
+     604 node.go
+     197 page.go
+     691 tx.go
+    4029 total
 </code></pre></td></tr></table>
 </div>
-</div><p>是不是有疑问，为什么空目录、<code>1</code> 个字节大小的文件占据空间 <code>4kb</code>？为什么空文件 <code>size=0</code>？<code>Blocks</code>、<code>IO Block</code> 又是什么？下面就来解答下这些疑惑。</p>
-<p>我们知道，文件都是储存在磁盘上的，磁盘的最小存储单位称之为<strong>扇区</strong>（<code>sector</code>），应用程序存储最小单位为字节 <code>Byte</code>。每个扇区储存 <code>512B</code>（<code>0.5KB</code>）。操作系统读取磁盘时，为了提高效率，不会逐个扇区读取，而是一次性连续读取多个扇区，即一次性读取一个<strong>块</strong>（<code>block</code>）。这种由多个扇区组成的<strong>块</strong>，是文件存取的最小单位。<strong>块</strong> 的大小，最常见的是 <code>4KB</code>，也即由连续八个 <strong>扇区</strong>组成。</p>
-<p>需要搞清楚的是，<code>sector</code> 是磁盘的存储单位，是一个物理上的概念，属于硬件范畴；而 <code>block</code> 是操作系统存储文件的单位，是一个逻辑上的抽象。所以即便文件为 <code>0</code>，也会占用一个 <code>block</code>。可通过如下方式查看：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">&gt; df -T
-Filesystem     Type   1K-blocks      Used Available Use% Mounted on
-/dev/sda1      ext4    <span class="m">20158332</span>  <span class="m">16297168</span>   <span class="m">2837164</span>  86% /
-
-&gt; tune2fs -l /dev/sda1 <span class="p">|</span> grep -i <span class="s2">&#34;block size&#34;</span>
-Block size:               <span class="m">4096</span>
-</code></pre></td></tr></table>
-</div>
-</div><p>现在可以来回答上面的问题：</p>
-<ul>
-<li>
-<p><code>block</code>、<code>IO Block</code>  其实上面已经解释了，<code>IO Block = 4096 = 8*512</code></p>
-</li>
-<li>
-<p><code>unix</code> 哲学为一切本质都是文件，所以目录也是个文件，可以 <code>vim empty_dir</code>，打开看到的是这个目录下的所有文件\目录（这是一个递归，哈哈）等。所以其实文件是存储在目录结构里的。</p>
-</li>
-<li>
-<p>上面提到操作系统存储文件最小单位为 <code>block=4096</code>，所以在物理上会占据 <code>4kb</code>，即便空文件或字节小于该值。</p>
-</li>
-<li>
-<p>那么空文件，<code>size=0</code>，那文件信息是保存在哪里呢？这里就涉及到另外一个重要的概念：<a href="https://www.ruanyifeng.com/blog/2011/12/inode.html">inode</a>，文件的元信息（创建时间、更新时间、所属组、所属用户、权限等等）都是存储在 <code>inode</code> 里，这里的 <code>size</code> 指的是文件内容大小。<code>inode</code> 才是操作系统识别一个文件的唯一标志，而不是文件名。</p>
-</li>
-</ul>
-<p>那么 <code>page</code> 又是什么呢，其实上面已经提到了，<code>page</code> 常称为<strong>内存页</strong>，是操作系统用来管理内存的。其实也可以视为 <code>virtual blocks</code>，那么 <code>page</code> 与 <code>block</code> 关系是怎么回事呢？操作系统从磁盘读出的数据后，就保存在内存页中，当一个 <code>block</code> 被调入到内存，它必定要被存储在一个缓冲区中。</p>
-<p>操作系统都会整 <code>page</code> 大小的读取或写入，一般地，<code>page</code> 最常见的大小为 <code>4kb</code>，这是为什么呢？</p>
-<p>之所以按照 <code>page</code> 进行操作，是因为：</p>
-<ul>
-<li><code>page</code> 过小，页表寻址时开销较大，效率较低。</li>
-<li><code>page</code> 过大，可能会造成内存空间的浪费，导致内存碎片产生，且内存利用率较低。</li>
-</ul>
-<p>在 <code>*nix</code> 系统的实现中，有 <code>buffer cache</code> 和 <code>page cahe</code>，<code>buffer cache</code>缓存的是文件 <code>inode</code>、<code>dentry</code> 等元信息，优化磁盘 <code>block I/O</code>，而 <code>page cache</code>由多个物理上的 <code>page</code> 组成， 缓存的则是具体的文件内容（<code>file</code> 结构体定义），优化文件 <code>I/O</code>。</p>
-<h2 id="page-cache-与-sync-机制">page cache 与 sync 机制</h2>
-<p>上一小节提到了 <code>page cache</code>，是操作系统用来 <code>cache file</code> 的，读取和写入都是按照 <code>page</code> 进行。</p>
-<ul>
-<li>
-<p><code>read</code>：读取的时候，先读 <code>page cache</code>，存在则视为 <code>hit</code>，直接返回，不存在再从磁盘上按需加载至 <code>page cache</code>。</p>
-</li>
-<li>
-<p><code>write</code>：写入的时候也类似，先写 <code>page cache</code>，被修改的 <code>page</code> 称之为脏页（<code>dirty page</code>），维护在 <code>dirty list</code> 中，再自动或主动写回磁盘（<code>flush</code>），保证磁盘与内存的数据一致。自动刷盘是内核保证的，内核周期性的将 <code>dirty list</code> 的数据刷盘；主动刷盘需要调用 <code>sync</code> 函数集，详细可参考 <a href="https://blog.csdn.net/luckyapple1028/article/details/61413724">Linux fsync和fdatasync系统调用实现分析（Ext4文件系统）</a>。</p>
-</li>
-</ul>
-<p>查看自动刷盘的周期：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">$ sysctl vm.dirty_expire_centisecs
-vm.dirty_expire_centisecs <span class="o">=</span> <span class="m">3000</span> <span class="c1">## 单位 10ms</span>
-</code></pre></td></tr></table>
-</div>
-</div><h2 id="mmap">mmap</h2>
-<h2 id="cow-技术">COW 技术</h2>
-<h2 id="b-tree">B+ tree</h2>
-<blockquote>
-<p>参考文献</p>
-</blockquote>
-<ul>
-<li><a href="https://sylvanassun.github.io/2017/10/29/2017-10-29-virtual_memory/">虚拟内存的那点事儿</a></li>
-</ul>
+</div><p>其中，<code>errors.go</code> 定义的是全局错误，其他文件对应一个核心模块，后面会逐个注解。</p>
+<p>大体架构图如下：</p>
+<h2 id="示例-demo">示例 demo</h2>
 
     </div>
 
@@ -385,13 +197,9 @@ vm.dirty_expire_centisecs <span class="o">=</span> <span class="m">3000</span> <
           <a href="/tags/database/">Database</a>
           </div>
       <nav class="post-nav">
-        <a class="prev" href="/post/learn-boltdb-2/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Boltdb 源码学习 - 组织结构（二）</span>
-            <span class="prev-text nav-mobile">Prev</span>
-          </a>
-        <a class="next" href="/post/go-sort/">
-            <span class="next-text nav-default">Go Sort 使用</span>
+        
+        <a class="next" href="/post/linux-filesystem/">
+            <span class="next-text nav-default">Linux 文件系统相关概念</span>
             <span class="next-text nav-mobile">Next</span>
             <i class="iconfont icon-right"></i>
           </a>
