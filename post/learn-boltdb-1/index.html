@@ -49,7 +49,7 @@
 <meta itemprop="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，">
 <meta itemprop="datePublished" content="2020-09-02T11:04:39+08:00" />
 <meta itemprop="dateModified" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="wordCount" content="2044">
+<meta itemprop="wordCount" content="2313">
 
 
 
@@ -144,13 +144,15 @@
 <li>从磁盘 <code>load</code> 数据到内存</li>
 <li>从内存写入数据到磁盘</li>
 </ul>
+<p><code>DMA</code>（<code>Direct Memory Access</code>） 意为直接内存访问。因为<code>cpu</code> 一个总线周期最多只能存取一次总线，且在 <code>ARM</code> 架构下，对于赋值等操作，不能把内存中 <code>A</code> 地址的值直接 <code>copy</code> 到 <code>B</code> 地址，而需要使用寄存器作为中间存储。这样一来，对于 <code>ARM</code>，<code>copy</code> 的代价需要花费两个总线周期。而有了 <code>DMA</code> 后，则可以直接访问内存地址而无需 <code>cpu</code> 参与，直接由 <code>DMA</code> 控制器建立源与目的传输，从而可以解放 <code>cpu</code>。</p>
+<p>另外，广义上而言，<em>内存是外存的 <code>cache</code>，寄存器和 <code>cpu</code> 多级高速缓存是内存的 <code>cache</code></em>。</p>
 <h2 id="内存管理">内存管理</h2>
 <p>首先，放一张经典图：</p>
 <p><img src="/img/MMU_principle_updated.png" alt=""></p>
 <h4 id="物理内存与虚拟内存">物理内存与虚拟内存</h4>
 <p>物理内存，也即我们常说的内存条，是  <code>cpu</code> 的地址线可以直接进行寻址的内存空间大小，常见的如 <code>512MB</code>、<code>4GB</code>、<code>	8GB</code>。也即，物理内存的大小，本质是 <code>min(内存条大小, cpu 总线可寻址大小)</code>。</p>
 <p>从物理内存的定义即可知，其空间有限，所以不一定能满足实际中的需求，比如要读取一个大于物理内存的文件。另外，操作系统设计时，为了方便程序员编写程序，如果直接使用物理内存，多个程序可能会产生混用破坏，且所持有的空间大多是非连续的。</p>
-<p>所以，操作系统就通过把一部分<strong>硬盘空间</strong>，当做一段连续的物理内存来使用，这就是所谓的<strong>虚拟内存</strong>，对于程序编写者来说，可以同视为一段连续的、私有的、独享的内存块。</p>
+<p>所以，操作系统就通过把一部分<strong>硬盘空间</strong>，当做一段连续的物理内存来使用，这就是所谓的<strong>虚拟内存</strong>，对于程序编写者来说，可以同视为一段连续的、私有的、独享的内存沙箱。</p>
 <h4 id="分页机制">分页机制</h4>
 <p>上面提到物理内存与虚拟内存的关系，虚拟内存本质是把文件映射在物理内存中，那么操作系统是怎么管理这种映射呢？</p>
 <p>首先，操作系统会把虚拟内存与物理内存分割成大小相同的区块（<code>page</code>），通过编号将进程的各个页离散地存储在内存中（注意：内存的地址可能不是连续的），然后以该区块大小为单位进行传输。</p>
@@ -172,6 +174,7 @@
 </li>
 </ul>
 <h4 id="转换流程">转换流程</h4>
+<p>我们知道，进程在运行时，其要访问的页表必须在内存中，否则就找不到数据了，所以需要实现一套转换机制。</p>
 <p>系统会为每一个进程建立一张页表，页表在内存中起始地址与页表长度，维护在 <code>process control block，PCB</code> 中），进程执行时，通过查找进程自己的页表，找到每页在内存中的物理块号。页表一般通过<strong>硬件实现（页表寄存器, PTR）</strong>，且常驻于内存。</p>
 <p>大概转换流程流程如下：</p>
 <ul>
