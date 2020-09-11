@@ -16,14 +16,14 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="Liuduoyu" /><meta name="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
+<meta name="author" content="Liuduoyu" /><meta name="description" content="boltDB 是用 go 写的一款基于纯内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，其实现的功能较简单，是" /><meta name="keywords" content="php, mysql, redis, go, golang, data structures, algorithm, web" />
 
 
 
 
 
 
-<meta name="generator" content="Hugo 0.74.3 with theme even" />
+<meta name="generator" content="Hugo 0.74.2 with theme even" />
 
 
 <link rel="canonical" href="https://liuyu121.github.io/post/learn-boltdb-1/" />
@@ -40,23 +40,22 @@
 
 
 <meta property="og:title" content="Boltdb 源码学习 - 组织结构（一）" />
-<meta property="og:description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，" />
+<meta property="og:description" content="boltDB 是用 go 写的一款基于纯内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，其实现的功能较简单，是" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://liuyu121.github.io/post/learn-boltdb-1/" />
 <meta property="article:published_time" content="2020-09-02T15:34:42+08:00" />
 <meta property="article:modified_time" content="2020-09-02T15:34:42+08:00" />
 <meta itemprop="name" content="Boltdb 源码学习 - 组织结构（一）">
-<meta itemprop="description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，">
-<meta itemprop="datePublished" content="2020-09-02T15:34:42+08:00" />
-<meta itemprop="dateModified" content="2020-09-02T15:34:42+08:00" />
-<meta itemprop="wordCount" content="273">
+<meta itemprop="description" content="boltDB 是用 go 写的一款基于纯内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，其实现的功能较简单，是">
+<meta itemprop="datePublished" content="2020-09-02T15:34:42&#43;08:00" />
+<meta itemprop="dateModified" content="2020-09-02T15:34:42&#43;08:00" />
+<meta itemprop="wordCount" content="531">
 
 
 
-<meta itemprop="keywords" content="go,BoltDB,Database," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="go,BoltDB,Database," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Boltdb 源码学习 - 组织结构（一）"/>
-<meta name="twitter:description" content="boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，"/>
+<meta name="twitter:description" content="boltDB 是用 go 写的一款基于纯内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，其实现的功能较简单，是"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -136,9 +135,114 @@
 
     
     <div class="post-content">
-      <p><a href="https://github.com/boltdb/bolt">boltDB</a> 是用 <code>go</code> 写的一款基于本地内存的 <code>k-v 存储引擎</code>，<code>etcd</code> 底层就使用了 <code>boltDB</code>。相对于其他常见的如 <code>MySQL</code>、<code>redis</code> 等，实现的公功能较简单，所以可以通过阅读源码，加强对数据库、操作系统（特别是文件这一块）以及 <code>go</code> 语言本身的理解。</p>
+      <p><a href="https://github.com/liuyu121/bbolt">boltDB</a> 是用 <code>go</code> 写的一款基于纯内存的 <code>k-v 存储引擎</code>，<code>etcd</code> 底层就使用了 <code>boltDB</code>。相对于其他常见的如 <code>MySQL</code>、<code>redis</code> 等，其实现的功能较简单，是一个很好的通过阅读源码，加强对数据库、操作系统文件处理等，以及 <code>go</code> 语言本身的理解。</p>
 <h2 id="架构">架构</h2>
-<p><code>bolt</code> 主要文件如下，共 <code>4k+</code> 行，其他形如 <code>bolt_*</code> 的文件，是为了兼容各个操作系统而存在的，统一封装了不同操作系统的一些系统调用：</p>
+<p><code>boltDB</code> 代码不多，一般都是 <code>test、main</code> 以及一些平台兼容代码（为了兼容各个操作系统，统一封装了不同操作系统的一些系统调用），概览如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">gocloc --by-file --include-lang=Go --exclude-ext=.go .
+---------------------------------------------------------------------------------------
+File                                 files          blank        comment           code
+---------------------------------------------------------------------------------------
+bucket_test.go                                        235            111           1613
+cmd/bbolt/main.go                                     314            251           1571
+db_test.go                                            213            147           1423
+tx_test.go                                            101             74            749
+db.go                                                 173            306            695
+cursor_test.go                                         97             65            655
+bucket.go                                             120            162            495
+tx.go                                                 101            146            477
+node.go                                                88            122            392
+freelist_test.go                                       43             17            374
+freelist.go                                            44             63            297
+cursor.go                                              53             78            265
+simulation_test.go                                     56             40            265
+page.go                                                32             24            148
+freelist_hmap.go                                       35             20            123
+node_test.go                                           19             21            116
+bolt_windows.go                                        20             19            102
+quick_test.go                                          13             10             67
+bolt_unix.go                                           12             15             66
+bolt_unix_aix.go                                       12             13             65
+bolt_unix_solaris.go                                   11             12             65
+page_test.go                                           10              5             57
+manydbs_test.go                                        12              2             53
+simulation_no_freelist_sync_test.go                     3              0             44
+allocate_test.go                                        6              0             25
+errors.go                                              17             30             24
+bolt_openbsd.go                                         4              0             23
+unsafe.go                                               5             14             20
+bolt_linux.go                                           2              1              7
+boltsync_unix.go                                        2              2              4
+bolt_386.go                                             2              2              3
+bolt_amd64.go                                           2              2              3
+bolt_arm64.go                                           3              3              3
+bolt_mips64x.go                                         3              3              3
+bolt_mipsx.go                                           3              3              3
+bolt_ppc.go                                             3              3              3
+bolt_ppc64.go                                           3              3              3
+bolt_ppc64le.go                                         3              3              3
+bolt_riscv64.go                                         3              3              3
+bolt_s390x.go                                           3              3              3
+doc.go                                                 13             30              1
+---------------------------------------------------------------------------------------
+TOTAL                                   41           1894           1828          10311
+---------------------------------------------------------------------------------------
+
+</code></pre></td></tr></table>
+</div>
+</div><p><code>bolt</code> 主要文件大概 <code>4k+</code> 行，其他形如 <code>bolt_*</code> 的文件：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1

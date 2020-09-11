@@ -17,7 +17,7 @@
       <pubDate>Wed, 02 Sep 2020 15:34:42 +0800</pubDate>
       
       <guid>https://liuyu121.github.io/post/learn-boltdb-1/</guid>
-      <description>boltDB 是用 go 写的一款基于本地内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，实现的公功能较简单，</description>
+      <description>boltDB 是用 go 写的一款基于纯内存的 k-v 存储引擎，etcd 底层就使用了 boltDB。相对于其他常见的如 MySQL、redis 等，其实现的功能较简单，是</description>
     </item>
     
   </channel>

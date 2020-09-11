@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.74.3 with theme even" />
+<meta name="generator" content="Hugo 0.74.2 with theme even" />
 
 
 <link rel="canonical" href="https://liuyu121.github.io/post/linux-filesystem/" />
@@ -47,14 +47,13 @@
 <meta property="article:modified_time" content="2020-09-02T11:04:39+08:00" />
 <meta itemprop="name" content="Linux 文件系统相关概念">
 <meta itemprop="description" content="基础概念 操作系统操作文件无非主要就是（通过 cpu、DMA）： 从磁盘 load 数据到内存 从内存写入数据到磁盘 DMA（Direct Memory Access） 意为直">
-<meta itemprop="datePublished" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="dateModified" content="2020-09-02T11:04:39+08:00" />
-<meta itemprop="wordCount" content="3734">
+<meta itemprop="datePublished" content="2020-09-02T11:04:39&#43;08:00" />
+<meta itemprop="dateModified" content="2020-09-02T11:04:39&#43;08:00" />
+<meta itemprop="wordCount" content="3813">
 
 
 
-<meta itemprop="keywords" content="Linux," />
-<meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="Linux," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Linux 文件系统相关概念"/>
 <meta name="twitter:description" content="基础概念 操作系统操作文件无非主要就是（通过 cpu、DMA）： 从磁盘 load 数据到内存 从内存写入数据到磁盘 DMA（Direct Memory Access） 意为直"/>
 
@@ -350,7 +349,19 @@ vm.dirty_expire_centisecs <span class="o">=</span> <span class="m">3000</span> <
 <p>而使用 <code>mmap</code> 机制，用户进程可以通过指针操作直接读写 <code>page cache</code>，这样就省去了第二次拷贝。但因为在这个过程中，可能会出现大量的缺页中断，所以性能不一定更好。</p>
 <p>详细可参考：<a href="https://zhuanlan.zhihu.com/p/67894878">Linux中的mmap映射 [一]</a></p>
 <p><code>cow</code> 完整语义是 <code>copy on write</code>，也即大名鼎鼎的<strong>写时拷贝</strong>。顾名思义，当多个进程拷贝某份数据时，当且仅当有修改，才真正触发拷贝。思想类似于上面提到的页表加载机制，按需加载，内核拖得越久越好，可以极大提高吞吐量和性能。</p>
-<h2 id="b-tree">B+ tree</h2>
+<h2 id="推荐阅读">推荐阅读</h2>
+<p><del>操作系统太复杂了，还涉及到硬件，这就知识盲区了</del></p>
+<ul>
+<li>
+<p><a href="https://sylvanassun.github.io/2017/10/29/2017-10-29-virtual_memory/">虚拟内存的那点事儿</a></p>
+</li>
+<li>
+<p><a href="https://draveness.me/whys-the-design/">为什么这么设计系列文章</a></p>
+</li>
+<li>
+<p><a href="https://blog.csdn.net/luckyapple1028/article/details/61413724">Linux fsync和fdatasync系统调用实现分析（Ext4文件系统）</a></p>
+</li>
+</ul>
 
     </div>
 
